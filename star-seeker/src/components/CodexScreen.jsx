@@ -1,18 +1,16 @@
 // src/components/CodexScreen.jsx
 import React, { useState } from 'react';
-import { CHAR_DB, ELEMENTS } from '../constants';
+import { ELEMENTS } from '../constants';         // 요소 정보는 constants에서
+import { CHAR_DB } from '../data/characters';    // 캐릭터 DB는 data/characters에서
 import { Sword, Shield, Lock, Scroll, User, Sparkles } from 'lucide-react';
 
 export const CodexScreen = ({ inventory }) => {
-  // 인벤토리에 없는 캐릭터도 도감에는 보여야 하므로 CHAR_DB 전체를 사용하되, 획득 여부 체크
   const [selectedCharId, setSelectedCharId] = useState(CHAR_DB[0].id);
-  const [tab, setTab] = useState('INFO'); // 'INFO' (전투정보) or 'PROFILE' (프로필/스토리)
+  const [tab, setTab] = useState('INFO'); 
 
   const selectedChar = CHAR_DB.find(c => c.id === selectedCharId);
-  // 인벤토리에 해당 캐릭터가 있는지 확인 (보유 중이면 활성화)
   const isOwned = inventory.some(c => c.id === selectedCharId);
   
-  // 보유 중인 캐릭터라면 인벤토리 정보를 가져와서(인연도 등) 병합, 아니면 DB 기본값
   const charData = isOwned 
     ? { ...selectedChar, ...inventory.find(c => c.id === selectedCharId) } 
     : { ...selectedChar, bond: 0 };
@@ -56,7 +54,7 @@ export const CodexScreen = ({ inventory }) => {
 
       {/* 오른쪽: 상세 정보 패널 */}
       <div className="flex-1 bg-slate-950/60 backdrop-blur-xl rounded-xl border border-white/10 flex flex-col overflow-hidden relative shadow-2xl">
-         {/* 상단 헤더: 캐릭터 기본 정보 */}
+         {/* 상단 헤더 */}
          <div className="p-6 pb-0 flex gap-6 items-end relative z-10 shrink-0">
             <div className={`w-24 h-24 rounded-full border-2 ${ELEMENTS[charData.element].border} ${ELEMENTS[charData.element].bg.replace('/20','/80')} shadow-[0_0_30px_rgba(255,255,255,0.1)] flex items-center justify-center shrink-0`}>
                 <span className="text-2xl font-bold text-white shadow-sm">{charData.name[0]}</span>
@@ -95,7 +93,6 @@ export const CodexScreen = ({ inventory }) => {
 
             {tab === 'INFO' && (
               <div className="space-y-6 relative z-10 animate-fade-in">
-                 {/* 스탯 정보 */}
                  <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white/5 p-3 rounded-lg border border-white/10">
                        <span className="text-xs text-slate-400 flex items-center gap-1 mb-1"><Sword size={12}/> 공격력</span>
@@ -107,7 +104,6 @@ export const CodexScreen = ({ inventory }) => {
                     </div>
                  </div>
                  
-                 {/* 스킬 정보 */}
                  <div>
                     <h3 className="text-yellow-100 font-bold mb-3 text-sm flex items-center gap-2"><Sparkles size={14}/> 스킬 정보</h3>
                     <div className="space-y-2">
@@ -139,7 +135,6 @@ export const CodexScreen = ({ inventory }) => {
 
             {tab === 'PROFILE' && (
               <div className="space-y-6 relative z-10 animate-fade-in">
-                  {/* 프로필 데이터 */}
                   <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                      <h3 className="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2"><User size={14}/> 기본 프로필</h3>
                      <div className="grid grid-cols-2 gap-y-2 text-xs">
@@ -150,7 +145,6 @@ export const CodexScreen = ({ inventory }) => {
                      </div>
                   </div>
 
-                  {/* 스토리 목록 */}
                   <div>
                      <h3 className="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2"><Scroll size={14}/> 인연 스토리</h3>
                      <div className="space-y-2">

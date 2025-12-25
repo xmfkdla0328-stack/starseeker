@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { SYNERGIES, CHAR_DB } from '../constants';
+import { SYNERGIES } from '../constants';     // 시너지는 constants에서
+import { CHAR_DB } from '../data/characters'; // 캐릭터는 data/characters에서 가져옴
 
 export const useGameLogic = () => {
   const [screen, setScreen] = useState('HOME');
@@ -83,7 +84,6 @@ export const useGameLogic = () => {
     }
   }, [gems, inventory, showToast]);
 
-  // 필요한 모든 데이터와 함수를 반환
   return {
     screen, setScreen,
     gems, setGems,
