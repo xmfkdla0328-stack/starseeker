@@ -2,10 +2,10 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Sparkles } from 'lucide-react';
 
-// 분리한 파일들 불러오기
-import { SYNERGIES, CHAR_DB } from './constants';
-import { Sidebar, StatusBar, Background } from './components/Layout';
-import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, BattleScreen } from './components/Screens';
+// 분리한 파일들 불러오기 (확장자 명시)
+import { SYNERGIES, CHAR_DB } from './constants.js';
+import { Sidebar, StatusBar, Background } from './components/Layout.jsx';
+import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, BattleScreen } from './components/Screens.jsx';
 
 export default function StarSeekerApp() {
   const [screen, setScreen] = useState('HOME');
@@ -14,11 +14,13 @@ export default function StarSeekerApp() {
   const [party, setParty] = useState({ front: [null, null, null, null], back: [null, null, null, null] });
   const [toast, setToast] = useState(null);
 
+  // [수정 1] 초기화 로직 강화: 인벤토리가 비어있을 때만 확실하게 스타터 지급
   useEffect(() => {
-    if (inventory.length === 0) {
+    setInventory((prev) => {
+      if (prev.length > 0) return prev; // 이미 캐릭터가 있다면 건너뜀
       const starter = { ...CHAR_DB[0], ultLevel: 0, bond: 0, uid: Date.now() };
-      setInventory([starter]);
-    }
+      return [starter];
+    });
   }, []);
 
   const showToast = useCallback((msg) => {
@@ -44,40 +46,64 @@ export default function StarSeekerApp() {
     return results;
   }, [party]);
 
+  // [수정 2] 가차 로직 최적화: 중복 생성 원천 차단
   const handleGacha = useCallback((count) => {
     const cost = count * 100;
-    if (gems < cost) { showToast('별의 조각이 부족합니다!'); return; }
+    
+    // 재화 확인은 상태 업데이트 밖에서 먼저 수행 (사용자 경험상 즉각 반응 필요)
+    // 단, setGems 내부에서 다시 한 번 체크하면 더 안전하지만, 여기서는 UI 편의성을 위해 간단히 처리
+    if (gems < cost) { 
+      showToast('별의 조각이 부족합니다!'); 
+      return; 
+    }
     
     setGems(prev => prev - cost);
-    const newChars = [];
-    let payback = 0;
     
-    // 최신 상태 참조를 위해 inventory를 의존성에 포함 (함수형 업데이트 내에서 처리하면 더 좋으나 구조 유지)
-    const currentInventory = [...inventory]; 
+    // 핵심 수정: setInventory 안에서 'prev'(최신 목록)를 직접 참조하여 로직 수행
+    setInventory(prevInventory => {
+      const currentInventory = [...prevInventory]; // 최신 상태 복사
+      let payback = 0;
+      let newMsg = '';
 
-    for (let i = 0; i < count; i++) {
-      const picked = CHAR_DB[Math.floor(Math.random() * CHAR_DB.length)];
-      const existingIdx = currentInventory.findIndex(c => c.id === picked.id);
-      
-      if (existingIdx >= 0) {
-        const target = currentInventory[existingIdx];
-        if (target.ultLevel < 5) {
-          currentInventory[existingIdx] = { ...target, ultLevel: target.ultLevel + 1 };
-          showToast(`${picked.name} 중복! 필살기 강화!`);
-        } else { payback += 20; }
-      } else {
-        const newChar = { ...picked, ultLevel: 0, bond: 0, uid: Date.now() + i };
-        newChars.push(newChar);
-        currentInventory.push(newChar);
+      for (let i = 0; i < count; i++) {
+        const picked = CHAR_DB[Math.floor(Math.random() * CHAR_DB.length)];
+        
+        // 최신 currentInventory 기준으로 중복 검사
+        const existingIdx = currentInventory.findIndex(c => c.id === picked.id);
+        
+        if (existingIdx >= 0) {
+          // 중복: 강화 또는 페이백
+          const target = currentInventory[existingIdx];
+          if (target.ultLevel < 5) {
+            currentInventory[existingIdx] = { ...target, ultLevel: target.ultLevel + 1 };
+            newMsg = `${picked.name} 중복! 필살기 강화!`;
+          } else {
+            payback += 20;
+          }
+        } else {
+          // 신규: 추가
+          // uid에 난수(Math.random)를 더해 고유성 보장 강화
+          const newChar = { ...picked, ultLevel: 0, bond: 0, uid: Date.now() + i + Math.random() };
+          currentInventory.push(newChar);
+        }
       }
-    }
-    setInventory(currentInventory);
 
-    if (payback > 0) {
-      setGems(prev => prev + payback);
-      setTimeout(() => showToast(`${payback} 별의 조각 페이백!`), 500);
-    }
-  }, [gems, inventory, showToast]);
+      // 상태 업데이트 함수 내부에서 부수 효과(토스트, 페이백) 처리
+      if (newMsg && count === 1) showToast(newMsg); // 1회 뽑기일 때만 개별 메시지
+      if (count > 1) showToast(`${count}회 관측 완료!`);
+
+      if (payback > 0) {
+        // 페이백 발생 시 비동기로 처리 (렌더링 사이클 충돌 방지)
+        setTimeout(() => {
+            setGems(g => g + payback);
+            showToast(`${payback} 별의 조각 페이백!`);
+        }, 500);
+      }
+
+      return currentInventory;
+    });
+
+  }, [gems, showToast]); // inventory 의존성 제거 (함수형 업데이트 사용으로 불필요)
 
   return (
     <div className="flex h-screen w-screen bg-slate-900 text-slate-200 overflow-hidden font-sans select-none relative">
