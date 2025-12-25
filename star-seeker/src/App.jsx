@@ -42,7 +42,11 @@ export default function StarSeekerApp() {
               <GardenScreen inventory={inventory} showToast={showToast} />
             )}
             {screen === 'BATTLE' && (
-              <BattleScreen party={party} activeSynergies={activeSynergies} />
+              <BattleScreen 
+              party={party} 
+              activeSynergies={activeSynergies}
+              battleSystem={useGameLogic().battleSystem} // 주의: useGameLogic()을 여기서 또 호출하면 안됩니다!
+              />
             )}
             {screen === 'CODEX' && (
               <CodexScreen inventory={inventory} />

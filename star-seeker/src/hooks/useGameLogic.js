@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { SYNERGIES } from '../constants';     // 시너지는 constants에서
-import { CHAR_DB } from '../data/characters'; // 캐릭터는 data/characters에서 가져옴
+import { SYNERGIES } from '../constants';
+import { CHAR_DB } from '../data/characters';
+// 전투 시스템 훅 가져오기
+import { useBattleSystem } from './useBattleSystem';
 
 export const useGameLogic = () => {
   const [screen, setScreen] = useState('HOME');
@@ -9,6 +11,9 @@ export const useGameLogic = () => {
   const [party, setParty] = useState({ front: [null, null, null, null], back: [null, null, null, null] });
   const [toast, setToast] = useState(null);
   const [mainChar, setMainChar] = useState(null);
+
+  // 전투 시스템 연결 (party 상태를 넘겨줍니다)
+  const battleSystem = useBattleSystem(party);
 
   // 초기화 로직
   useEffect(() => {
@@ -24,13 +29,18 @@ export const useGameLogic = () => {
     }
   }, [inventory, mainChar]);
 
-  // 알림 표시 함수
+  // 화면 전환 시 전투 자동 시작/종료 처리
+  useEffect(() => {
+    if (screen === 'BATTLE' && battleSystem.battleState === 'IDLE') {
+      battleSystem.startBattle();
+    }
+  }, [screen]); // battleSystem은 의존성에서 제외하여 무한 루프 방지
+
   const showToast = useCallback((msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
   }, []);
 
-  // 시너지 계산 로직
   const activeSynergies = useMemo(() => {
     const counts = {};
     const activeChars = [...party.front, ...party.back].filter(c => c !== null);
@@ -49,7 +59,6 @@ export const useGameLogic = () => {
     return results;
   }, [party]);
 
-  // 가챠 로직
   const handleGacha = useCallback((count) => {
     const cost = count * 100;
     if (gems < cost) { showToast('별의 조각이 부족합니다!'); return; }
@@ -92,6 +101,7 @@ export const useGameLogic = () => {
     mainChar, setMainChar,
     toast, showToast,
     activeSynergies,
-    handleGacha
+    handleGacha,
+    battleSystem // 전투 시스템 전체를 반환하여 컴포넌트에서 쓸 수 있게 함
   };
 };
