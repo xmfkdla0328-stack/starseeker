@@ -1,13 +1,13 @@
 // src/components/Layout.jsx
 import React from 'react';
-import { Home, Users, Sword, Cloud, Telescope, Sparkles, Star } from 'lucide-react';
+import { Home, Users, BookOpen, Cloud, Telescope, Sparkles, Star } from 'lucide-react'; // Sword 제거, BookOpen 추가
 
 // Sidebar 컴포넌트
 export const Sidebar = React.memo(({ screen, setScreen }) => {
   const navItems = [
     { id: 'HOME', icon: Home, label: '홈' },
     { id: 'PARTY', icon: Users, label: '파티' },
-    { id: 'BATTLE', icon: Sword, label: '전투' },
+    { id: 'CODEX', icon: BookOpen, label: '도감' }, // 전투 대신 도감 추가
     { id: 'GARDEN', icon: Cloud, label: '정원' },
     { id: 'GACHA', icon: Telescope, label: '관측' },
   ];

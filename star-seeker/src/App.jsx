@@ -1,94 +1,25 @@
 // src/App.jsx
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Sparkles } from 'lucide-react';
+import React from 'react';
+import { Sparkles, Sword } from 'lucide-react';
 
-// 분리한 파일들 불러오기
-import { SYNERGIES, CHAR_DB } from './constants';
+// 커스텀 훅 가져오기
+import { useGameLogic } from './hooks/useGameLogic';
+
+// UI 컴포넌트들
 import { Sidebar, StatusBar, Background } from './components/Layout';
-// Screens.jsx를 통해 개별 화면 컴포넌트들을 가져옵니다.
-import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, BattleScreen } from './components/Screens';
+import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, BattleScreen, CodexScreen } from './components/Screens';
 
 export default function StarSeekerApp() {
-  const [screen, setScreen] = useState('HOME');
-  const [gems, setGems] = useState(3000);
-  const [inventory, setInventory] = useState([]);
-  const [party, setParty] = useState({ front: [null, null, null, null], back: [null, null, null, null] });
-  const [toast, setToast] = useState(null);
-
-  // 메인 화면에 세워둘 캐릭터 (없으면 인벤토리 첫 번째 캐릭터 사용)
-  const [mainChar, setMainChar] = useState(null);
-
-  useEffect(() => {
-    // 게임 시작 시 인벤토리가 비어있으면 기본 캐릭터 지급
-    if (inventory.length === 0) {
-      const starter = { ...CHAR_DB[0], ultLevel: 0, bond: 0, uid: Date.now() };
-      setInventory([starter]);
-    }
-  }, []);
-
-  // 인벤토리가 로드되었는데 메인 캐릭터가 안정해져 있다면 첫 번째 캐릭터로 설정
-  useEffect(() => {
-    if (inventory.length > 0 && !mainChar) {
-      setMainChar(inventory[0]);
-    }
-  }, [inventory, mainChar]);
-
-  const showToast = useCallback((msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
-  }, []);
-
-  const activeSynergies = useMemo(() => {
-    const counts = {};
-    const activeChars = [...party.front, ...party.back].filter(c => c !== null);
-    activeChars.forEach(char => {
-      char.tags.forEach(tag => { counts[tag] = (counts[tag] || 0) + 1; });
-    });
-    const results = [];
-    Object.entries(counts).forEach(([tag, count]) => {
-      const synData = SYNERGIES[tag];
-      if (!synData) return;
-      const effects = synData.levels.filter(l => count >= l.count);
-      if (effects.length > 0) {
-        results.push({ name: tag, count, effect: effects[effects.length - 1].effect });
-      }
-    });
-    return results;
-  }, [party]);
-
-  const handleGacha = useCallback((count) => {
-    const cost = count * 100;
-    if (gems < cost) { showToast('별의 조각이 부족합니다!'); return; }
-    
-    setGems(prev => prev - cost);
-    const newChars = [];
-    let payback = 0;
-    
-    const currentInventory = [...inventory]; 
-
-    for (let i = 0; i < count; i++) {
-      const picked = CHAR_DB[Math.floor(Math.random() * CHAR_DB.length)];
-      const existingIdx = currentInventory.findIndex(c => c.id === picked.id);
-      
-      if (existingIdx >= 0) {
-        const target = currentInventory[existingIdx];
-        if (target.ultLevel < 5) {
-          currentInventory[existingIdx] = { ...target, ultLevel: target.ultLevel + 1 };
-          showToast(`${picked.name} 중복! 필살기 강화!`);
-        } else { payback += 20; }
-      } else {
-        const newChar = { ...picked, ultLevel: 0, bond: 0, uid: Date.now() + i };
-        newChars.push(newChar);
-        currentInventory.push(newChar);
-      }
-    }
-    setInventory(currentInventory);
-
-    if (payback > 0) {
-      setGems(prev => prev + payback);
-      setTimeout(() => showToast(`${payback} 별의 조각 페이백!`), 500);
-    }
-  }, [gems, inventory, showToast]);
+  const {
+    screen, setScreen,
+    gems,
+    inventory,
+    party, setParty,
+    mainChar, setMainChar,
+    toast, showToast,
+    activeSynergies,
+    handleGacha
+  } = useGameLogic();
 
   return (
     <div className="flex h-screen w-screen bg-slate-900 text-slate-200 overflow-hidden font-sans select-none relative">
@@ -98,14 +29,62 @@ export default function StarSeekerApp() {
       <main className="flex-1 flex flex-col h-full relative z-10 overflow-hidden">
         <StatusBar gems={gems} />
         <div className="flex-1 overflow-y-auto relative no-scrollbar">
-            {/* HomeScreen에 메인 캐릭터 정보와 변경 함수 전달 */}
-            {screen === 'HOME' && <HomeScreen showToast={showToast} mainChar={mainChar} setMainChar={setMainChar} inventory={inventory} />}
-            {screen === 'PARTY' && <PartyScreen party={party} setParty={setParty} inventory={inventory} showToast={showToast} activeSynergies={activeSynergies} />}
-            {screen === 'GACHA' && <GachaScreen handleGacha={handleGacha} />}
-            {screen === 'GARDEN' && <GardenScreen inventory={inventory} showToast={showToast} />}
-            {screen === 'BATTLE' && <BattleScreen party={party} activeSynergies={activeSynergies} />}
+            {screen === 'HOME' && (
+              <HomeScreen showToast={showToast} mainChar={mainChar} setMainChar={setMainChar} inventory={inventory} />
+            )}
+            {screen === 'PARTY' && (
+              <PartyScreen party={party} setParty={setParty} inventory={inventory} showToast={showToast} activeSynergies={activeSynergies} />
+            )}
+            {screen === 'GACHA' && (
+              <GachaScreen handleGacha={handleGacha} />
+            )}
+            {screen === 'GARDEN' && (
+              <GardenScreen inventory={inventory} showToast={showToast} />
+            )}
+            {screen === 'BATTLE' && (
+              <BattleScreen party={party} activeSynergies={activeSynergies} />
+            )}
+            {screen === 'CODEX' && (
+              <CodexScreen inventory={inventory} />
+            )}
         </div>
       </main>
+
+      {/* 우측 하단 전투 진입 플로팅 버튼 (전투 화면이 아닐 때만 표시) */}
+      {screen !== 'BATTLE' && (
+        <button 
+          onClick={() => setScreen('BATTLE')}
+          className="fixed bottom-8 right-8 z-50 w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 group hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(239,68,68,0.3)] hover:shadow-[0_0_60px_rgba(239,68,68,0.6)]"
+          title="전투 개시"
+        >
+           {/* 렌즈 하우징 (테두리) */}
+           <div className="absolute inset-0 rounded-full bg-slate-900 border-[3px] border-slate-600 group-hover:border-red-500/50 transition-colors shadow-inner"></div>
+           
+           {/* 렌즈 유리 효과 (내부 그라데이션) */}
+           <div className="absolute inset-1 rounded-full bg-gradient-to-br from-slate-800 via-slate-950 to-slate-900 overflow-hidden border border-white/5">
+              {/* 반사광 */}
+              <div className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-gradient-to-br from-white/10 via-transparent to-transparent rotate-45 pointer-events-none blur-sm"></div>
+           </div>
+
+           {/* 조준 UI (십자선 및 회전하는 원) */}
+           <div className="absolute inset-0 z-10 flex items-center justify-center opacity-60 group-hover:opacity-100 transition-all duration-300">
+               {/* 십자선 */}
+               <div className="absolute w-full h-[1px] bg-red-500/20 group-hover:bg-red-500/50 transition-colors"></div>
+               <div className="absolute h-full w-[1px] bg-red-500/20 group-hover:bg-red-500/50 transition-colors"></div>
+               {/* 회전하는 조준원 */}
+               <div className="absolute w-[70%] h-[70%] border border-dashed border-red-500/30 rounded-full animate-[spin_10s_linear_infinite] group-hover:border-red-500/60"></div>
+               <div className="absolute w-[85%] h-[85%] border border-red-500/10 rounded-full"></div>
+           </div>
+
+           {/* 메인 아이콘 */}
+           <Sword size={32} className="relative z-20 text-red-400 opacity-80 group-hover:text-red-200 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
+
+           {/* 텍스트 라벨 (호버 시 하단에 표시) */}
+           <span className="absolute -bottom-10 bg-slate-900/90 border border-red-500/30 px-3 py-1 rounded-full text-xs text-red-200 font-bold opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 shadow-lg pointer-events-none whitespace-nowrap z-30 backdrop-blur-md">
+              TARGET LOCKED
+           </span>
+        </button>
+      )}
 
       {toast && (
         <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-900/90 text-white px-6 py-2 rounded-full shadow-lg border border-yellow-500/30 z-[70] animate-bounce-slight flex items-center gap-2 backdrop-blur-md text-xs">
@@ -113,6 +92,7 @@ export default function StarSeekerApp() {
         </div>
       )}
 
+      {/* 스타일 유지 */}
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
