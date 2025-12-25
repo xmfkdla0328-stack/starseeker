@@ -18,7 +18,8 @@ export default function StarSeekerApp() {
     mainChar, setMainChar,
     toast, showToast,
     activeSynergies,
-    handleGacha
+    handleGacha,
+    battleSystem // 여기서 불러온 battleSystem 객체를 사용해야 합니다.
   } = useGameLogic();
 
   return (
@@ -43,9 +44,8 @@ export default function StarSeekerApp() {
             )}
             {screen === 'BATTLE' && (
               <BattleScreen 
-              party={party} 
-              activeSynergies={activeSynergies}
-              battleSystem={useGameLogic().battleSystem} // 주의: useGameLogic()을 여기서 또 호출하면 안됩니다!
+                activeSynergies={activeSynergies} 
+                battleSystem={battleSystem} 
               />
             )}
             {screen === 'CODEX' && (
