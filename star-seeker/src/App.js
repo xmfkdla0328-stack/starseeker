@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Star, Moon, Sun, Cloud, Flame, Droplets, Mountain, Sparkles, Sword, Shield, Home, Users, Play, Search, Gift, ChevronRight, X } from 'lucide-react';
+import { 
+  Star, Moon, Sun, Cloud, Flame, Droplets, Mountain, Sparkles, Sword, Shield, 
+  Home, Users, Play, Search, Gift, ChevronRight, X, Compass, Telescope, Feather,
+  Target, ScrollText 
+} from 'lucide-react';
 
 // --- 데이터 모델 및 상수 ---
-
-// 속성 정의
 const ELEMENTS = {
-  FIRE: { name: '불', color: 'text-red-500', bg: 'bg-red-500' },
-  WATER: { name: '물', color: 'text-blue-500', bg: 'bg-blue-500' },
-  EARTH: { name: '대지', color: 'text-green-500', bg: 'bg-green-500' },
-  LIGHT: { name: '빛', color: 'text-yellow-400', bg: 'bg-yellow-400' },
-  DARK: { name: '어둠', color: 'text-purple-500', bg: 'bg-purple-500' },
+  FIRE: { name: '불', color: 'text-red-400', bg: 'bg-red-500/20', border: 'border-red-500/50' },
+  WATER: { name: '물', color: 'text-blue-400', bg: 'bg-blue-500/20', border: 'border-blue-500/50' },
+  EARTH: { name: '대지', color: 'text-emerald-400', bg: 'bg-emerald-500/20', border: 'border-emerald-500/50' },
+  LIGHT: { name: '빛', color: 'text-yellow-300', bg: 'bg-yellow-500/20', border: 'border-yellow-500/50' },
+  DARK: { name: '어둠', color: 'text-purple-400', bg: 'bg-purple-500/20', border: 'border-purple-500/50' },
 };
 
-// 태그(시너지) 정의
 const SYNERGIES = {
   '조영': {
     name: '조영',
@@ -48,7 +49,6 @@ const SYNERGIES = {
   }
 };
 
-// 캐릭터 데이터베이스 (예시)
 const CHAR_DB = [
   { id: 1, name: '서주목', rarity: 5, element: 'LIGHT', role: 'BOTH', tags: ['조영', '조호', '신장의 의지'], baseAtk: 100, baseHp: 500, desc: '별의 인도를 받는 사령관' },
   { id: 2, name: '루나', rarity: 4, element: 'DARK', role: 'BACK', tags: ['별의 여행자', '조영'], baseAtk: 80, baseHp: 300, desc: '달빛 아래 노래하는 음유시인' },
@@ -63,17 +63,12 @@ const CHAR_DB = [
 // --- 컴포넌트 시작 ---
 
 export default function StarSeekerApp() {
-  // --- 상태 관리 ---
-  const [screen, setScreen] = useState('HOME'); // 화면 상태: HOME, PARTY, GACHA, GARDEN, BATTLE
-  const [gems, setGems] = useState(3000); // 재화
-  const [inventory, setInventory] = useState([]); // 보유 캐릭터: { ...charData, ultLevel, bond }
-  const [party, setParty] = useState({ front: [null, null, null, null], back: [null, null, null, null] }); // 파티 구성
-  const [garden, setGarden] = useState({ chars: [], furniture: [] }); // 정원 상태
-  
-  // 알림 메시지 상태
+  const [screen, setScreen] = useState('HOME');
+  const [gems, setGems] = useState(3000);
+  const [inventory, setInventory] = useState([]);
+  const [party, setParty] = useState({ front: [null, null, null, null], back: [null, null, null, null] });
   const [toast, setToast] = useState(null);
 
-  // 초기 데이터 로드 (첫 실행 시 기본 캐릭터 지급)
   useEffect(() => {
     if (inventory.length === 0) {
       const starter = { ...CHAR_DB[0], ultLevel: 0, bond: 0, uid: Date.now() };
@@ -86,270 +81,241 @@ export default function StarSeekerApp() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // --- 로직 함수들 ---
-
-  // 파티 시너지 계산
   const activeSynergies = useMemo(() => {
     const counts = {};
     const activeChars = [...party.front, ...party.back].filter(c => c !== null);
-    
     activeChars.forEach(char => {
-      char.tags.forEach(tag => {
-        counts[tag] = (counts[tag] || 0) + 1;
-      });
+      char.tags.forEach(tag => { counts[tag] = (counts[tag] || 0) + 1; });
     });
-
     const results = [];
     Object.entries(counts).forEach(([tag, count]) => {
       const synData = SYNERGIES[tag];
       if (!synData) return;
-      
-      // 현재 count에 해당하는 가장 높은 효과 찾기
       const effects = synData.levels.filter(l => count >= l.count);
       if (effects.length > 0) {
-        const currentEffect = effects[effects.length - 1]; // 가장 높은 단계
-        results.push({ name: tag, count, effect: currentEffect.effect, max: count === effects[effects.length-1].count });
+        results.push({ name: tag, count, effect: effects[effects.length - 1].effect });
       }
     });
     return results;
   }, [party]);
 
-  // 가차 로직
   const handleGacha = (count) => {
     const cost = count * 100;
-    if (gems < cost) {
-      showToast('별의 조각(재화)이 부족합니다!');
-      return;
-    }
-
+    if (gems < cost) { showToast('별의 조각이 부족합니다!'); return; }
     setGems(prev => prev - cost);
     const newChars = [];
     let payback = 0;
-
     for (let i = 0; i < count; i++) {
-      const randIdx = Math.floor(Math.random() * CHAR_DB.length);
-      const picked = CHAR_DB[randIdx];
-      
-      // 중복 체크
+      const picked = CHAR_DB[Math.floor(Math.random() * CHAR_DB.length)];
       const existingIdx = inventory.findIndex(c => c.id === picked.id);
-      
       if (existingIdx >= 0) {
         const target = inventory[existingIdx];
         if (target.ultLevel < 5) {
-          // 필살기 강화
           const newInv = [...inventory];
           newInv[existingIdx] = { ...target, ultLevel: target.ultLevel + 1 };
           setInventory(newInv);
-          showToast(`${picked.name} 중복! 필살기 레벨 UP!`);
-        } else {
-          // 페이백
-          payback += 20;
-        }
+          showToast(`${picked.name} 중복! 필살기 강화!`);
+        } else { payback += 20; }
       } else {
-        // 신규 획득
-        const newChar = { ...picked, ultLevel: 0, bond: 0, uid: Date.now() + i };
-        newChars.push(newChar);
+        newChars.push({ ...picked, ultLevel: 0, bond: 0, uid: Date.now() + i });
       }
     }
-
-    if (newChars.length > 0) {
-      setInventory(prev => [...prev, ...newChars]);
-    }
+    if (newChars.length > 0) setInventory(prev => [...prev, ...newChars]);
     if (payback > 0) {
       setGems(prev => prev + payback);
       setTimeout(() => showToast(`${payback} 별의 조각 페이백!`), 500);
     }
   };
 
-  // --- 화면 렌더링 컴포넌트 ---
+  // --- UI 컴포넌트 ---
 
-  const Navigation = () => (
-    <nav className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md border-t border-slate-700 p-2 flex justify-around items-center z-50 h-16 text-xs sm:text-sm">
-      <button onClick={() => setScreen('HOME')} className={`flex flex-col items-center ${screen === 'HOME' ? 'text-yellow-400' : 'text-slate-400'}`}>
-        <Home size={20} /> <span className="mt-1">홈</span>
-      </button>
-      <button onClick={() => setScreen('PARTY')} className={`flex flex-col items-center ${screen === 'PARTY' ? 'text-yellow-400' : 'text-slate-400'}`}>
-        <Users size={20} /> <span className="mt-1">파티</span>
-      </button>
-      <button onClick={() => setScreen('BATTLE')} className={`flex flex-col items-center ${screen === 'BATTLE' ? 'text-yellow-400' : 'text-slate-400'}`}>
-        <Sword size={20} /> <span className="mt-1">전투</span>
-      </button>
-      <button onClick={() => setScreen('GARDEN')} className={`flex flex-col items-center ${screen === 'GARDEN' ? 'text-yellow-400' : 'text-slate-400'}`}>
-        <Cloud size={20} /> <span className="mt-1">모형정원</span>
-      </button>
-      <button onClick={() => setScreen('GACHA')} className={`flex flex-col items-center ${screen === 'GACHA' ? 'text-yellow-400' : 'text-slate-400'}`}>
-        <Search size={20} /> <span className="mt-1">관측(뽑기)</span>
-      </button>
-    </nav>
-  );
+  const Sidebar = () => {
+    const navItems = [
+      { id: 'HOME', icon: Home, label: '홈' },
+      { id: 'PARTY', icon: Users, label: '파티' },
+      { id: 'BATTLE', icon: Sword, label: '전투' },
+      { id: 'GARDEN', icon: Cloud, label: '정원' },
+      { id: 'GACHA', icon: Telescope, label: '관측' },
+    ];
 
-  const TopBar = () => (
-    <div className="fixed top-0 left-0 right-0 bg-slate-900/80 backdrop-blur-md p-3 flex justify-between items-center z-50 border-b border-slate-700">
-      <div className="font-bold text-lg text-yellow-100 flex items-center gap-2">
-        <Sparkles className="text-yellow-400" /> Star Seeker
+    return (
+      <nav className="h-full w-20 bg-slate-950/50 backdrop-blur-xl border-r border-white/10 flex flex-col items-center py-4 z-50 shrink-0 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 via-transparent to-purple-500/10 opacity-50 pointer-events-none"></div>
+        <div className="mb-4 text-yellow-300 animate-pulse">
+          <Sparkles size={24} />
+        </div>
+        <div className="flex flex-col gap-4 flex-1 justify-center">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = screen === item.id;
+            return (
+              <button key={item.id} onClick={() => setScreen(item.id)}
+                className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300 group/btn
+                  ${isActive ? 'text-yellow-300 bg-white/10 shadow-[0_0_15px_rgba(253,224,71,0.3)] scale-110' : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'}`}
+              >
+                <Icon size={20} strokeWidth={1.5} className={`transition-transform duration-300 ${isActive ? 'rotate-0' : 'group-hover/btn:-rotate-12'}`}/>
+                {isActive && <div className="absolute inset-0 rounded-2xl ring-1 ring-yellow-300/50 animate-ping once"></div>}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+    );
+  };
+
+  const StatusBar = () => (
+    <div className="absolute top-3 right-4 flex items-center gap-3 z-50 pointer-events-none">
+      <div className="bg-slate-950/60 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2 border border-white/10 shadow-sm pointer-events-auto">
+        <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_5px_#34d399]"></div>
+        <span className="text-xs text-slate-300 font-medium">Lv.12</span>
       </div>
-      <div className="flex items-center gap-4">
-        <div className="bg-slate-800 px-3 py-1 rounded-full flex items-center gap-2 border border-slate-600">
-          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-          <span className="text-xs text-slate-300">Lv. 12 (계정)</span>
-        </div>
-        <div className="bg-slate-800 px-3 py-1 rounded-full flex items-center gap-2 border border-slate-600 text-yellow-300">
-          <Star size={14} fill="currentColor" />
-          <span>{gems}</span>
-        </div>
+      <div className="bg-slate-950/60 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2 border border-white/10 text-yellow-300 shadow-sm group cursor-pointer hover:border-yellow-300/50 transition-colors pointer-events-auto">
+        <Star size={14} fill="currentColor" className="group-hover:animate-spin once" />
+        <span className="font-bold text-sm">{gems.toLocaleString()}</span>
       </div>
     </div>
   );
 
-  // 홈 화면
+  const Background = () => (
+    <div className="absolute inset-0 z-0 overflow-hidden bg-[#0f172a]">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/40 via-slate-950 to-slate-950"></div>
+        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] animate-pan-slow"></div>
+        {[...Array(15)].map((_, i) => (
+            <div key={i} className="absolute rounded-full bg-white animate-twinkle" style={{
+                top: `${Math.random() * 100}%`, left: `${Math.random() * 100}%`,
+                width: `${Math.random() * 2 + 1}px`, height: `${Math.random() * 2 + 1}px`,
+                animationDelay: `${Math.random() * 5}s`, opacity: Math.random() * 0.7
+            }}></div>
+        ))}
+    </div>
+  );
+
+  // --- 메인 스크린 컨텐츠 ---
+
   const HomeScreen = () => (
-    <div className="flex flex-col items-center justify-center h-full bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900 text-center p-8">
-      <div className="w-64 h-64 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 absolute blur-3xl animate-pulse"></div>
-      <h1 className="text-4xl md:text-6xl font-serif text-white mb-4 tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
-        STAR SEEKER
-      </h1>
-      <p className="text-slate-400 text-sm md:text-lg mb-12 font-light">
-        "별의 소리를 듣는 자, 우주의 끝에서 답을 찾으리라"
-      </p>
-      
-      {/* 메인 캐릭터 전시 (인연도 표시) */}
-      <div className="relative group cursor-pointer" onClick={() => showToast(`서주목: "오늘 별이 참 밝군요, 대장."`)}>
-        <div className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-yellow-500/30 bg-slate-800 flex items-center justify-center overflow-hidden relative shadow-2xl transition-transform transform group-hover:scale-105">
-          {/* 캐릭터 이미지 대용 아이콘 */}
-          <Users size={64} className="text-slate-600" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <span className="absolute bottom-4 text-white font-bold">서주목</span>
-        </div>
-        <div className="absolute -bottom-2 -right-2 bg-pink-500 text-white text-xs px-2 py-1 rounded-full border border-white flex items-center gap-1">
-          ♥ 인연 Lv.3
+    <div className="flex flex-col items-center justify-center h-full text-center relative p-4">
+      <div className="flex flex-col items-center z-10">
+        <h1 className="text-4xl md:text-6xl font-serif text-transparent bg-clip-text bg-gradient-to-b from-yellow-100 to-yellow-300 mb-2 tracking-widest drop-shadow-[0_0_25px_rgba(253,224,71,0.4)]">
+          STAR SEEKER
+        </h1>
+        <p className="text-slate-300 text-sm md:text-lg mb-8 font-light italic opacity-80 flex items-center gap-2">
+          <Feather size={14} className="text-slate-400"/> 별의 파편을 줍는 여정 <Feather size={14} className="text-slate-400 transform scale-x-[-1]"/>
+        </p>
+        
+        <div className="relative group cursor-pointer animate-float-slow" onClick={() => showToast(`서주목: "당신의 렌즈 너머엔 무엇이 보이나요?"`)}>
+          <div className="w-36 h-36 md:w-48 md:h-48 rounded-full p-1 bg-gradient-to-tr from-yellow-400/50 to-indigo-500/50 shadow-[0_0_30px_rgba(253,224,71,0.2)] transition-all duration-500 group-hover:shadow-[0_0_50px_rgba(253,224,71,0.4)] group-hover:scale-105">
+             <div className="w-full h-full rounded-full bg-slate-900/80 backdrop-blur-sm flex items-center justify-center overflow-hidden relative border border-white/20">
+                <Users size={60} className="text-slate-500/50 group-hover:text-yellow-200/50 transition-colors" />
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-slate-950 to-transparent"></div>
+                <span className="absolute bottom-5 text-yellow-100 font-bold text-lg tracking-wider font-serif">서주목</span>
+             </div>
+          </div>
+          <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-[10px] px-2 py-1 rounded-full border border-white/30 flex items-center gap-1 shadow-lg">
+            <span className="text-pink-200">♥</span> 인연 Lv.3
+          </div>
         </div>
       </div>
     </div>
   );
 
-  // 파티 화면
   const PartyScreen = () => {
-    const [selectedSlot, setSelectedSlot] = useState(null); // { line: 'front'|'back', index: 0 }
+    const [selectedSlot, setSelectedSlot] = useState(null);
     
     const handleAssign = (char) => {
       if (!selectedSlot) return;
-      
-      // 역할 검사
       const { line } = selectedSlot;
       if (char.role !== 'BOTH' && char.role.toLowerCase() !== line) {
-        showToast('이 위치에는 배치할 수 없는 캐릭터입니다.');
-        return;
+        showToast('이 위치에는 배치할 수 없는 캐릭터입니다.'); return;
       }
-
-      // 이미 파티에 있는지 확인
-      const isAlreadyIn = [...party.front, ...party.back].find(c => c && c.id === char.id);
-      if (isAlreadyIn) {
-        showToast('이미 파티에 배치된 캐릭터입니다.');
-        return;
+      if ([...party.front, ...party.back].find(c => c && c.id === char.id)) {
+        showToast('이미 파티에 배치된 캐릭터입니다.'); return;
       }
-
-      const newParty = { ...party };
-      newParty[line][selectedSlot.index] = char;
-      setParty(newParty);
-      setSelectedSlot(null);
+      const newParty = { ...party }; newParty[line][selectedSlot.index] = char;
+      setParty(newParty); setSelectedSlot(null);
     };
-
     const removeChar = (line, index) => {
-      const newParty = { ...party };
-      newParty[line][index] = null;
-      setParty(newParty);
+        const newParty = { ...party }; newParty[line][index] = null; setParty(newParty);
     };
 
-    return (
-      <div className="flex h-full pt-16 pb-20 gap-4 p-4 overflow-hidden">
-        {/* 파티 배치 구역 */}
-        <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
-          {/* 후열 */}
-          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
-            <h3 className="text-slate-400 text-xs mb-2 uppercase tracking-wider flex items-center gap-2">
-              <Shield size={12} /> 후열 (Support / Back)
-            </h3>
-            <div className="grid grid-cols-4 gap-2">
-              {party.back.map((char, idx) => (
-                <div key={`back-${idx}`} 
-                  onClick={() => char ? removeChar('back', idx) : setSelectedSlot({line: 'back', index: idx})}
-                  className={`aspect-[3/4] rounded-lg border-2 flex flex-col items-center justify-center cursor-pointer transition-all relative
-                    ${char ? 'border-yellow-500/50 bg-slate-700' : 'border-dashed border-slate-600 hover:bg-slate-700/50'}
-                  `}>
-                  {char ? (
-                    <>
-                      <div className={`text-xs ${ELEMENTS[char.element].color} font-bold`}>{char.name}</div>
-                      <div className="text-[10px] text-slate-400 mt-1">{char.role}</div>
-                    </>
-                  ) : (
-                    <span className="text-slate-600">+</span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 전열 */}
-          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
-            <h3 className="text-slate-400 text-xs mb-2 uppercase tracking-wider flex items-center gap-2">
-              <Sword size={12} /> 전열 (Attack / Front)
-            </h3>
-            <div className="grid grid-cols-4 gap-2">
-              {party.front.map((char, idx) => (
-                <div key={`front-${idx}`}
-                  onClick={() => char ? removeChar('front', idx) : setSelectedSlot({line: 'front', index: idx})}
-                  className={`aspect-[3/4] rounded-lg border-2 flex flex-col items-center justify-center cursor-pointer transition-all relative
-                    ${char ? 'border-red-500/50 bg-slate-700' : 'border-dashed border-slate-600 hover:bg-slate-700/50'}
-                  `}>
-                  {char ? (
-                    <>
-                      <div className={`text-xs ${ELEMENTS[char.element].color} font-bold`}>{char.name}</div>
-                      <div className="text-[10px] text-slate-400 mt-1">{char.role}</div>
-                    </>
-                  ) : (
-                    <span className="text-slate-600">+</span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* 정보 패널 */}
-        <div className="w-1/3 bg-slate-900/80 border-l border-slate-700 p-4 overflow-y-auto">
-          <h2 className="text-yellow-100 font-bold mb-4">활성화된 시너지</h2>
-          {activeSynergies.length === 0 ? (
-            <p className="text-slate-500 text-sm">활성화된 태그 효과가 없습니다.</p>
+    const CharSlot = ({ char, line, idx }) => (
+        <div onClick={() => char ? removeChar(line, idx) : setSelectedSlot({line, index: idx})}
+          className={`aspect-[3/4] rounded-lg border-2 flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden group
+            ${char ? `${ELEMENTS[char.element].border} bg-slate-900/60 backdrop-blur-sm` : 'border-dashed border-slate-700/50 hover:bg-white/5 hover:border-slate-500/50'}
+          `}>
+          {char ? (
+            <>
+              <div className={`absolute inset-0 opacity-20 bg-gradient-to-br ${ELEMENTS[char.element].bg.replace('/20', '/0')} via-transparent to-transparent`}></div>
+              <div className={`text-xs md:text-sm ${ELEMENTS[char.element].color} font-bold z-10 flex flex-col items-center text-center leading-tight`}>
+                  {char.name}
+                  <span className="text-[9px] text-slate-400 font-normal opacity-70 mt-0.5 scale-90">{char.role === 'BOTH' ? '만능' : (char.role==='FRONT'?'전열':'후열')}</span>
+              </div>
+            </>
           ) : (
-            <div className="space-y-3">
-              {activeSynergies.map((syn, idx) => (
-                <div key={idx} className="bg-slate-800 p-3 rounded border border-slate-600">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-yellow-400 font-bold text-sm">
-                      &lt;{syn.name}&gt; ({syn.count}인)
-                    </span>
-                  </div>
-                  <p className="text-slate-300 text-xs">{syn.effect}</p>
-                </div>
-              ))}
-            </div>
+            <span className="text-slate-600 text-xl opacity-50">+</span>
           )}
         </div>
+    );
 
-        {/* 캐릭터 선택 모달 */}
-        {selectedSlot && (
-          <div className="absolute inset-0 z-50 bg-black/80 flex flex-col p-4 backdrop-blur-sm">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-white text-lg font-bold">캐릭터 선택 ({selectedSlot.line === 'front' ? '전열' : '후열'})</h3>
-              <button onClick={() => setSelectedSlot(null)} className="p-2 bg-slate-700 rounded-full"><X size={20} className="text-white"/></button>
+    return (
+      <div className="flex h-full gap-4 p-4 overflow-hidden relative">
+        <div className="flex-1 flex flex-col gap-3 h-full">
+          <div className="flex-1 bg-slate-900/40 backdrop-blur-md p-3 rounded-xl border border-blue-900/30 flex flex-col shadow-inner shadow-blue-900/10 min-h-0">
+            <h3 className="text-blue-300/80 text-[10px] md:text-xs mb-1 uppercase tracking-wider flex items-center gap-2 font-bold shrink-0">
+              <Shield size={12} /> 후열 (Support)
+            </h3>
+            <div className="grid grid-cols-4 gap-2 flex-1 min-h-0">
+              {party.back.map((char, idx) => <CharSlot key={`back-${idx}`} char={char} line="back" idx={idx} />)}
             </div>
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 overflow-y-auto pb-20">
+          </div>
+          <div className="flex-1 bg-slate-900/40 backdrop-blur-md p-3 rounded-xl border border-red-900/30 flex flex-col shadow-inner shadow-red-900/10 min-h-0">
+            <h3 className="text-red-300/80 text-[10px] md:text-xs mb-1 uppercase tracking-wider flex items-center gap-2 font-bold shrink-0">
+              <Sword size={12} /> 전열 (Attack)
+            </h3>
+            <div className="grid grid-cols-4 gap-2 flex-1 min-h-0">
+              {party.front.map((char, idx) => <CharSlot key={`front-${idx}`} char={char} line="front" idx={idx} />)}
+            </div>
+          </div>
+        </div>
+
+        <div className="w-56 bg-slate-950/60 backdrop-blur-xl border border-white/10 p-4 rounded-xl overflow-y-auto no-scrollbar h-full shadow-xl flex flex-col">
+          <h2 className="text-yellow-100 font-bold mb-3 flex items-center gap-2 text-sm border-b border-white/10 pb-2 shrink-0">
+              <Compass size={16} className="text-yellow-400"/> 활성 시너지
+          </h2>
+          <div className="space-y-2 flex-1 overflow-y-auto no-scrollbar">
+            {activeSynergies.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-slate-500 text-xs italic text-center">태그를 조합하여<br/>효과를 발동시키세요.</div>
+            ) : activeSynergies.map((syn, idx) => (
+              <div key={idx} className="bg-white/5 p-2 rounded-lg border border-white/10 relative overflow-hidden">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-yellow-300 font-bold text-xs flex items-center gap-1">
+                    <Sparkles size={10}/> {syn.name} <span className="text-slate-400 text-[10px] font-normal">({syn.count})</span>
+                  </span>
+                </div>
+                <p className="text-slate-300 text-[10px] pl-2 border-l-2 border-yellow-500/30">{syn.effect}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {selectedSlot && (
+          <div className="absolute inset-0 z-[60] bg-slate-950/90 backdrop-blur-md flex flex-col p-4 animate-fade-in">
+            <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2 shrink-0">
+              <h3 className="text-lg text-white font-bold font-serif flex items-center gap-2">
+                  {selectedSlot.line === 'front' ? <Sword size={18} className="text-red-400"/> : <Shield size={18} className="text-blue-400"/>}
+                  선택
+              </h3>
+              <button onClick={() => setSelectedSlot(null)} className="p-1 bg-white/10 hover:bg-white/20 rounded-full"><X size={18} className="text-slate-300"/></button>
+            </div>
+            <div className="grid grid-cols-5 gap-3 overflow-y-auto p-1 no-scrollbar flex-1">
               {inventory.map((char) => (
                 <div key={char.uid} onClick={() => handleAssign(char)}
-                  className="bg-slate-800 p-2 rounded border border-slate-600 hover:border-yellow-400 cursor-pointer flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full mb-2 ${ELEMENTS[char.element].bg}`}></div>
-                  <span className="text-slate-200 text-xs font-bold text-center">{char.name}</span>
-                  <span className="text-[10px] text-slate-500 mt-1">{char.role}</span>
+                  className={`bg-slate-900/80 p-2 rounded-lg border cursor-pointer flex flex-col items-center transition-all hover:scale-105 group relative overflow-hidden
+                    ${(char.role !== 'BOTH' && char.role.toLowerCase() !== selectedSlot.line) ? 'opacity-40 grayscale border-slate-700' : `border-white/10 hover:${ELEMENTS[char.element].border}`}
+                  `}>
+                  <div className={`w-8 h-8 rounded-full mb-1 ${ELEMENTS[char.element].bg} border ${ELEMENTS[char.element].border} flex items-center justify-center shadow-sm relative z-10`}>
+                    <div className={`w-2 h-2 rounded-full ${ELEMENTS[char.element].bg.replace('/20','/80')}`}></div>
+                  </div>
+                  <span className="text-slate-200 text-[10px] font-bold text-center z-10">{char.name}</span>
                 </div>
               ))}
             </div>
@@ -359,170 +325,165 @@ export default function StarSeekerApp() {
     );
   };
 
-  // 가차 화면
   const GachaScreen = () => (
-    <div className="flex flex-col items-center justify-center h-full pt-16 pb-20 bg-black relative overflow-hidden">
-       {/* 배경 애니메이션 (망원경 렌즈 효과) */}
-       <div className="absolute inset-0 flex items-center justify-center opacity-30">
-          <div className="w-[600px] h-[600px] rounded-full border border-slate-600 flex items-center justify-center animate-[spin_60s_linear_infinite]">
-            <div className="w-[400px] h-[400px] rounded-full border border-slate-700 flex items-center justify-center animate-[spin_40s_linear_infinite_reverse]">
-               <div className="w-[200px] h-[200px] rounded-full border border-slate-800"></div>
+    <div className="flex w-full h-full items-center justify-center relative overflow-hidden p-4">
+       {/* 배경/망원경 연출 - 절대 위치로 깔아서 공간 차지 문제 해결 */}
+       <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+          <div className="w-[40vh] h-[40vh] md:w-[60vh] md:h-[60vh] rounded-full border border-indigo-500/30 flex items-center justify-center animate-[spin_60s_linear_infinite]">
+            <div className="w-[28vh] h-[28vh] md:w-[45vh] md:h-[45vh] rounded-full border border-purple-500/30 flex items-center justify-center animate-[spin_40s_linear_infinite_reverse]">
+               <div className="w-[15vh] h-[15vh] md:w-[30vh] md:h-[30vh] rounded-full border border-yellow-500/20 shadow-[0_0_50px_rgba(253,224,71,0.1)]"></div>
             </div>
           </div>
        </div>
 
-       <div className="z-10 text-center space-y-8">
-          <div className="bg-slate-900/80 p-6 rounded-2xl border border-slate-700 backdrop-blur-md max-w-md mx-4">
-             <h2 className="text-2xl text-yellow-100 font-serif mb-2">성운 관측</h2>
-             <p className="text-slate-400 text-sm mb-6">새로운 별(캐릭터)을 찾기 위해 망원경 초점을 맞춥니다.</p>
+       {/* 컨텐츠 박스 (화면 중앙 정렬, 높이 오버플로우 방지) */}
+       <div className="z-10 flex flex-col items-center justify-center gap-3 md:gap-6 max-w-xl w-full bg-slate-950/70 p-5 md:p-8 rounded-3xl border border-white/10 backdrop-blur-xl shadow-2xl relative">
+             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-yellow-500/10 opacity-50 pointer-events-none rounded-3xl"></div>
              
-             <div className="flex gap-4 justify-center">
+             <div className="text-center shrink-0">
+                <h2 className="text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-100 to-yellow-300 font-serif mb-1 relative z-10 flex items-center justify-center gap-2">
+                    <Telescope size={24} className="text-yellow-400"/> 성운 관측
+                </h2>
+                <p className="text-slate-400 text-xs md:text-sm mb-4 relative z-10 font-light opacity-80">
+                    미지의 별을 찾기 위해 렌즈의 초점을 맞춥니다.
+                </p>
+             </div>
+             
+             {/* 버튼 그룹 */}
+             <div className="flex gap-4 w-full justify-center relative z-10">
                 <button onClick={() => handleGacha(1)} 
-                  className="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-6 py-3 rounded-lg flex flex-col items-center min-w-[100px] transition-colors">
-                  <span className="text-sm mb-1">1회 관측</span>
-                  <div className="flex items-center gap-1 text-yellow-400 text-xs">
+                  className="flex-1 bg-slate-800/80 hover:bg-slate-700/80 border border-white/20 text-white py-3 rounded-xl flex flex-col items-center transition-all active:scale-95 group">
+                  <span className="text-sm font-bold mb-1 group-hover:text-yellow-200 transition-colors">1회</span>
+                  <div className="flex items-center gap-1 text-yellow-400 text-[10px] bg-slate-950/50 px-2 py-0.5 rounded-full border border-yellow-500/30">
                     <Star size={10} fill="currentColor"/> 100
                   </div>
                 </button>
                 <button onClick={() => handleGacha(10)}
-                  className="bg-indigo-600 hover:bg-indigo-500 border border-indigo-400 text-white px-6 py-3 rounded-lg flex flex-col items-center min-w-[100px] transition-colors shadow-lg shadow-indigo-500/20">
-                  <span className="text-sm mb-1 font-bold">10회 관측</span>
-                  <div className="flex items-center gap-1 text-yellow-200 text-xs">
+                  className="flex-1 bg-gradient-to-br from-indigo-600/80 to-purple-600/80 hover:from-indigo-500/80 hover:to-purple-500/80 border border-indigo-400/50 text-white py-3 rounded-xl flex flex-col items-center transition-all active:scale-95 shadow-[0_0_15px_rgba(99,102,241,0.3)] group">
+                  <span className="text-sm font-bold mb-1 flex items-center gap-1"><Sparkles size={12} className="text-yellow-200"/> 10회</span>
+                  <div className="flex items-center gap-1 text-yellow-200 text-[10px] bg-indigo-950/50 px-2 py-0.5 rounded-full border border-yellow-500/30">
                     <Star size={10} fill="currentColor"/> 1000
                   </div>
                 </button>
              </div>
-          </div>
        </div>
     </div>
   );
 
-  // 모형 정원 화면
   const GardenScreen = () => {
-    // 5명의 배치된 캐릭터 상태 (간소화를 위해 랜덤 위치)
     const [gardenChars, setGardenChars] = useState([]);
-
     useEffect(() => {
-      // 인벤토리에서 최대 5명 가져와서 배치
-      const placed = inventory.slice(0, 5).map(c => ({
-        ...c,
-        x: Math.random() * 80 + 10, // % 단위
-        y: Math.random() * 60 + 20,
-        dir: Math.random() > 0.5 ? 1 : -1
-      }));
+      const placed = inventory.slice(0, 5).map(c => ({ ...c, x: Math.random() * 80 + 10, y: Math.random() * 60 + 20, dir: Math.random() > 0.5 ? 1 : -1 }));
       setGardenChars(placed);
-
-      // 간단한 움직임 시뮬레이션
       const interval = setInterval(() => {
-        setGardenChars(prev => prev.map(c => ({
-          ...c,
-          x: Math.max(10, Math.min(90, c.x + (Math.random() - 0.5) * 5)), // 조금씩 이동
-          dir: Math.random() > 0.5 ? 1 : -1
-        })));
+        setGardenChars(prev => prev.map(c => ({ ...c, x: Math.max(10, Math.min(90, c.x + (Math.random() - 0.5) * 5)), dir: Math.random() > 0.5 ? 1 : -1 })));
       }, 2000);
-
       return () => clearInterval(interval);
     }, [inventory]);
 
     return (
-      <div className="h-full pt-16 pb-20 bg-emerald-900/20 relative overflow-hidden">
-        {/* 배경 (모형 정원 느낌) */}
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-        <div className="absolute bottom-20 left-10 w-32 h-32 bg-slate-800 rounded-lg transform skew-x-12 opacity-50 border border-slate-600"></div>
-        <div className="absolute top-32 right-20 w-24 h-40 bg-slate-800 rounded-full opacity-50 border border-slate-600 flex items-center justify-center">
-            <div className="text-slate-500 text-xs">분수대</div>
+      <div className="h-full relative overflow-hidden rounded-2xl m-3 border border-white/10 shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/30 to-teal-950/50"></div>
+        <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        <div className="absolute bottom-8 left-16 w-32 h-20 bg-slate-800/50 rounded-lg transform skew-x-12 border border-white/10 backdrop-blur-sm flex items-end justify-center pb-2 shadow-lg">
+            <span className="text-slate-500 text-[10px]">벤치</span>
         </div>
-
-        {/* 캐릭터들 */}
         {gardenChars.map((char, idx) => (
           <div key={idx} 
-            className="absolute transition-all duration-[2000ms] ease-in-out cursor-pointer group flex flex-col items-center"
+            className="absolute transition-all duration-[2000ms] ease-in-out cursor-pointer group flex flex-col items-center z-20 hover:scale-110"
             style={{ left: `${char.x}%`, top: `${char.y}%` }}
-            onClick={() => showToast(`${char.name}: "이곳은 참 평화롭군요."`)}
+            onClick={() => showToast(`${char.name}: "이곳의 공기는 맑군요."`)}
           >
-            {/* 말풍선 */}
-            <div className="opacity-0 group-hover:opacity-100 absolute -top-10 bg-white text-slate-900 text-[10px] px-2 py-1 rounded-lg whitespace-nowrap shadow-lg transition-opacity">
-               ♪
+            <div className="opacity-0 group-hover:opacity-100 absolute -top-8 bg-white/90 text-slate-900 text-[10px] px-2 py-1 rounded-full whitespace-nowrap shadow-lg transition-all font-bold flex items-center gap-1">
+               <Sparkles size={8} className="text-yellow-500"/> 휴식
             </div>
-            
-            {/* 캐릭터 아바타 */}
-            <div className={`w-12 h-12 rounded-full border-2 border-white shadow-lg flex items-center justify-center bg-slate-700 ${char.dir === 1 ? 'scale-x-100' : '-scale-x-100'}`}>
-               <span className="text-[10px] font-bold text-white select-none">{char.name[0]}</span>
+            <div className={`w-10 h-10 rounded-full border-2 ${ELEMENTS[char.element].border} shadow-lg flex items-center justify-center ${ELEMENTS[char.element].bg.replace('/20','/80')} backdrop-blur-sm ${char.dir === 1 ? 'scale-x-100' : '-scale-x-100'} relative overflow-hidden`}>
+               <span className="text-[10px] font-bold text-white select-none relative z-10">{char.name[0]}</span>
             </div>
-            <div className="w-8 h-2 bg-black/20 rounded-full mt-1 blur-sm"></div>
           </div>
         ))}
-
-        <div className="absolute top-20 left-4 bg-slate-900/80 p-2 rounded text-xs text-slate-300">
-           * 캐릭터들은 자유롭게 돌아다니며 상호작용합니다.
-        </div>
       </div>
     );
   };
 
-  // 전투 화면 (시뮬레이션)
-  const BattleScreen = () => {
-    return (
-      <div className="h-full pt-16 pb-20 flex flex-col p-4 bg-slate-950">
-        {/* 적 진영 */}
-        <div className="flex-1 flex items-center justify-center gap-4 bg-red-900/10 rounded-t-xl border border-red-900/30 p-4">
-           <div className="w-20 h-20 bg-red-900/50 rounded-full animate-pulse border-2 border-red-500 flex items-center justify-center text-red-200 text-xs font-bold">BOSS<br/>화염룡</div>
-           <div className="text-slate-400 text-xs text-left">
-              <p>속성: <span className="text-red-500">불(Fire)</span></p>
-              <p>약점: <span className="text-blue-500">물(Water)</span></p>
-           </div>
-        </div>
-
-        {/* 전투 로그 및 시너지 표시 */}
-        <div className="h-24 bg-black/50 border-y border-slate-700 p-2 text-xs overflow-y-auto font-mono text-green-400">
-           <p>{'>'} 전투 개시!</p>
-           {activeSynergies.map((syn, i) => (
-             <p key={i} className="text-yellow-300">{'>'} [시너지 발동] {syn.name}: {syn.effect}</p>
-           ))}
-           <p>{'>'} 서주목이(가) 스킬을 사용했습니다.</p>
-           <p>{'>'} 아군의 공격력이 20% 상승했습니다.</p>
-        </div>
-
-        {/* 아군 진영 (파티) */}
-        <div className="flex-1 bg-blue-900/10 rounded-b-xl border border-blue-900/30 p-4 flex flex-col justify-end">
-           <div className="flex justify-center gap-2 mb-4">
-              {party.front.map((c, i) => (
-                <div key={i} className={`w-12 h-16 rounded border ${c ? 'border-blue-400 bg-blue-900/40' : 'border-slate-700 bg-slate-900/40'} flex items-center justify-center text-[10px]`}>
-                   {c ? c.name : '빈자리'}
-                </div>
-              ))}
-           </div>
-           <div className="flex justify-center gap-2 opacity-70 scale-90">
-              {party.back.map((c, i) => (
-                <div key={i} className={`w-12 h-16 rounded border ${c ? 'border-indigo-400 bg-indigo-900/40' : 'border-slate-700 bg-slate-900/40'} flex items-center justify-center text-[10px]`}>
-                   {c ? c.name : '빈자리'}
-                </div>
-              ))}
-           </div>
-        </div>
-      </div>
-    );
-  };
-
-  // --- 메인 렌더링 ---
-  return (
-    <div className="w-full h-screen bg-slate-900 text-slate-200 overflow-hidden font-sans select-none relative">
-      <TopBar />
+  const BattleScreen = () => (
+    <div className="h-full flex flex-col p-3 gap-3 relative">
+      <div className="absolute inset-0 bg-gradient-to-r from-red-900/10 via-transparent to-blue-900/10 pointer-events-none"></div>
       
-      {screen === 'HOME' && <HomeScreen />}
-      {screen === 'PARTY' && <PartyScreen />}
-      {screen === 'GACHA' && <GachaScreen />}
-      {screen === 'GARDEN' && <GardenScreen />}
-      {screen === 'BATTLE' && <BattleScreen />}
+      <div className="flex-[2] flex items-center justify-center gap-6 bg-red-950/40 backdrop-blur-md rounded-xl border border-red-500/20 p-2 shadow-inner shadow-red-900/20 relative overflow-hidden min-h-0">
+         <div className="w-20 h-20 bg-red-900/30 rounded-full animate-pulse-slow border-4 border-red-500/50 flex flex-col items-center justify-center text-red-100 font-bold relative z-10">
+            <Flame size={24} className="text-red-500 mb-1"/>
+            <span className="text-xs">BOSS</span>
+         </div>
+         <div className="text-slate-300 text-xs text-left bg-slate-900/50 p-2 rounded-lg border border-white/10 backdrop-blur-sm relative z-10">
+            <h4 className="font-bold text-red-400 mb-1 flex items-center gap-1">화염룡</h4>
+            <p><span className="text-red-400">불</span> / 약점: <span className="text-blue-400">물</span></p>
+         </div>
+      </div>
 
-      <Navigation />
+      <div className="h-20 bg-slate-950/60 border border-white/10 rounded-lg p-2 text-[10px] overflow-y-auto font-mono text-slate-300 no-scrollbar shadow-inner shrink-0">
+         <p className="text-green-400 font-bold mb-1">{'>'} 전투 개시!</p>
+         {activeSynergies.map((syn, i) => (
+           <p key={i} className="text-yellow-300">{'>'} [시너지] {syn.name}: {syn.effect}</p>
+         ))}
+         <p className="opacity-70">{'>'} 서주목 스킬 사용.</p>
+         <p className="opacity-70">{'>'} 공격력 상승.</p>
+      </div>
 
-      {/* 토스트 알림 */}
+      <div className="flex-[3] bg-blue-950/40 backdrop-blur-md rounded-xl border border-blue-500/20 p-2 flex flex-col justify-end shadow-inner shadow-blue-900/20 relative overflow-hidden min-h-0">
+         <div className="flex justify-center gap-2 mb-2 relative z-10">
+            {party.front.map((c, i) => (
+              <div key={i} className={`w-12 h-16 rounded-lg border transition-all ${c ? `${ELEMENTS[c.element].border} ${ELEMENTS[c.element].bg}` : 'border-slate-700/50 bg-slate-900/30'} flex flex-col items-center justify-center backdrop-blur-sm`}>
+                 {c ? <Sword size={12} className="text-red-400 opacity-70"/> : null}
+              </div>
+            ))}
+         </div>
+         <div className="flex justify-center gap-2 scale-90 opacity-80 relative z-10">
+            {party.back.map((c, i) => (
+              <div key={i} className={`w-12 h-16 rounded-lg border transition-all ${c ? `${ELEMENTS[c.element].border} ${ELEMENTS[c.element].bg}` : 'border-slate-700/50 bg-slate-900/30'} flex flex-col items-center justify-center backdrop-blur-sm`}>
+                 {c ? <Shield size={12} className="text-blue-400 opacity-70"/> : null}
+              </div>
+            ))}
+         </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex h-screen w-screen bg-slate-900 text-slate-200 overflow-hidden font-sans select-none relative">
+      <Background />
+      <Sidebar />
+      <main className="flex-1 flex flex-col h-full relative z-10 overflow-hidden">
+        <StatusBar />
+        <div className="flex-1 overflow-y-auto relative no-scrollbar">
+            {screen === 'HOME' && <HomeScreen />}
+            {screen === 'PARTY' && <PartyScreen />}
+            {screen === 'GACHA' && <GachaScreen />}
+            {screen === 'GARDEN' && <GardenScreen />}
+            {screen === 'BATTLE' && <BattleScreen />}
+        </div>
+      </main>
       {toast && (
-        <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-full shadow-lg border border-yellow-500/50 z-[60] animate-bounce">
-          {toast}
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-900/90 text-white px-6 py-2 rounded-full shadow-lg border border-yellow-500/30 z-[70] animate-bounce-slight flex items-center gap-2 backdrop-blur-md text-xs">
+          <Sparkles size={14} className="text-yellow-400"/> {toast}
         </div>
       )}
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes float-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+        @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .animate-pulse-slow { animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pan-slow { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
+        .animate-pan-slow { animation: pan-slow 60s linear infinite; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.5); } }
+        .animate-twinkle { animation: twinkle 3s ease-in-out infinite; }
+        @keyframes bounce-slight { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
+        .animate-bounce-slight { animation: bounce-slight 2s ease-in-out infinite; }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
+      `}</style>
     </div>
   );
 }
