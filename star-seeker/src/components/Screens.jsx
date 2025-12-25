@@ -75,7 +75,20 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, activeSyner
   return (
     <div className="flex h-full gap-4 p-4 overflow-hidden relative">
       <div className="flex-1 flex flex-col gap-3 h-full overflow-hidden">
-        {/* 후열 영역 */}
+        
+        {/* 전열 영역 (위로 이동됨) */}
+        <div className="flex-1 bg-slate-900/40 backdrop-blur-md p-3 rounded-xl border border-red-900/30 flex flex-col shadow-inner shadow-red-900/10 min-h-0 justify-center">
+          <h3 className="text-red-300/80 text-[10px] md:text-xs mb-2 uppercase tracking-wider flex items-center gap-2 font-bold shrink-0 justify-center">
+            <Sword size={12} /> 전열 (Attack)
+          </h3>
+          <div className="w-full max-w-md mx-auto">
+            <div className="grid grid-cols-4 gap-3">
+              {party.front.map((char, idx) => <CharSlot key={`front-${idx}`} char={char} line="front" idx={idx} />)}
+            </div>
+          </div>
+        </div>
+
+        {/* 후열 영역 (아래로 이동됨) */}
         <div className="flex-1 bg-slate-900/40 backdrop-blur-md p-3 rounded-xl border border-blue-900/30 flex flex-col shadow-inner shadow-blue-900/10 min-h-0 justify-center">
           <h3 className="text-blue-300/80 text-[10px] md:text-xs mb-2 uppercase tracking-wider flex items-center gap-2 font-bold shrink-0 justify-center">
             <Shield size={12} /> 후열 (Support)
@@ -87,17 +100,6 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, activeSyner
           </div>
         </div>
         
-        {/* 전열 영역 */}
-        <div className="flex-1 bg-slate-900/40 backdrop-blur-md p-3 rounded-xl border border-red-900/30 flex flex-col shadow-inner shadow-red-900/10 min-h-0 justify-center">
-          <h3 className="text-red-300/80 text-[10px] md:text-xs mb-2 uppercase tracking-wider flex items-center gap-2 font-bold shrink-0 justify-center">
-            <Sword size={12} /> 전열 (Attack)
-          </h3>
-          <div className="w-full max-w-md mx-auto">
-            <div className="grid grid-cols-4 gap-3">
-              {party.front.map((char, idx) => <CharSlot key={`front-${idx}`} char={char} line="front" idx={idx} />)}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* 시너지 패널 */}
@@ -133,17 +135,26 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, activeSyner
           </div>
           
           <div className="overflow-y-auto p-1 no-scrollbar flex-1">
-            {/* 그리드 컬럼 수를 늘려서(5->6~8) 아이템 크기를 줄임 */}
             <div className="grid grid-cols-6 md:grid-cols-8 gap-2">
               {inventory.map((char) => (
                 <div key={char.uid} onClick={() => handleAssign(char)}
-                  className={`bg-slate-900/80 p-1.5 rounded-lg border cursor-pointer flex flex-col items-center transition-all hover:scale-105 group relative overflow-hidden
+                  className={`bg-slate-900/80 p-1.5 rounded-lg border cursor-pointer flex flex-col items-center justify-between transition-all hover:scale-105 group relative overflow-hidden h-20
                     ${(char.role !== 'BOTH' && char.role.toLowerCase() !== selectedSlot.line) ? 'opacity-40 grayscale border-slate-700' : `border-white/10 hover:${ELEMENTS[char.element].border}`}
                   `}>
-                  <div className={`w-8 h-8 rounded-full mb-1 ${ELEMENTS[char.element].bg} border ${ELEMENTS[char.element].border} flex items-center justify-center shadow-sm relative z-10`}>
+                  <div className={`w-8 h-8 rounded-full ${ELEMENTS[char.element].bg} border ${ELEMENTS[char.element].border} flex items-center justify-center shadow-sm relative z-10 shrink-0`}>
                     <div className={`w-2 h-2 rounded-full ${ELEMENTS[char.element].bg.replace('/20','/80')}`}></div>
                   </div>
-                  <span className="text-slate-200 text-[9px] font-bold text-center z-10 truncate w-full">{char.name}</span>
+                  <div className="flex flex-col items-center w-full z-10">
+                    <span className="text-slate-200 text-[9px] font-bold text-center truncate w-full leading-tight">{char.name}</span>
+                    {/* 역할 표시 배지 추가 */}
+                    <span className={`text-[8px] px-1.5 py-0.5 rounded-full mt-1 font-bold ${
+                      char.role === 'BOTH' ? 'bg-purple-500/20 text-purple-300' :
+                      char.role === 'FRONT' ? 'bg-red-500/20 text-red-300' :
+                      'bg-blue-500/20 text-blue-300'
+                    }`}>
+                      {char.role === 'BOTH' ? '만능' : char.role === 'FRONT' ? '전열' : '후열'}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
