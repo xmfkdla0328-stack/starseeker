@@ -1,129 +1,13 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+// src/components/Screens.jsx
+import React, { useState, useEffect } from 'react';
 import { 
-  Star, Moon, Sun, Cloud, Flame, Droplets, Mountain, Sparkles, Sword, Shield, 
-  Home, Users, Play, Search, Gift, ChevronRight, X, Compass, Telescope, Feather,
-  Target, ScrollText 
+  Users, Feather, Shield, Sword, Compass, Sparkles, X, 
+  Telescope, Star, Flame 
 } from 'lucide-react';
+import { ELEMENTS } from '../constants.js'; 
 
-// --- 데이터 모델 및 상수 ---
-const ELEMENTS = {
-  FIRE: { name: '불', color: 'text-red-400', bg: 'bg-red-500/20', border: 'border-red-500/50' },
-  WATER: { name: '물', color: 'text-blue-400', bg: 'bg-blue-500/20', border: 'border-blue-500/50' },
-  EARTH: { name: '대지', color: 'text-emerald-400', bg: 'bg-emerald-500/20', border: 'border-emerald-500/50' },
-  LIGHT: { name: '빛', color: 'text-yellow-300', bg: 'bg-yellow-500/20', border: 'border-yellow-500/50' },
-  DARK: { name: '어둠', color: 'text-purple-400', bg: 'bg-purple-500/20', border: 'border-purple-500/50' },
-};
-
-const SYNERGIES = {
-  '조영': {
-    name: '조영',
-    desc: '그림자를 비추는 빛',
-    levels: [
-      { count: 2, effect: '공격력 +10%' },
-      { count: 4, effect: '공격력 +20%' },
-      { count: 6, effect: '공격력 +30%' },
-      { count: 8, effect: '공격력 +50%' },
-    ]
-  },
-  '조호': {
-    name: '조호',
-    desc: '수호하는 호랑이',
-    levels: [
-      { count: 2, effect: '전열 "조호" 캐릭터 사망 시 1회 20% 체력 부활' },
-    ]
-  },
-  '신장의 의지': {
-    name: '신장의 의지',
-    desc: '신성한 장군의 기백',
-    levels: [
-      { count: 1, effect: '아군 전체 방어력 +5%' },
-      { count: 3, effect: '아군 전체 방어력 +15%' },
-    ]
-  },
-  '별의 여행자': {
-    name: '별의 여행자',
-    desc: '우주를 여행하는 자들',
-    levels: [
-      { count: 2, effect: '탐험 속도 +20%' },
-    ]
-  }
-};
-
-const CHAR_DB = [
-  { id: 1, name: '서주목', rarity: 5, element: 'LIGHT', role: 'BOTH', tags: ['조영', '조호', '신장의 의지'], baseAtk: 100, baseHp: 500, desc: '별의 인도를 받는 사령관' },
-  { id: 2, name: '루나', rarity: 4, element: 'DARK', role: 'BACK', tags: ['별의 여행자', '조영'], baseAtk: 80, baseHp: 300, desc: '달빛 아래 노래하는 음유시인' },
-  { id: 3, name: '이그니스', rarity: 4, element: 'FIRE', role: 'FRONT', tags: ['조호', '신장의 의지'], baseAtk: 120, baseHp: 600, desc: '불꽃을 다루는 검사' },
-  { id: 4, name: '아쿠아', rarity: 3, element: 'WATER', role: 'BACK', tags: ['별의 여행자'], baseAtk: 60, baseHp: 350, desc: '치유의 물방울' },
-  { id: 5, name: '테라', rarity: 3, element: 'EARTH', role: 'FRONT', tags: ['조호'], baseAtk: 90, baseHp: 700, desc: '대지의 방패' },
-  { id: 6, name: '솔라', rarity: 5, element: 'LIGHT', role: 'BOTH', tags: ['조영', '신장의 의지'], baseAtk: 110, baseHp: 550, desc: '태양의 기사' },
-  { id: 7, name: '녹스', rarity: 4, element: 'DARK', role: 'FRONT', tags: ['조영', '별의 여행자'], baseAtk: 130, baseHp: 450, desc: '어둠 속의 암살자' },
-  { id: 8, name: '실바', rarity: 3, element: 'EARTH', role: 'BACK', tags: ['조호'], baseAtk: 50, baseHp: 400, desc: '숲의 관리자' },
-];
-
-// --- 분리된 UI 컴포넌트 (최적화) ---
-
-const Sidebar = React.memo(({ screen, setScreen }) => {
-  const navItems = [
-    { id: 'HOME', icon: Home, label: '홈' },
-    { id: 'PARTY', icon: Users, label: '파티' },
-    { id: 'BATTLE', icon: Sword, label: '전투' },
-    { id: 'GARDEN', icon: Cloud, label: '정원' },
-    { id: 'GACHA', icon: Telescope, label: '관측' },
-  ];
-
-  return (
-    <nav className="h-full w-20 bg-slate-950/50 backdrop-blur-xl border-r border-white/10 flex flex-col items-center py-4 z-50 shrink-0 relative overflow-hidden group">
-      <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 via-transparent to-purple-500/10 opacity-50 pointer-events-none"></div>
-      <div className="mb-4 text-yellow-300 animate-pulse">
-        <Sparkles size={24} />
-      </div>
-      <div className="flex flex-col gap-4 flex-1 justify-center">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = screen === item.id;
-          return (
-            <button key={item.id} onClick={() => setScreen(item.id)}
-              className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300 group/btn
-                ${isActive ? 'text-yellow-300 bg-white/10 shadow-[0_0_15px_rgba(253,224,71,0.3)] scale-110' : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'}`}
-            >
-              <Icon size={20} strokeWidth={1.5} className={`transition-transform duration-300 ${isActive ? 'rotate-0' : 'group-hover/btn:-rotate-12'}`}/>
-              {isActive && <div className="absolute inset-0 rounded-2xl ring-1 ring-yellow-300/50 animate-ping once"></div>}
-            </button>
-          );
-        })}
-      </div>
-    </nav>
-  );
-});
-
-const StatusBar = React.memo(({ gems }) => (
-  <div className="absolute top-3 right-4 flex items-center gap-3 z-50 pointer-events-none">
-    <div className="bg-slate-950/60 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2 border border-white/10 shadow-sm pointer-events-auto">
-      <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_5px_#34d399]"></div>
-      <span className="text-xs text-slate-300 font-medium">Lv.12</span>
-    </div>
-    <div className="bg-slate-950/60 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2 border border-white/10 text-yellow-300 shadow-sm group cursor-pointer hover:border-yellow-300/50 transition-colors pointer-events-auto">
-      <Star size={14} fill="currentColor" className="group-hover:animate-spin once" />
-      <span className="font-bold text-sm">{gems.toLocaleString()}</span>
-    </div>
-  </div>
-));
-
-const Background = React.memo(() => (
-  <div className="absolute inset-0 z-0 overflow-hidden bg-[#0f172a]">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/40 via-slate-950 to-slate-950"></div>
-      <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] animate-pan-slow"></div>
-      {[...Array(15)].map((_, i) => (
-          <div key={i} className="absolute rounded-full bg-white animate-twinkle" style={{
-              top: `${Math.random() * 100}%`, left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 2 + 1}px`, height: `${Math.random() * 2 + 1}px`,
-              animationDelay: `${Math.random() * 5}s`, opacity: Math.random() * 0.7
-          }}></div>
-      ))}
-  </div>
-));
-
-const HomeScreen = ({ showToast }) => (
+// --- 홈 화면 ---
+export const HomeScreen = ({ showToast }) => (
   <div className="flex flex-col items-center justify-center h-full text-center relative p-4">
     <div className="flex flex-col items-center z-10">
       <h1 className="text-4xl md:text-6xl font-serif text-transparent bg-clip-text bg-gradient-to-b from-yellow-100 to-yellow-300 mb-2 tracking-widest drop-shadow-[0_0_25px_rgba(253,224,71,0.4)]">
@@ -149,7 +33,8 @@ const HomeScreen = ({ showToast }) => (
   </div>
 );
 
-const PartyScreen = ({ party, setParty, inventory, showToast, activeSynergies }) => {
+// --- 파티 화면 ---
+export const PartyScreen = ({ party, setParty, inventory, showToast, activeSynergies }) => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   
   const handleAssign = (char) => {
@@ -256,7 +141,8 @@ const PartyScreen = ({ party, setParty, inventory, showToast, activeSynergies })
   );
 };
 
-const GachaScreen = ({ handleGacha }) => (
+// --- 가챠 화면 ---
+export const GachaScreen = ({ handleGacha }) => (
   <div className="flex w-full h-full items-center justify-center relative overflow-hidden p-4">
      <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
         <div className="w-[40vh] h-[40vh] md:w-[60vh] md:h-[60vh] rounded-full border border-indigo-500/30 flex items-center justify-center animate-[spin_60s_linear_infinite]">
@@ -298,7 +184,8 @@ const GachaScreen = ({ handleGacha }) => (
   </div>
 );
 
-const GardenScreen = ({ inventory, showToast }) => {
+// --- 정원 화면 ---
+export const GardenScreen = ({ inventory, showToast }) => {
   const [gardenChars, setGardenChars] = useState([]);
   useEffect(() => {
     const placed = inventory.slice(0, 5).map(c => ({ ...c, x: Math.random() * 80 + 10, y: Math.random() * 60 + 20, dir: Math.random() > 0.5 ? 1 : -1 }));
@@ -334,7 +221,8 @@ const GardenScreen = ({ inventory, showToast }) => {
   );
 };
 
-const BattleScreen = ({ party, activeSynergies }) => (
+// --- 전투 화면 ---
+export const BattleScreen = ({ party, activeSynergies }) => (
   <div className="h-full flex flex-col p-3 gap-3 relative">
     <div className="absolute inset-0 bg-gradient-to-r from-red-900/10 via-transparent to-blue-900/10 pointer-events-none"></div>
     
@@ -376,121 +264,3 @@ const BattleScreen = ({ party, activeSynergies }) => (
     </div>
   </div>
 );
-
-// --- 메인 컴포넌트 ---
-
-export default function StarSeekerApp() {
-  const [screen, setScreen] = useState('HOME');
-  const [gems, setGems] = useState(3000);
-  const [inventory, setInventory] = useState([]);
-  const [party, setParty] = useState({ front: [null, null, null, null], back: [null, null, null, null] });
-  const [toast, setToast] = useState(null);
-
-  useEffect(() => {
-    if (inventory.length === 0) {
-      const starter = { ...CHAR_DB[0], ultLevel: 0, bond: 0, uid: Date.now() };
-      setInventory([starter]);
-    }
-  }, []);
-
-  const showToast = useCallback((msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
-  }, []);
-
-  const activeSynergies = useMemo(() => {
-    const counts = {};
-    const activeChars = [...party.front, ...party.back].filter(c => c !== null);
-    activeChars.forEach(char => {
-      char.tags.forEach(tag => { counts[tag] = (counts[tag] || 0) + 1; });
-    });
-    const results = [];
-    Object.entries(counts).forEach(([tag, count]) => {
-      const synData = SYNERGIES[tag];
-      if (!synData) return;
-      const effects = synData.levels.filter(l => count >= l.count);
-      if (effects.length > 0) {
-        results.push({ name: tag, count, effect: effects[effects.length - 1].effect });
-      }
-    });
-    return results;
-  }, [party]);
-
-  const handleGacha = useCallback((count) => {
-    const cost = count * 100;
-    if (gems < cost) { showToast('별의 조각이 부족합니다!'); return; }
-    
-    // 비동기적인 상태 업데이트를 위해 함수형 업데이트 사용 권장 (여기서는 로직 단순화를 위해 직접 계산)
-    // gems 참조를 피하려면 함수형 업데이트가 좋지만, 여기서는 gems가 dependency에 포함되어야 함.
-    setGems(prev => prev - cost);
-    
-    const newChars = [];
-    let payback = 0;
-    
-    // inventory는 클로저로 캡처되므로, 최신 상태를 사용하기 위해 함수형 업데이트 안에서 처리하거나,
-    // inventory를 의존성에 추가해야 함. 여기서는 inventory 의존성 추가 방식을 사용.
-    const currentInventory = [...inventory]; 
-
-    for (let i = 0; i < count; i++) {
-      const picked = CHAR_DB[Math.floor(Math.random() * CHAR_DB.length)];
-      const existingIdx = currentInventory.findIndex(c => c.id === picked.id);
-      
-      if (existingIdx >= 0) {
-        const target = currentInventory[existingIdx];
-        if (target.ultLevel < 5) {
-          currentInventory[existingIdx] = { ...target, ultLevel: target.ultLevel + 1 };
-          showToast(`${picked.name} 중복! 필살기 강화!`);
-        } else { payback += 20; }
-      } else {
-        const newChar = { ...picked, ultLevel: 0, bond: 0, uid: Date.now() + i };
-        newChars.push(newChar);
-        currentInventory.push(newChar);
-      }
-    }
-
-    setInventory(currentInventory);
-
-    if (payback > 0) {
-      setGems(prev => prev + payback);
-      setTimeout(() => showToast(`${payback} 별의 조각 페이백!`), 500);
-    }
-  }, [gems, inventory, showToast]);
-
-  return (
-    <div className="flex h-screen w-screen bg-slate-900 text-slate-200 overflow-hidden font-sans select-none relative">
-      <Background />
-      <Sidebar screen={screen} setScreen={setScreen} />
-      <main className="flex-1 flex flex-col h-full relative z-10 overflow-hidden">
-        <StatusBar gems={gems} />
-        <div className="flex-1 overflow-y-auto relative no-scrollbar">
-            {screen === 'HOME' && <HomeScreen showToast={showToast} />}
-            {screen === 'PARTY' && <PartyScreen party={party} setParty={setParty} inventory={inventory} showToast={showToast} activeSynergies={activeSynergies} />}
-            {screen === 'GACHA' && <GachaScreen handleGacha={handleGacha} />}
-            {screen === 'GARDEN' && <GardenScreen inventory={inventory} showToast={showToast} />}
-            {screen === 'BATTLE' && <BattleScreen party={party} activeSynergies={activeSynergies} />}
-        </div>
-      </main>
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-900/90 text-white px-6 py-2 rounded-full shadow-lg border border-yellow-500/30 z-[70] animate-bounce-slight flex items-center gap-2 backdrop-blur-md text-xs">
-          <Sparkles size={14} className="text-yellow-400"/> {toast}
-        </div>
-      )}
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        @keyframes float-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
-        @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .animate-pulse-slow { animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pan-slow { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
-        .animate-pan-slow { animation: pan-slow 60s linear infinite; }
-        @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.5); } }
-        .animate-twinkle { animation: twinkle 3s ease-in-out infinite; }
-        @keyframes bounce-slight { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
-        .animate-bounce-slight { animation: bounce-slight 2s ease-in-out infinite; }
-        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-        .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
-      `}</style>
-    </div>
-  );
-}
