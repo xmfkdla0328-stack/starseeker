@@ -55,45 +55,53 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, activeSyner
 
   const CharSlot = ({ char, line, idx }) => (
       <div onClick={() => char ? removeChar(line, idx) : setSelectedSlot({line, index: idx})}
-        className={`aspect-[3/4] rounded-lg border-2 flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden group
+        className={`aspect-[3/4] rounded-lg border-2 flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden group w-full
           ${char ? `${ELEMENTS[char.element].border} bg-slate-900/60 backdrop-blur-sm` : 'border-dashed border-slate-700/50 hover:bg-white/5 hover:border-slate-500/50'}
         `}>
         {char ? (
           <>
             <div className={`absolute inset-0 opacity-20 bg-gradient-to-br ${ELEMENTS[char.element].bg.replace('/20', '/0')} via-transparent to-transparent`}></div>
-            <div className={`text-xs md:text-sm ${ELEMENTS[char.element].color} font-bold z-10 flex flex-col items-center text-center leading-tight`}>
+            <div className={`text-xs ${ELEMENTS[char.element].color} font-bold z-10 flex flex-col items-center text-center leading-tight`}>
                 {char.name}
                 <span className="text-[9px] text-slate-400 font-normal opacity-70 mt-0.5 scale-90">{char.role === 'BOTH' ? '만능' : (char.role==='FRONT'?'전열':'후열')}</span>
             </div>
           </>
         ) : (
-          <span className="text-slate-600 text-xl opacity-50">+</span>
+          <span className="text-slate-600 text-lg opacity-50">+</span>
         )}
       </div>
   );
 
   return (
     <div className="flex h-full gap-4 p-4 overflow-hidden relative">
-      <div className="flex-1 flex flex-col gap-3 h-full">
-        <div className="flex-1 bg-slate-900/40 backdrop-blur-md p-3 rounded-xl border border-blue-900/30 flex flex-col shadow-inner shadow-blue-900/10 min-h-0">
-          <h3 className="text-blue-300/80 text-[10px] md:text-xs mb-1 uppercase tracking-wider flex items-center gap-2 font-bold shrink-0">
+      <div className="flex-1 flex flex-col gap-3 h-full overflow-hidden">
+        {/* 후열 영역 */}
+        <div className="flex-1 bg-slate-900/40 backdrop-blur-md p-3 rounded-xl border border-blue-900/30 flex flex-col shadow-inner shadow-blue-900/10 min-h-0 justify-center">
+          <h3 className="text-blue-300/80 text-[10px] md:text-xs mb-2 uppercase tracking-wider flex items-center gap-2 font-bold shrink-0 justify-center">
             <Shield size={12} /> 후열 (Support)
           </h3>
-          <div className="grid grid-cols-4 gap-2 flex-1 min-h-0">
-            {party.back.map((char, idx) => <CharSlot key={`back-${idx}`} char={char} line="back" idx={idx} />)}
+          <div className="w-full max-w-md mx-auto">
+            <div className="grid grid-cols-4 gap-3">
+              {party.back.map((char, idx) => <CharSlot key={`back-${idx}`} char={char} line="back" idx={idx} />)}
+            </div>
           </div>
         </div>
-        <div className="flex-1 bg-slate-900/40 backdrop-blur-md p-3 rounded-xl border border-red-900/30 flex flex-col shadow-inner shadow-red-900/10 min-h-0">
-          <h3 className="text-red-300/80 text-[10px] md:text-xs mb-1 uppercase tracking-wider flex items-center gap-2 font-bold shrink-0">
+        
+        {/* 전열 영역 */}
+        <div className="flex-1 bg-slate-900/40 backdrop-blur-md p-3 rounded-xl border border-red-900/30 flex flex-col shadow-inner shadow-red-900/10 min-h-0 justify-center">
+          <h3 className="text-red-300/80 text-[10px] md:text-xs mb-2 uppercase tracking-wider flex items-center gap-2 font-bold shrink-0 justify-center">
             <Sword size={12} /> 전열 (Attack)
           </h3>
-          <div className="grid grid-cols-4 gap-2 flex-1 min-h-0">
-            {party.front.map((char, idx) => <CharSlot key={`front-${idx}`} char={char} line="front" idx={idx} />)}
+          <div className="w-full max-w-md mx-auto">
+            <div className="grid grid-cols-4 gap-3">
+              {party.front.map((char, idx) => <CharSlot key={`front-${idx}`} char={char} line="front" idx={idx} />)}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="w-56 bg-slate-950/60 backdrop-blur-xl border border-white/10 p-4 rounded-xl overflow-y-auto no-scrollbar h-full shadow-xl flex flex-col">
+      {/* 시너지 패널 */}
+      <div className="w-56 bg-slate-950/60 backdrop-blur-xl border border-white/10 p-4 rounded-xl overflow-y-auto no-scrollbar h-full shadow-xl flex flex-col shrink-0">
         <h2 className="text-yellow-100 font-bold mb-3 flex items-center gap-2 text-sm border-b border-white/10 pb-2 shrink-0">
             <Compass size={16} className="text-yellow-400"/> 활성 시너지
         </h2>
@@ -113,27 +121,32 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, activeSyner
         </div>
       </div>
 
+      {/* 캐릭터 선택 팝업 */}
       {selectedSlot && (
         <div className="absolute inset-0 z-[60] bg-slate-950/90 backdrop-blur-md flex flex-col p-4 animate-fade-in">
           <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2 shrink-0">
             <h3 className="text-lg text-white font-bold font-serif flex items-center gap-2">
                 {selectedSlot.line === 'front' ? <Sword size={18} className="text-red-400"/> : <Shield size={18} className="text-blue-400"/>}
-                선택
+                {selectedSlot.line === 'front' ? '전열' : '후열'} 배치 선택
             </h3>
             <button onClick={() => setSelectedSlot(null)} className="p-1 bg-white/10 hover:bg-white/20 rounded-full"><X size={18} className="text-slate-300"/></button>
           </div>
-          <div className="grid grid-cols-5 gap-3 overflow-y-auto p-1 no-scrollbar flex-1">
-            {inventory.map((char) => (
-              <div key={char.uid} onClick={() => handleAssign(char)}
-                className={`bg-slate-900/80 p-2 rounded-lg border cursor-pointer flex flex-col items-center transition-all hover:scale-105 group relative overflow-hidden
-                  ${(char.role !== 'BOTH' && char.role.toLowerCase() !== selectedSlot.line) ? 'opacity-40 grayscale border-slate-700' : `border-white/10 hover:${ELEMENTS[char.element].border}`}
-                `}>
-                <div className={`w-8 h-8 rounded-full mb-1 ${ELEMENTS[char.element].bg} border ${ELEMENTS[char.element].border} flex items-center justify-center shadow-sm relative z-10`}>
-                  <div className={`w-2 h-2 rounded-full ${ELEMENTS[char.element].bg.replace('/20','/80')}`}></div>
+          
+          <div className="overflow-y-auto p-1 no-scrollbar flex-1">
+            {/* 그리드 컬럼 수를 늘려서(5->6~8) 아이템 크기를 줄임 */}
+            <div className="grid grid-cols-6 md:grid-cols-8 gap-2">
+              {inventory.map((char) => (
+                <div key={char.uid} onClick={() => handleAssign(char)}
+                  className={`bg-slate-900/80 p-1.5 rounded-lg border cursor-pointer flex flex-col items-center transition-all hover:scale-105 group relative overflow-hidden
+                    ${(char.role !== 'BOTH' && char.role.toLowerCase() !== selectedSlot.line) ? 'opacity-40 grayscale border-slate-700' : `border-white/10 hover:${ELEMENTS[char.element].border}`}
+                  `}>
+                  <div className={`w-8 h-8 rounded-full mb-1 ${ELEMENTS[char.element].bg} border ${ELEMENTS[char.element].border} flex items-center justify-center shadow-sm relative z-10`}>
+                    <div className={`w-2 h-2 rounded-full ${ELEMENTS[char.element].bg.replace('/20','/80')}`}></div>
+                  </div>
+                  <span className="text-slate-200 text-[9px] font-bold text-center z-10 truncate w-full">{char.name}</span>
                 </div>
-                <span className="text-slate-200 text-[10px] font-bold text-center z-10">{char.name}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       )}
