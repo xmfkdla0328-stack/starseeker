@@ -8,7 +8,7 @@ import { calculateStatsByLevel } from '../../data/playerStats';
  * 스탯 및 스킬 정보 표시
  */
 export const CharacterInfoTab = ({ charData, getSkillInfo }) => {
-  const bondLevel = charData.bondLevel || 1;
+  const bondLevel = charData.bondLevel || 0;
   
   return (
     <div className="space-y-6 relative z-10 animate-fade-in">

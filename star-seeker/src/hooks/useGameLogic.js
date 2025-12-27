@@ -7,6 +7,7 @@ import { useBattleSystem } from './useBattleSystem';
 import { useSynergy } from './useSynergy';
 import { useGacha } from './useGacha';
 import { useLevelSync } from './useLevelSync';
+import { useBondSystem } from './useBondSystem';
 
 export const useGameLogic = () => {
   const [screen, setScreen] = useState('HOME');
@@ -40,6 +41,9 @@ export const useGameLogic = () => {
   // 3. 가챠 로직 (플레이어 레벨 전달)
   const handleGacha = useGacha(items, setItems, inventory, setInventory, showToast, playerInfo.level);
 
+  // 4. 인연도 시스템
+  const { increaseBondFromBattle } = useBondSystem(inventory, setInventory, party, screen);
+
   // 초기화 및 자동 처리
   useEffect(() => {
     if (inventory.length === 0) {
@@ -53,36 +57,6 @@ export const useGameLogic = () => {
       setMainChar(inventory[0]);
     }
   }, [inventory, mainChar]);
-
-  // 인연도 증가 함수 (전투 승리 시)
-  const increaseBondFromBattle = useCallback(() => {
-    setInventory(prev =>
-      prev.map(char => {
-        const inParty = [...party.front, ...party.back].some(p => p && p.id === char.id);
-        return inParty ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 0) + 1) } : char;
-      })
-    );
-  }, [party]);
-
-  // 인연도 증가 함수 (정원 배치 시 - 초당 증가)
-  const increaseBondFromGarden = useCallback(() => {
-    setInventory(prev =>
-      prev.map(char => {
-        const inGarden = prev.slice(0, 5).some(c => c.id === char.id);
-        return inGarden ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 0) + 0.02) } : char;
-      })
-    );
-  }, []);
-
-  // 정원 시간 경과에 따른 인연도 증가
-  useEffect(() => {
-    if (screen === 'GARDEN') {
-      const interval = setInterval(() => {
-        increaseBondFromGarden();
-      }, 1000); // 1초마다 증가
-      return () => clearInterval(interval);
-    }
-  }, [screen, increaseBondFromGarden]);
 
   // 플레이어 레벨 동기화
   useLevelSync(playerInfo, setPlayerInfo, inventory, setInventory, party, setParty, mainChar, setMainChar, showToast);

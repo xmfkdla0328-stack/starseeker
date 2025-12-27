@@ -4,7 +4,7 @@ import { BOND_LEVELS } from '../../data/characters';
 
 /**
  * 캐릭터 인연도 표시 컴포넌트
- * @param {number} bondLevel - 현재 인연도 (1-5)
+ * @param {number} bondLevel - 현재 인연도 (0-5)
  * @param {boolean} detailed - 상세 정보 표시 여부
  */
 export const BondDisplay = ({ bondLevel = 0, detailed = false }) => {
