@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sword, Shield, Wind, Sparkles } from 'lucide-react';
+import { Sword, Shield, Wind, Sparkles, Heart } from 'lucide-react';
 import { SkillBlock } from './SkillBlock';
 import { calculateStatsByLevel } from '../../data/playerStats';
 
@@ -8,13 +8,15 @@ import { calculateStatsByLevel } from '../../data/playerStats';
  * 스탯 및 스킬 정보 표시
  */
 export const CharacterInfoTab = ({ charData, getSkillInfo }) => {
+  const bondLevel = charData.bondLevel || 1;
+  
   return (
     <div className="space-y-6 relative z-10 animate-fade-in">
       {/* 스탯 (레벨에 따른 실제 스탯 표시) */}
       {(() => {
         const actualStats = calculateStatsByLevel(charData.baseAtk, charData.baseHp, charData.level || 1);
         return (
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-4 gap-3">
             <div className="bg-white/5 p-3 rounded-lg border border-white/10">
               <span className="text-xs text-slate-400 flex items-center gap-1 mb-1">
                 <Sword size={12} /> 공격력
@@ -32,6 +34,12 @@ export const CharacterInfoTab = ({ charData, getSkillInfo }) => {
                 <Wind size={12} /> 속도
               </span>
               <span className="text-xl font-bold text-slate-200">{charData.baseSpd || '-'}</span>
+            </div>
+            <div className="bg-pink-500/10 p-3 rounded-lg border border-pink-500/30">
+              <span className="text-xs text-pink-300 flex items-center gap-1 mb-1">
+                <Heart size={12} /> 인연도
+              </span>
+              <span className="text-xl font-bold text-pink-200">{bondLevel}</span>
             </div>
           </div>
         );

@@ -4,14 +4,17 @@ import { BattleLog } from './battle/BattleLog';
 import { AllyCard } from './battle/AllyCard';
 import { BattleControls } from './battle/BattleControls';
 
-export const BattleScreen = ({ battleSystem, addExp, setScreen }) => {
+export const BattleScreen = ({ battleSystem, addExp, setScreen, increaseBondFromBattle }) => {
   const { enemy, allies, logs, battleState, processTurn, isAuto, setIsAuto } = battleSystem;
 
-  // 승리 시 경험치 획득
+  // 승리 시 경험치 획득 및 인연도 증가
   useEffect(() => {
     if (battleState === 'VICTORY') {
       const expReward = 100; // 기본 경험치 보상
       addExp(expReward);
+      if (increaseBondFromBattle) {
+        increaseBondFromBattle();
+      }
       
       // 2초 후 자동으로 HOME 화면으로 이동
       const timer = setTimeout(() => {
@@ -20,7 +23,7 @@ export const BattleScreen = ({ battleSystem, addExp, setScreen }) => {
       
       return () => clearTimeout(timer);
     }
-  }, [battleState, addExp, setScreen]);
+  }, [battleState, addExp, setScreen, increaseBondFromBattle]);
 
   if (!enemy || allies.length === 0) return <div className="text-center p-10 text-slate-400">전투 준비 중...</div>;
 

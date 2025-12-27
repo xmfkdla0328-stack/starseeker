@@ -43,7 +43,7 @@ export const useGameLogic = () => {
   // 초기화 및 자동 처리
   useEffect(() => {
     if (inventory.length === 0) {
-      const starter = { ...CHAR_DB[0], ultLevel: 0, bond: 0, uid: Date.now(), level: 1 };
+      const starter = { ...CHAR_DB[0], ultLevel: 0, bondLevel: 1, uid: Date.now(), level: 1 };
       setInventory([starter]);
     }
   }, []);
@@ -54,11 +54,15 @@ export const useGameLogic = () => {
     }
   }, [inventory, mainChar]);
 
+  // 정원 시간 경과에 따른 인연도 증가
   useEffect(() => {
-    if (screen === 'BATTLE' && battleSystem.battleState === 'IDLE') {
-      battleSystem.startBattle();
+    if (screen === 'GARDEN') {
+      const interval = setInterval(() => {
+        increaseBondFromGarden();
+      }, 1000); // 1초마다 증가
+      return () => clearInterval(interval);
     }
-  }, [screen]);
+  }, [screen, increaseBondFromGarden]);
 
   // 플레이어 레벨 동기화
   useLevelSync(playerInfo, setPlayerInfo, inventory, setInventory, party, setParty, mainChar, setMainChar, showToast);
@@ -79,6 +83,26 @@ export const useGameLogic = () => {
     }));
   }, []);
 
+  // 인연도 증가 함수 (전투 승리 시)
+  const increaseBondFromBattle = useCallback(() => {
+    setInventory(prev =>
+      prev.map(char => {
+        const inParty = [...party.front, ...party.back].some(p => p && p.id === char.id);
+        return inParty ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 1) + 1) } : char;
+      })
+    );
+  }, [party]);
+
+  // 인연도 증가 함수 (정원 배치 시 - 초당 증가)
+  const increaseBondFromGarden = useCallback(() => {
+    setInventory(prev =>
+      prev.map(char => {
+        const inGarden = prev.slice(0, 5).some(c => c.id === char.id);
+        return inGarden ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 1) + 0.02) } : char;
+      })
+    );
+  }, []);
+
   return {
     screen, setScreen,
     inventory, setInventory,
@@ -96,6 +120,8 @@ export const useGameLogic = () => {
     handleSelectTitle,
     // 경험치 추가
     addExp,
+    // 인연도 증가
+    increaseBondFromBattle,
     // 아이템
     items, setItems,
   };

@@ -1,6 +1,15 @@
 // src/constants.js
 // 게임 시스템 전반에 사용되는 상수(속성, 시너지 등)를 정의합니다.
 
+// 인연도 레벨별 정보
+export const BOND_LEVELS = {
+  1: { name: '만남', story: '처음 만난 그날의 기억' },
+  2: { name: '친숙', story: '함께하는 시간들' },
+  3: { name: '깊어짐', story: '마음을 열기 시작하다' },
+  4: { name: '신뢰', story: '내가 믿고 따를 사람' },
+  5: { name: '인연의 끝', story: '영원한 인연의 맹세' },
+};
+
 export const ELEMENTS = {
   FIRE: { name: '불', color: 'text-red-400', bg: 'bg-red-500/20', border: 'border-red-500/50' },
   WATER: { name: '물', color: 'text-blue-400', bg: 'bg-blue-500/20', border: 'border-blue-500/50' },
