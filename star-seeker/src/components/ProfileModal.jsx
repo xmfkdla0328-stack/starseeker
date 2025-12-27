@@ -69,7 +69,7 @@ export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unl
               
               {/* 프로필 텍스트 */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-1">
                   {selectedTitleData && (
                     (() => {
                       const rarityStyles = getRarityStyles(selectedTitleData.rarity);
@@ -81,10 +81,10 @@ export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unl
                     })()
                   )}
                 </div>
-                <h2 className="text-lg font-serif font-bold text-cyan-100 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)] truncate leading-tight">
+                <p className="text-xs text-cyan-300/70 font-serif font-semibold tracking-wider uppercase mb-1">
                   {selectedTitleData?.name}
-                </h2>
-                <p className="text-sm font-bold text-cyan-200 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">{playerInfo.nickname}</p>
+                </p>
+                <p className="text-2xl font-serif font-bold text-cyan-100 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)] leading-tight">{playerInfo.nickname}</p>
                 <p className="text-xs text-cyan-300/60 tracking-wider uppercase mt-2">LV {playerInfo.level} ✧ {playerInfo.totalBattles} Encounters</p>
               </div>
             </div>
