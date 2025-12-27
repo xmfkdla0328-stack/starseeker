@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Package, Sparkles, X } from 'lucide-react';
+import { Package, Sparkles, Star, X } from 'lucide-react';
 
 export const InventoryScreen = ({ items = {} }) => {
   const [selectedItem, setSelectedItem] = useState(null);
@@ -15,6 +15,16 @@ export const InventoryScreen = ({ items = {} }) => {
       color: 'text-yellow-300',
       bgGradient: 'from-yellow-500/20 to-amber-600/20',
       borderColor: 'border-yellow-400/30',
+    },
+    gems: {
+      id: 'gems',
+      name: '별의 조각',
+      icon: Star,
+      description: '성운을 관측하기 위해 필요한 신비로운 조각. 가챠를 돌릴 때 사용됩니다. 1회 모집에 100개, 10회 모집에 1000개가 필요합니다.',
+      rarity: 'epic',
+      color: 'text-blue-300',
+      bgGradient: 'from-blue-500/20 to-indigo-600/20',
+      borderColor: 'border-blue-400/30',
     }
   };
 

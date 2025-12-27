@@ -11,7 +11,6 @@ import { getTitleById } from '../data/playerStats';
 
 export const useGameLogic = () => {
   const [screen, setScreen] = useState('HOME');
-  const [gems, setGems] = useState(3000);
   const [inventory, setInventory] = useState([]);
   const [party, setParty] = useState({ front: [null, null, null, null], back: [null, null, null, null] });
   const [toast, setToast] = useState(null);
@@ -25,6 +24,7 @@ export const useGameLogic = () => {
   // 아이템 인벤토리
   const [items, setItems] = useState({
     stardust: 0, // 별의 먼지
+    gems: 3000,  // 별의 조각
   });
 
   const showToast = useCallback((msg) => {
@@ -39,7 +39,7 @@ export const useGameLogic = () => {
   const battleSystem = useBattleSystem(party, activeSynergies);
   
   // 3. 가챠 로직 (플레이어 레벨 전달)
-  const handleGacha = useGacha(gems, setGems, inventory, setInventory, showToast, playerInfo.level);
+  const handleGacha = useGacha(items, setItems, inventory, setInventory, showToast, playerInfo.level);
 
   // 초기화 및 자동 처리
   useEffect(() => {
@@ -82,7 +82,6 @@ export const useGameLogic = () => {
 
   return {
     screen, setScreen,
-    gems, setGems,
     inventory, setInventory,
     party, setParty,
     mainChar, setMainChar,

@@ -2,15 +2,15 @@ import { useCallback } from 'react';
 import { CHAR_DB } from '../data/characters';
 import { GAME_CONST } from '../constants';
 
-export const useGacha = (gems, setGems, inventory, setInventory, showToast, playerLevel = 1) => {
+export const useGacha = (items, setItems, inventory, setInventory, showToast, playerLevel = 1) => {
   const handleGacha = useCallback((count) => {
     const cost = count * GAME_CONST.GACHA_COST_PER_PULL;
-    if (gems < cost) { 
+    if (items.gems < cost) { 
       showToast('별의 조각이 부족합니다!'); 
       return null;
     }
     
-    setGems(prev => prev - cost);
+    setItems(prev => ({ ...prev, gems: prev.gems - cost }));
     let payback = 0;
     const gachaResults = []; // 뽑은 캐릭터들 저장
     
@@ -43,12 +43,12 @@ export const useGacha = (gems, setGems, inventory, setInventory, showToast, play
     setInventory(currentInventory);
 
     if (payback > 0) {
-      setGems(prev => prev + payback);
+      setItems(prev => ({ ...prev, gems: prev.gems + payback }));
       setTimeout(() => showToast(`${payback} 별의 조각 페이백!`), 500);
     }
 
     return gachaResults; // 뽑은 캐릭터 배열 반환
-  }, [gems, inventory, setGems, setInventory, showToast, playerLevel]);
+  }, [items.gems, inventory, setItems, setInventory, showToast, playerLevel]);
 
   return handleGacha;
 };

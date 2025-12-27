@@ -13,7 +13,6 @@ import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, BattleScreen, Codex
 export default function StarSeekerApp() {
   const {
     screen, setScreen,
-    gems,
     inventory,
     party, setParty,
     mainChar, setMainChar,
@@ -37,7 +36,7 @@ export default function StarSeekerApp() {
       <Sidebar screen={screen} setScreen={setScreen} />
       
       <main className="flex-1 flex flex-col h-full relative z-10 overflow-hidden">
-        <StatusBar gems={gems} playerInfo={playerInfo} onProfileClick={() => setShowProfile(true)} />
+        <StatusBar gems={items.gems} playerInfo={playerInfo} onProfileClick={() => setShowProfile(true)} />
         <div className="flex-1 overflow-y-auto relative no-scrollbar">
             {screen === 'HOME' && (
               <HomeScreen 
