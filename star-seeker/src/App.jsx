@@ -25,6 +25,7 @@ export default function StarSeekerApp() {
     playerStats,
     unlockedAchievements,
     handleSelectTitle,
+    addExp,
   } = useGameLogic();
 
   const [showProfile, setShowProfile] = useState(false);
@@ -56,7 +57,7 @@ export default function StarSeekerApp() {
               <GardenScreen inventory={inventory} showToast={showToast} />
             )}
             {screen === 'BATTLE' && (
-              <BattleScreen activeSynergies={activeSynergies} battleSystem={battleSystem} />
+              <BattleScreen activeSynergies={activeSynergies} battleSystem={battleSystem} addExp={addExp} setScreen={setScreen} />
             )}
             {screen === 'CODEX' && (
               <CodexScreen inventory={inventory} />

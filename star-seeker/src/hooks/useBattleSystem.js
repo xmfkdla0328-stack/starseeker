@@ -3,6 +3,7 @@ import { BOSS_DATA } from '../utils/battle/battleData';
 import { BATTLE_CONST } from '../utils/battle/constants';
 import { getSynergyBonus, calculateBackRowSupport } from '../utils/battle/formulas';
 import { executeAllyAction, executeBossAction } from '../utils/battle/turnLogic';
+import { calculateStatsByLevel } from '../data/playerStats';
 
 export const useBattleSystem = (party, activeSynergies) => {
   const [battleState, setBattleState] = useState('IDLE');
@@ -36,13 +37,17 @@ export const useBattleSystem = (party, activeSynergies) => {
     const initAg = () => Math.floor(Math.random() * 200);
 
     frontChars.forEach(c => {
-      const finalAtk = Math.floor(c.baseAtk * (1 + atkBonusPct / 100)) + addedAtk;
-      const finalHp = c.baseHp + addedHp;
+      const charLevel = c.level || 1;
+      const levelStats = calculateStatsByLevel(c.baseAtk, c.baseHp, charLevel);
+      const finalAtk = Math.floor(levelStats.atk * (1 + atkBonusPct / 100)) + addedAtk;
+      const finalHp = levelStats.hp + addedHp;
       battleAllies.push({ ...c, position: 'FRONT', maxHp: finalHp, hp: finalHp, atk: finalAtk, defPct: defBonusPct, spd: c.baseSpd, actionGauge: initAg(), isDead: false, buffs: [] });
     });
 
     backChars.forEach(c => {
-      battleAllies.push({ ...c, position: 'BACK', maxHp: c.baseHp, hp: c.baseHp, atk: c.baseAtk, defPct: 0, spd: c.baseSpd, actionGauge: initAg(), isDead: false, buffs: [] });
+      const charLevel = c.level || 1;
+      const levelStats = calculateStatsByLevel(c.baseAtk, c.baseHp, charLevel);
+      battleAllies.push({ ...c, position: 'BACK', maxHp: levelStats.hp, hp: levelStats.hp, atk: levelStats.atk, defPct: 0, spd: c.baseSpd, actionGauge: initAg(), isDead: false, buffs: [] });
     });
 
     setAllies(battleAllies);

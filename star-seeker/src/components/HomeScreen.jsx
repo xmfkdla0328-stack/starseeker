@@ -87,26 +87,7 @@ export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScr
             </h1>
             <p className="text-cyan-300/60 text-xs md:text-sm mt-1 md:mt-2 max-w-xs md:max-w-md mx-auto italic line-clamp-2">"{mainChar.desc}"</p>
             
-            {/* 구분선 */}
-            <div className="flex items-center justify-center gap-2 mt-4 md:mt-5">
-              <div className="w-6 h-px bg-gradient-to-r from-transparent to-cyan-400/30"></div>
-              <div className="w-1 h-1 bg-cyan-400/50 rounded-full"></div>
-              <div className="w-6 h-px bg-gradient-to-l from-transparent to-cyan-400/30"></div>
-            </div>
-            
-            {/* 유저 정보: 타이틀과 닉네임 */}
-            <div className="mt-4 md:mt-5">
-              {/* 타이틀 (작은 글씨, 윗줄) */}
-              {selectedTitle && (
-                <p className="text-xs md:text-sm text-cyan-300/70 tracking-widest uppercase font-semibold drop-shadow-[0_0_8px_rgba(34,211,238,0.3)] mb-1">
-                  {selectedTitle.name}
-                </p>
-              )}
-              {/* 유저 닉네임 (큰 글씨, 밑줄) */}
-              <p className="text-2xl md:text-3xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-white to-cyan-200 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
-                {playerInfo?.nickname || 'Observer'}
-              </p>
-            </div>
+
          </div>
       </div>
 

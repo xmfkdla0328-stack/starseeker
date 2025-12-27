@@ -6,6 +6,8 @@ import { DEFAULT_PLAYER_INFO, DEFAULT_PLAYER_STATS, ACHIEVEMENTS } from '../data
 import { useBattleSystem } from './useBattleSystem';
 import { useSynergy } from './useSynergy';
 import { useGacha } from './useGacha';
+import { useLevelSync } from './useLevelSync';
+import { getTitleById } from '../data/playerStats';
 
 export const useGameLogic = () => {
   const [screen, setScreen] = useState('HOME');
@@ -31,13 +33,13 @@ export const useGameLogic = () => {
   // 2. 전투 시스템 (activeSynergies 전달)
   const battleSystem = useBattleSystem(party, activeSynergies);
   
-  // 3. 가챠 로직
-  const handleGacha = useGacha(gems, setGems, inventory, setInventory, showToast);
+  // 3. 가챠 로직 (플레이어 레벨 전달)
+  const handleGacha = useGacha(gems, setGems, inventory, setInventory, showToast, playerInfo.level);
 
   // 초기화 및 자동 처리
   useEffect(() => {
     if (inventory.length === 0) {
-      const starter = { ...CHAR_DB[0], ultLevel: 0, bond: 0, uid: Date.now() };
+      const starter = { ...CHAR_DB[0], ultLevel: 0, bond: 0, uid: Date.now(), level: 1 };
       setInventory([starter]);
     }
   }, []);
@@ -54,11 +56,22 @@ export const useGameLogic = () => {
     }
   }, [screen]);
 
+  // 플레이어 레벨 동기화
+  useLevelSync(playerInfo, setPlayerInfo, inventory, setInventory, party, setParty, mainChar, setMainChar, showToast);
+
   // 타이틀 선택 핸들러
   const handleSelectTitle = useCallback((titleId) => {
     setPlayerInfo(prev => ({
       ...prev,
       selectedTitle: titleId,
+    }));
+  }, []);
+
+  // 경험치 추가 함수
+  const addExp = useCallback((expAmount) => {
+    setPlayerInfo(prev => ({
+      ...prev,
+      exp: prev.exp + expAmount,
     }));
   }, []);
 
@@ -78,5 +91,7 @@ export const useGameLogic = () => {
     unlockedAchievements, setUnlockedAchievements,
     // 타이틀 선택
     handleSelectTitle,
+    // 경험치 추가
+    addExp,
   };
 };

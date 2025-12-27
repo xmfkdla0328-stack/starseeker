@@ -1,11 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BossDisplay } from './battle/BossDisplay';
 import { BattleLog } from './battle/BattleLog';
 import { AllyCard } from './battle/AllyCard';
 import { BattleControls } from './battle/BattleControls';
 
-export const BattleScreen = ({ battleSystem }) => {
+export const BattleScreen = ({ battleSystem, addExp, setScreen }) => {
   const { enemy, allies, logs, battleState, processTurn, isAuto, setIsAuto } = battleSystem;
+
+  // 승리 시 경험치 획득
+  useEffect(() => {
+    if (battleState === 'VICTORY') {
+      const expReward = 100; // 기본 경험치 보상
+      addExp(expReward);
+      
+      // 2초 후 자동으로 HOME 화면으로 이동
+      const timer = setTimeout(() => {
+        setScreen('HOME');
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [battleState, addExp, setScreen]);
 
   if (!enemy || allies.length === 0) return <div className="text-center p-10 text-slate-400">전투 준비 중...</div>;
 

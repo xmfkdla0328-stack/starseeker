@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { CHAR_DB } from '../data/characters';
 import { GAME_CONST } from '../constants';
 
-export const useGacha = (gems, setGems, inventory, setInventory, showToast) => {
+export const useGacha = (gems, setGems, inventory, setInventory, showToast, playerLevel = 1) => {
   const handleGacha = useCallback((count) => {
     const cost = count * GAME_CONST.GACHA_COST_PER_PULL;
     if (gems < cost) { 
@@ -34,8 +34,8 @@ export const useGacha = (gems, setGems, inventory, setInventory, showToast) => {
           payback += GAME_CONST.GACHA_PAYBACK_AMOUNT; 
         }
       } else {
-        // 신규 캐릭터 획득
-        const newChar = { ...picked, ultLevel: 0, bond: 0, uid: Date.now() + i };
+        // 신규 캐릭터 획득 - 플레이어 레벨로 초기화
+        const newChar = { ...picked, ultLevel: 0, bond: 0, uid: Date.now() + i, level: playerLevel };
         currentInventory.push(newChar);
       }
     }
@@ -48,7 +48,7 @@ export const useGacha = (gems, setGems, inventory, setInventory, showToast) => {
     }
 
     return gachaResults; // 뽑은 캐릭터 배열 반환
-  }, [gems, inventory, setGems, setInventory, showToast]);
+  }, [gems, inventory, setGems, setInventory, showToast, playerLevel]);
 
   return handleGacha;
 };

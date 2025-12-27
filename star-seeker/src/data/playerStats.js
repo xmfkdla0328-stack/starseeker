@@ -3,6 +3,40 @@
  * 레벨, 경험치, 업적 등의 데이터 구조 정의
  */
 
+/**
+ * 캐릭터 레벨에 따른 스탯 계산
+ * 기본 스탯에 일정 비율을 곱하여 반영
+ * @param {number} baseAtk 기본 공격력
+ * @param {number} baseHp 기본 체력
+ * @param {number} level 캐릭터 레벨
+ * @returns {Object} { hp, atk } 레벨에 따른 스탯
+ */
+export const calculateStatsByLevel = (baseAtk, baseHp, level) => {
+  // 레벨당 2%씩 증가 (레벨 1 = 1.0배, 레벨 50 = 1.98배)
+  const levelMultiplier = 1 + (level - 1) * 0.02;
+  return {
+    atk: Math.floor(baseAtk * levelMultiplier),
+    hp: Math.floor(baseHp * levelMultiplier),
+    def: Math.floor(30 * levelMultiplier), // 기본 방어력 (레벨에 따라 증가)
+  };
+};
+
+/**
+ * 캐릭터 객체에 레벨 스탯 적용
+ * @param {Object} character 캐릭터 객체
+ * @returns {Object} 레벨이 적용된 캐릭터 객체
+ */
+export const applyCharacterLevel = (character) => {
+  const level = character.level || 1;
+  const stats = calculateStatsByLevel(character.baseAtk, character.baseHp, level);
+  return {
+    ...character,
+    currentAtk: stats.atk,
+    currentHp: stats.hp,
+    currentDef: stats.def,
+  };
+};
+
 // 레벨별 필요 경험치 (누적)
 export const LEVEL_EXP_TABLE = {
   1: 0,
