@@ -142,6 +142,7 @@ export const CodexScreen = ({ inventory }) => {
                              desc={getSkillInfo('normal', '적 1체에게 공격력의 100% 피해').desc}
                              cooldown={getSkillInfo('normal').cooldown}
                              colorClass="bg-slate-500 text-slate-300 border-slate-500"
+                             accentClass="text-slate-200"
                              level={charData.skillLevels?.normal || 1}
                            />
                            <SkillBlock
@@ -150,6 +151,7 @@ export const CodexScreen = ({ inventory }) => {
                              desc={getSkillInfo('skill', '쿨타임 3턴. 강력한 효과 발동').desc}
                              cooldown={getSkillInfo('skill').cooldown}
                              colorClass="bg-blue-500 text-blue-300 border-blue-500"
+                             accentClass="text-blue-200"
                              level={charData.skillLevels?.skill || 1}
                            />
                            <SkillBlock
@@ -158,6 +160,7 @@ export const CodexScreen = ({ inventory }) => {
                              desc={getSkillInfo('ultimate', 'SP 100 소모. 전황을 뒤집는 일격').desc}
                              cooldown={getSkillInfo('ultimate').cooldown}
                              colorClass="bg-red-500 text-red-300 border-red-500"
+                             accentClass="text-red-200"
                              level={charData.skillLevels?.ultimate || 1}
                            />
                          </div>
@@ -173,6 +176,7 @@ export const CodexScreen = ({ inventory }) => {
                              desc={getSkillInfo('supportSkill', '아군에게 이로운 효과 부여').desc}
                              cooldown={getSkillInfo('supportSkill').cooldown}
                              colorClass="bg-emerald-500 text-emerald-300 border-emerald-500"
+                             accentClass="text-emerald-200"
                              level={charData.skillLevels?.supportSkill || 1}
                            />
                            <SkillBlock
@@ -181,6 +185,7 @@ export const CodexScreen = ({ inventory }) => {
                              desc={getSkillInfo('supportUlt', 'SP 100 소모. 아군 전체 강력 지원').desc}
                              cooldown={getSkillInfo('supportUlt').cooldown}
                              colorClass="bg-purple-500 text-purple-300 border-purple-500"
+                             accentClass="text-purple-200"
                              level={charData.skillLevels?.supportUlt || 1}
                            />
                          </div>
