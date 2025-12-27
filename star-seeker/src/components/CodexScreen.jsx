@@ -27,7 +27,7 @@ export const CodexScreen = ({ inventory }) => {
       {/* 왼쪽: 캐릭터 목록 */}
       <div className="w-1/3 max-w-[200px] bg-slate-900/40 backdrop-blur-md rounded-xl border border-white/10 flex flex-col overflow-hidden">
         <h2 className="p-3 text-sm font-bold text-slate-300 border-b border-white/10 bg-white/5 flex items-center gap-2">
-           <Scroll size={14} className="text-yellow-400"/> 캐릭터 도감
+           <Scroll size={14} className="text-yellow-400"/> 캐릭터 관리
         </h2>
         <div className="flex-1 overflow-y-auto no-scrollbar p-2 space-y-2">
           {CHAR_DB.map(char => {

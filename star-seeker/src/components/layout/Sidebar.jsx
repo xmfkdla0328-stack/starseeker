@@ -60,7 +60,7 @@ export const Sidebar = ({ screen, setScreen }) => {
       {/* 구분선 */}
       <div className="w-10 h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent my-2"></div>
       
-      <NavItem id="CODEX" icon={Book} label="도감" />
+      <NavItem id="CODEX" icon={Book} label="관리" />
       
       {/* 하단 장식 */}
       <div className="mt-auto pt-4 flex flex-col gap-1 items-center">
