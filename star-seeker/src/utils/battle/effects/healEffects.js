@@ -1,4 +1,5 @@
 import { BATTLE_CONST } from '../constants';
+import { applyUltLevelBonus } from '../skillLogic';
 
 /**
  * 힐 효과 관련 함수들
@@ -9,7 +10,10 @@ import { BATTLE_CONST } from '../constants';
  */
 export const healLowestHpAlly = (actor, params, allies) => {
   const ratio = params.ratio || BATTLE_CONST.HEAL_NORMAL_RATIO;
-  const healAmount = Math.floor(actor.atk * ratio);
+  let healAmount = Math.floor(actor.atk * ratio);
+  
+  // 돌파 보너스 적용 (ultLevel 당 +10%)
+  healAmount = applyUltLevelBonus(healAmount, actor.ultLevel || 0);
 
   // 체력 비율 가장 낮은 아군 찾기
   let targetIdx = -1;

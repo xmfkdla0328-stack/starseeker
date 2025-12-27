@@ -1,4 +1,5 @@
 import { BATTLE_CONST } from '../constants';
+import { applyUltLevelBonus } from '../skillLogic';
 import { EFFECT_TYPES } from '../effectTypes';
 
 /**
@@ -9,7 +10,11 @@ import { EFFECT_TYPES } from '../effectTypes';
  * 전열 공격력 버프 효과
  */
 export const applyFrontAtkBuff = (actor, params, allies) => {
-  const value = params.value || BATTLE_CONST.ATK_BUFF_NORMAL;
+  let value = params.value || BATTLE_CONST.ATK_BUFF_NORMAL;
+  
+  // 돌파 보너스 적용 (버프 값 증가 - ultLevel 당 +10%)
+  value = applyUltLevelBonus(value, actor.ultLevel || 0);
+  
   const duration = params.duration || BATTLE_CONST.DEFAULT_BUFF_DURATION;
 
   const newAllies = allies.map(t => {
@@ -29,7 +34,11 @@ export const applyFrontAtkBuff = (actor, params, allies) => {
  * 전열 방어력 버프 효과
  */
 export const applyFrontDefBuff = (actor, params, allies) => {
-  const value = params.value || BATTLE_CONST.DEF_BUFF_VAL;
+  let value = params.value || BATTLE_CONST.DEF_BUFF_VAL;
+  
+  // 돌파 보너스 적용 (버프 값 증가 - ultLevel 당 +10%)
+  value = applyUltLevelBonus(value, actor.ultLevel || 0);
+  
   const duration = params.duration || BATTLE_CONST.DEFAULT_BUFF_DURATION;
 
   const newAllies = allies.map(t => {
