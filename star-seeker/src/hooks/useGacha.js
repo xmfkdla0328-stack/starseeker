@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
 import { CHAR_DB } from '../data/characters';
+import { GAME_CONST } from '../constants';
 
 export const useGacha = (gems, setGems, inventory, setInventory, showToast) => {
   const handleGacha = useCallback((count) => {
-    const cost = count * 100;
+    const cost = count * GAME_CONST.GACHA_COST_PER_PULL;
     if (gems < cost) { 
       showToast('별의 조각이 부족합니다!'); 
       return; 
@@ -23,12 +24,12 @@ export const useGacha = (gems, setGems, inventory, setInventory, showToast) => {
       if (existingIdx >= 0) {
         // 중복 캐릭터: 필살기 레벨 강화
         const target = currentInventory[existingIdx];
-        if (target.ultLevel < 5) {
+        if (target.ultLevel < GAME_CONST.MAX_ULTIMATE_LEVEL) {
           currentInventory[existingIdx] = { ...target, ultLevel: target.ultLevel + 1 };
           showToast(`${picked.name} 중복! 필살기 강화!`);
         } else { 
           // 만렙이면 페이백
-          payback += 20; 
+          payback += GAME_CONST.GACHA_PAYBACK_AMOUNT; 
         }
       } else {
         // 신규 캐릭터 획득

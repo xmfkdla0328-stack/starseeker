@@ -7,6 +7,10 @@ export const CHAR_DB = [
       normal: '지휘 사격', skill: '전술 명령: 돌격', ultimate: '성운의 포격',
       supportSkill: '정밀 관측', supportUlt: '성운의 가호' 
     },
+    supportEffects: {
+      skill: { type: 'BUFF_FRONT_ATK', params: { value: 10 } },
+      ultimate: { type: 'BUFF_FRONT_ATK', params: { value: 30 } }
+    },
     profile: { age: '??', height: '182cm', like: '오래된 지도', hate: '흐린 날씨' },
     stories: [{ title: '만남', unlockBond: 1 }]
   },
@@ -16,6 +20,10 @@ export const CHAR_DB = [
     desc: '달빛 아래 노래하는 음유시인',
     skills: { 
       supportSkill: '치유의 노래', supportUlt: '월광 소나타' 
+    },
+    supportEffects: {
+      skill: { type: 'HEAL_LOWEST', params: { ratio: 1.2 } },
+      ultimate: { type: 'HEAL_LOWEST', params: { ratio: 2.5 } }
     },
     profile: { age: '19', height: '160cm', like: '노래', hate: '소음' },
     stories: [{ title: '첫 번째 노래', unlockBond: 1 }]
@@ -36,6 +44,10 @@ export const CHAR_DB = [
     desc: '치유의 물방울',
     skills: { 
       supportSkill: '정화의 비', supportUlt: '대해일' 
+    },
+    supportEffects: {
+      skill: { type: 'HEAL_LOWEST', params: { ratio: 1.2 } },
+      ultimate: { type: 'HEAL_LOWEST', params: { ratio: 2.5 } }
     },
     profile: { age: '16', height: '155cm', like: '깨끗한 물', hate: '건조함' },
     stories: [{ title: '작은 샘물', unlockBond: 1 }]
@@ -58,6 +70,10 @@ export const CHAR_DB = [
       normal: '빛의 일격', skill: '태양의 가호', ultimate: '솔라 이클립스',
       supportSkill: '태양의 축복', supportUlt: '여명의 빛' 
     },
+    supportEffects: {
+      skill: { type: 'BUFF_FRONT_ATK', params: { value: 10 } },
+      ultimate: { type: 'BUFF_FRONT_ATK', params: { value: 30 } }
+    },
     profile: { age: '22', height: '172cm', like: '정오의 햇살', hate: '거짓말' },
     stories: [{ title: '기사의 맹세', unlockBond: 1 }]
   },
@@ -78,6 +94,10 @@ export const CHAR_DB = [
     skills: { 
       supportSkill: '방어 태세 명령', 
       supportUlt: '남겨진 자의 증명' // ★ 스킬명 수정됨
+    },
+    supportEffects: {
+      skill: { type: 'BUFF_FRONT_DEF', params: { value: 20 } },
+      ultimate: { type: 'GRANT_TURN', params: { targetTag: '조호' } }
     },
     profile: { age: '34', height: '165cm', like: '장부 정리', hate: '낭비' },
     stories: [{ title: '보급의 중요성', unlockBond: 1 }]

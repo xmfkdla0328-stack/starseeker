@@ -1,5 +1,6 @@
 import { getElementalMultiplier } from './formulas';
 import { BATTLE_CONST } from './constants';
+import { GAME_CONST } from '../../constants';
 import { applySupportEffect } from './skillLogic'; // ★ 신규 모듈 import
 
 // 아군 행동 처리
@@ -29,12 +30,12 @@ export const executeAllyAction = (actor, allAllies, enemy) => {
     const finalAtk = Math.floor(me.atk * (1 + atkBuff / 100));
     
     const elemMod = getElementalMultiplier(me.element, currentEnemy.element);
-    const randMod = 0.9 + Math.random() * 0.2;
+    const randMod = GAME_CONST.DAMAGE_RANDOM_MIN + Math.random() * (GAME_CONST.DAMAGE_RANDOM_MAX - GAME_CONST.DAMAGE_RANDOM_MIN);
     const finalDmg = Math.floor(finalAtk * elemMod * randMod);
 
     currentEnemy.hp = Math.max(0, currentEnemy.hp - finalDmg);
 
-    const useSkill = Math.random() > 0.7 && me.skills?.skill;
+    const useSkill = Math.random() > GAME_CONST.SKILL_USE_CHANCE && me.skills?.skill;
     const skillName = useSkill ? me.skills.skill : (me.skills?.normal || '공격');
     
     let logMsg = `[${me.name}] ${skillName}! ${finalDmg}`;
@@ -46,8 +47,8 @@ export const executeAllyAction = (actor, allAllies, enemy) => {
     // --- [후열: 서포트] ---
     const rand = Math.random();
     let actionType = 'WAIT';
-    if (rand < 0.15) actionType = 'ULT';
-    else if (rand < 0.6) actionType = 'SKILL';
+    if (rand < GAME_CONST.SUPPORT_ULT_CHANCE) actionType = 'ULT';
+    else if (rand < GAME_CONST.SUPPORT_SKILL_CHANCE) actionType = 'SKILL';
 
     if (actionType !== 'WAIT') {
         const skillName = actionType === 'ULT' ? me.skills.supportUlt : me.skills.supportSkill;
@@ -89,10 +90,10 @@ export const executeBossAction = (boss, allAllies, reviveCount) => {
     // 방어력 계산
     const defBuff = (target.buffs || []).filter(b => b.type === 'DEF_UP').reduce((acc, b) => acc + b.val, 0);
     const totalDefPct = (target.defPct || 0) + defBuff;
-    const defMod = Math.max(0.1, 1 - totalDefPct / 100);
+    const defMod = Math.max(GAME_CONST.MIN_DEFENSE_MULTIPLIER, 1 - totalDefPct / 100);
 
     const elemMod = getElementalMultiplier(boss.element, target.element);
-    const randMod = 0.9 + Math.random() * 0.2;
+    const randMod = GAME_CONST.DAMAGE_RANDOM_MIN + Math.random() * (GAME_CONST.DAMAGE_RANDOM_MAX - GAME_CONST.DAMAGE_RANDOM_MIN);
     const finalDmg = Math.floor(boss.atk * elemMod * defMod * randMod);
 
     let newHp = target.hp - finalDmg;
@@ -108,7 +109,7 @@ export const executeBossAction = (boss, allAllies, reviveCount) => {
 
       if (canResurrect) {
         newReviveCount--;
-        newHp = Math.floor(target.maxHp * 0.2);
+        newHp = Math.floor(target.maxHp * GAME_CONST.JOHO_REVIVE_HP_RATIO);
         target.isDead = false; 
         logs.push(`> 🌟 [시너지] '조호' 발동! [${target.name}] 부활! (HP: ${newHp})`);
         logs.push(`> (남은 부활 횟수: ${newReviveCount})`);
