@@ -11,13 +11,6 @@ export const GachaCharacterCard = ({ char, idx, isSingle }) => {
       className={`animate-fade-in ${isSingle ? 'w-80' : ''}`}
       style={{ animationDelay: `${idx * 0.2}s` }}
     >
-      {/* 5성 배경 이펙트 */}
-      {is5Star && (
-        <div className="absolute inset-0 rounded-xl opacity-30 animate-pulse pointer-events-none">
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-yellow-400 via-amber-400 to-transparent blur-2xl"></div>
-        </div>
-      )}
-      
       {/* 캐릭터 카드 */}
       <div className={`p-3 rounded-xl border backdrop-blur-sm transition-all h-full relative z-10 ${
         is5Star 
