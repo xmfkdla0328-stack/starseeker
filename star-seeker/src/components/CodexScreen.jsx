@@ -1,8 +1,7 @@
-// src/components/CodexScreen.jsx
 import React, { useState } from 'react';
-import { ELEMENTS } from '../constants';         // 요소 정보는 constants에서
-import { CHAR_DB } from '../data/characters';    // 캐릭터 DB는 data/characters에서
-import { Sword, Shield, Lock, Scroll, User, Sparkles } from 'lucide-react';
+import { ELEMENTS } from '../constants';         
+import { CHAR_DB } from '../data/characters';    
+import { Sword, Shield, Lock, Scroll, User, Sparkles, Tag } from 'lucide-react';
 
 export const CodexScreen = ({ inventory }) => {
   const [selectedCharId, setSelectedCharId] = useState(CHAR_DB[0].id);
@@ -11,6 +10,7 @@ export const CodexScreen = ({ inventory }) => {
   const selectedChar = CHAR_DB.find(c => c.id === selectedCharId);
   const isOwned = inventory.some(c => c.id === selectedCharId);
   
+  // 보유 중이면 인벤토리 정보 사용, 아니면 DB 기본 정보 사용
   const charData = isOwned 
     ? { ...selectedChar, ...inventory.find(c => c.id === selectedCharId) } 
     : { ...selectedChar, bond: 0 };
@@ -59,15 +59,24 @@ export const CodexScreen = ({ inventory }) => {
             <div className={`w-24 h-24 rounded-full border-2 ${ELEMENTS[charData.element].border} ${ELEMENTS[charData.element].bg.replace('/20','/80')} shadow-[0_0_30px_rgba(255,255,255,0.1)] flex items-center justify-center shrink-0`}>
                 <span className="text-2xl font-bold text-white shadow-sm">{charData.name[0]}</span>
             </div>
-            <div className="mb-2">
-               <div className="flex items-center gap-2 mb-1">
+            <div className="mb-2 flex-1">
+               <div className="flex flex-wrap items-center gap-2 mb-2">
+                 {/* 속성 배지 */}
                  <span className={`px-2 py-0.5 rounded-full text-[10px] border ${ELEMENTS[charData.element].border} ${ELEMENTS[charData.element].color} bg-slate-950/50`}>
                    {ELEMENTS[charData.element].name} 속성
                  </span>
+                 {/* 역할 배지 */}
                  <span className="px-2 py-0.5 rounded-full text-[10px] border border-white/20 text-slate-300 bg-slate-950/50">
                    {charData.role === 'FRONT' ? '전열' : charData.role === 'BACK' ? '후열' : '만능'}
                  </span>
+                 {/* ★ 태그(특성) 배지 표시 영역 추가 ★ */}
+                 {charData.tags && charData.tags.map((tag, idx) => (
+                   <span key={idx} className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] border border-indigo-400/30 text-indigo-300 bg-indigo-950/50">
+                     <Tag size={10} /> {tag}
+                   </span>
+                 ))}
                </div>
+               
                <h1 className="text-3xl font-serif font-bold text-white flex items-end gap-2">
                  {charData.name} <span className="text-sm font-normal text-slate-400 mb-1.5 opacity-80">Lv.{charData.id * 10 + 5}</span>
                </h1>

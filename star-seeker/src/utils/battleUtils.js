@@ -2,8 +2,8 @@
 
 export const BOSS_DATA = {
   name: '화염룡',
-  maxHp: 10000,
-  atk: 300,
+  maxHp: 20000, // 전열이 강해질 예정이니 보스 체력도 상향
+  atk: 400,
   element: 'FIRE',
   img: 'BOSS'
 };
@@ -12,7 +12,6 @@ export const BOSS_DATA = {
 export const getElementalMultiplier = (atkElem, defElem) => {
   if (!atkElem || !defElem) return 1.0;
   
-  // 유리한 상성 (1.2배)
   if (
     (atkElem === 'WATER' && defElem === 'FIRE') ||
     (atkElem === 'FIRE' && defElem === 'EARTH') ||
@@ -23,7 +22,6 @@ export const getElementalMultiplier = (atkElem, defElem) => {
     return 1.2;
   }
   
-  // 불리한 상성 (0.8배)
   if (
     (atkElem === 'FIRE' && defElem === 'WATER') ||
     (atkElem === 'EARTH' && defElem === 'FIRE') ||
@@ -58,4 +56,26 @@ export const getSynergyBonus = (activeSynergies) => {
   });
 
   return { atkBonusPct, defBonusPct, johoRevive };
+};
+
+// ★ 추가된 함수: 후열 지원 스탯 계산
+// 후열 캐릭터 스탯의 20%를 전열 캐릭터들에게 고루 분배합니다.
+export const calculateBackRowSupport = (backRowChars) => {
+  if (!backRowChars || backRowChars.length === 0) return { atk: 0, hp: 0 };
+
+  let totalBackAtk = 0;
+  let totalBackHp = 0;
+
+  backRowChars.forEach(char => {
+    totalBackAtk += char.baseAtk;
+    totalBackHp += char.baseHp;
+  });
+
+  // 지원 비율 (20%)
+  const SUPPORT_RATIO = 0.2;
+
+  return {
+    addedAtk: Math.floor(totalBackAtk * SUPPORT_RATIO),
+    addedHp: Math.floor(totalBackHp * SUPPORT_RATIO)
+  };
 };
