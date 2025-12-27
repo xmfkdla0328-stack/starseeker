@@ -1,4 +1,5 @@
 import { getElementalMultiplier } from './formulas';
+import { applyUltLevelBonus } from './skillLogic';
 import { GAME_CONST } from '../../constants';
 
 /**
@@ -19,7 +20,10 @@ export const executeAllyAttack = (actor, enemy, activeBuffs = []) => {
   // 속성 상성 및 랜덤 데미지 계산
   const elemMod = getElementalMultiplier(actor.element, newEnemy.element);
   const randMod = GAME_CONST.DAMAGE_RANDOM_MIN + Math.random() * (GAME_CONST.DAMAGE_RANDOM_MAX - GAME_CONST.DAMAGE_RANDOM_MIN);
-  const finalDmg = Math.floor(finalAtk * elemMod * randMod);
+  let finalDmg = Math.floor(finalAtk * elemMod * randMod);
+
+  // 필살기 돌파 보너스 적용 (ultLevel 당 +10%)
+  finalDmg = applyUltLevelBonus(finalDmg, actor.ultLevel || 0);
 
   // 적 체력 감소
   newEnemy.hp = Math.max(0, newEnemy.hp - finalDmg);
