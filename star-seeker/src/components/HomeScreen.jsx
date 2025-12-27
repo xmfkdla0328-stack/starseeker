@@ -78,13 +78,7 @@ export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScr
 
          {/* 하단 텍스트 - 간격 조절 */}
          <div className="mt-3 md:mt-4 lg:mt-6 text-center relative z-20">
-            {/* 타이틀 (작은 글씨) */}
-            {selectedTitle && (
-              <p className="text-xs md:text-sm text-cyan-300/70 tracking-widest uppercase font-semibold drop-shadow-[0_0_8px_rgba(34,211,238,0.3)] mb-1">
-                {selectedTitle.name}
-              </p>
-            )}
-            {/* 닉네임 (큰 글씨) */}
+            {/* 캐릭터 이름 */}
             <h1 className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-white to-cyan-200 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] flex items-center justify-center gap-2 flex-wrap">
                {mainChar.name}
                <span className={`text-[10px] md:text-xs px-1.5 md:px-2 py-0.5 rounded border ${ELEMENTS[mainChar.element].border} ${ELEMENTS[mainChar.element].color} bg-black/40 backdrop-blur-sm shadow-[0_0_10px_rgba(34,211,238,0.2)]`}>
@@ -92,11 +86,26 @@ export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScr
                </span>
             </h1>
             <p className="text-cyan-300/60 text-xs md:text-sm mt-1 md:mt-2 max-w-xs md:max-w-md mx-auto italic line-clamp-2">"{mainChar.desc}"</p>
-            {/* 장식 라인 */}
-            <div className="flex items-center justify-center gap-2 mt-2">
+            
+            {/* 구분선 */}
+            <div className="flex items-center justify-center gap-2 mt-4 md:mt-5">
               <div className="w-6 h-px bg-gradient-to-r from-transparent to-cyan-400/30"></div>
               <div className="w-1 h-1 bg-cyan-400/50 rounded-full"></div>
               <div className="w-6 h-px bg-gradient-to-l from-transparent to-cyan-400/30"></div>
+            </div>
+            
+            {/* 유저 정보: 타이틀과 닉네임 */}
+            <div className="mt-4 md:mt-5">
+              {/* 타이틀 (작은 글씨, 윗줄) */}
+              {selectedTitle && (
+                <p className="text-xs md:text-sm text-cyan-300/70 tracking-widest uppercase font-semibold drop-shadow-[0_0_8px_rgba(34,211,238,0.3)] mb-1">
+                  {selectedTitle.name}
+                </p>
+              )}
+              {/* 유저 닉네임 (큰 글씨, 밑줄) */}
+              <p className="text-2xl md:text-3xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-white to-cyan-200 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
+                {playerInfo?.nickname || 'Observer'}
+              </p>
             </div>
          </div>
       </div>
