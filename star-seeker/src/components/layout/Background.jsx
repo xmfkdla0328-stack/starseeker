@@ -1,4 +1,5 @@
 import React from 'react';
+import { BackgroundStar, FloatingStar } from './BackgroundStar';
 
 export const Background = () => (
   <div className="absolute inset-0 z-0 overflow-hidden">
@@ -13,27 +14,27 @@ export const Background = () => (
     <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] animate-pan-slow"></div>
     
     {/* 별들 레이어 1 (작은 별) */}
-    <div className="absolute top-10 left-20 w-0.5 h-0.5 bg-white rounded-full animate-twinkle shadow-[0_0_2px_white]"></div>
-    <div className="absolute top-32 right-40 w-0.5 h-0.5 bg-blue-100 rounded-full animate-twinkle" style={{ animationDelay: '0.5s' }}></div>
-    <div className="absolute top-56 left-1/3 w-0.5 h-0.5 bg-yellow-50 rounded-full animate-twinkle" style={{ animationDelay: '1s' }}></div>
-    <div className="absolute top-80 right-1/4 w-0.5 h-0.5 bg-purple-100 rounded-full animate-twinkle" style={{ animationDelay: '1.5s' }}></div>
-    <div className="absolute top-44 left-2/3 w-0.5 h-0.5 bg-cyan-100 rounded-full animate-twinkle" style={{ animationDelay: '2s' }}></div>
+    <BackgroundStar size="small" color="white" position="top-10 left-20" animationDelay="0s" />
+    <BackgroundStar size="small" color="blue-100" position="top-32 right-40" animationDelay="0.5s" />
+    <BackgroundStar size="small" color="yellow-50" position="top-56 left-1/3" animationDelay="1s" />
+    <BackgroundStar size="small" color="purple-100" position="top-80 right-1/4" animationDelay="1.5s" />
+    <BackgroundStar size="small" color="cyan-100" position="top-44 left-2/3" animationDelay="2s" />
     
     {/* 별들 레이어 2 (중간 별) */}
-    <div className="absolute top-20 right-1/3 w-1 h-1 bg-white rounded-full animate-twinkle shadow-[0_0_4px_white]" style={{ animationDelay: '0.3s' }}></div>
-    <div className="absolute bottom-32 left-1/4 w-1 h-1 bg-blue-200 rounded-full animate-twinkle" style={{ animationDelay: '1.2s' }}></div>
-    <div className="absolute bottom-56 right-1/5 w-1 h-1 bg-yellow-100 rounded-full animate-twinkle" style={{ animationDelay: '2.3s' }}></div>
-    <div className="absolute top-72 right-2/3 w-1 h-1 bg-purple-200 rounded-full animate-twinkle" style={{ animationDelay: '1.8s' }}></div>
+    <BackgroundStar size="medium" color="white" position="top-20 right-1/3" animationDelay="0.3s" withShadow={true} />
+    <BackgroundStar size="medium" color="blue-200" position="bottom-32 left-1/4" animationDelay="1.2s" />
+    <BackgroundStar size="medium" color="yellow-100" position="bottom-56 right-1/5" animationDelay="2.3s" />
+    <BackgroundStar size="medium" color="purple-200" position="top-72 right-2/3" animationDelay="1.8s" />
     
     {/* 별들 레이어 3 (큰 별) */}
-    <div className="absolute top-40 left-1/4 w-1.5 h-1.5 bg-white rounded-full animate-twinkle shadow-[0_0_8px_rgba(255,255,255,0.8)]" style={{ animationDelay: '0.8s' }}></div>
-    <div className="absolute bottom-40 right-1/3 w-1.5 h-1.5 bg-cyan-200 rounded-full animate-twinkle shadow-[0_0_8px_rgba(165,243,252,0.6)]" style={{ animationDelay: '2.5s' }}></div>
-    <div className="absolute top-1/2 left-1/2 w-1.5 h-1.5 bg-yellow-200 rounded-full animate-twinkle shadow-[0_0_10px_rgba(254,240,138,0.7)]" style={{ animationDelay: '1.5s' }}></div>
+    <BackgroundStar size="large" color="white" position="top-40 left-1/4" animationDelay="0.8s" withShadow={true} />
+    <BackgroundStar size="large" color="cyan-200" position="bottom-40 right-1/3" animationDelay="2.5s" withShadow={true} />
+    <BackgroundStar size="large" color="yellow-200" position="top-1/2 left-1/2" animationDelay="1.5s" withShadow={true} />
     
     {/* 떠다니는 별 입자들 */}
-    <div className="absolute top-1/4 right-1/6 w-px h-px bg-white/60 rounded-full animate-float"></div>
-    <div className="absolute top-2/3 left-1/5 w-px h-px bg-blue-200/50 rounded-full animate-float" style={{ animationDelay: '1s' }}></div>
-    <div className="absolute bottom-1/3 right-1/2 w-px h-px bg-purple-200/50 rounded-full animate-float" style={{ animationDelay: '2s' }}></div>
+    <FloatingStar position="top-1/4 right-1/6" animationDelay="0s" color="white/60" />
+    <FloatingStar position="top-2/3 left-1/5" animationDelay="1s" color="blue-200/50" />
+    <FloatingStar position="bottom-1/3 right-1/2" animationDelay="2s" color="purple-200/50" />
     
     {/* 은하수 효과 */}
     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-indigo-500/5 to-transparent rotate-12 animate-pan-slow"></div>

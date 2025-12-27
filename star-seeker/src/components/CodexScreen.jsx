@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ELEMENTS } from '../constants';         
 import { CHAR_DB } from '../data/characters';
 import { calculateStatsByLevel } from '../data/playerStats';
+import { SkillBlock } from './codex/SkillBlock';
 import { Sword, Shield, Lock, Scroll, User, Sparkles, Tag, Wind } from 'lucide-react';
 
 export const CodexScreen = ({ inventory }) => {
@@ -15,19 +16,6 @@ export const CodexScreen = ({ inventory }) => {
   const charData = isOwned 
     ? { ...selectedChar, ...inventory.find(c => c.id === selectedCharId) } 
     : { ...selectedChar, bond: 0 };
-
-  // 스킬 표시용 컴포넌트
-  const SkillBlock = ({ type, name, desc, colorClass }) => (
-    <div className="bg-slate-900/50 p-3 rounded-lg border border-white/5 flex gap-3 items-center">
-        <div className={`w-8 h-8 rounded flex items-center justify-center text-[10px] shrink-0 border bg-opacity-20 ${colorClass}`}>
-            {type}
-        </div>
-        <div>
-            <div className={`text-sm font-bold ${colorClass.split(' ')[0].replace('border-','text-')}`}>{name}</div>
-            <div className="text-xs text-slate-500">{desc}</div>
-        </div>
-    </div>
-  );
 
   return (
     <div className="flex h-full gap-4 p-4 overflow-hidden relative">
