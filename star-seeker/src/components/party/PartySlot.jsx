@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import { ELEMENTS } from '../../constants'; // 경로 주의 (../../)
+import { ELEMENTS } from '../../constants';
+import { ElementIcon } from '../common/ElementIcon';
 
 export const PartySlot = ({ char, line, idx, removeChar, setSelectedSlot, highlightedSynergy }) => {
   // 하이라이트 관련 상태 계산
@@ -18,6 +19,12 @@ export const PartySlot = ({ char, line, idx, removeChar, setSelectedSlot, highli
       {char ? (
         <>
           <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-cyan-400/10 via-transparent to-transparent"></div>
+
+          {/* 속성 아이콘 배지 */}
+          <div className="absolute top-1 left-1 p-1.5 rounded-full bg-black/50 border border-white/10 backdrop-blur-sm shadow-sm">
+            <ElementIcon element={char.element} size={14} />
+          </div>
+
           <div className="text-xs text-cyan-200 font-bold z-10 flex flex-col items-center text-center leading-tight">
               {char.name}
               <span className="text-[9px] text-slate-400 font-normal opacity-70 mt-0.5 scale-90">{char.role === 'BOTH' ? '만능' : (char.role==='FRONT'?'전열':'후열')}</span>

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Sword, Shield, X, Lock } from 'lucide-react';
 import { ELEMENTS } from '../../constants';
+import { ElementIcon } from '../common/ElementIcon';
 
 export const PartySelector = ({ inventory, party, selectedSlot, setSelectedSlot, handleAssign }) => {
   // 인벤토리 정렬 (배치된 캐릭터를 뒤로 보냄)
@@ -42,20 +43,22 @@ export const PartySelector = ({ inventory, party, selectedSlot, setSelectedSlot,
                   }
                 `}>
                 
-                <div className="flex items-center gap-2">
+                 <div className="flex items-center gap-2">
                    <div className={`w-8 h-8 rounded-full ${ELEMENTS[char.element].bg} border ${ELEMENTS[char.element].border} flex items-center justify-center shrink-0`}>
-                      <div className={`w-2 h-2 rounded-full ${ELEMENTS[char.element].bg.replace('/20','/80')}`}></div>
+                     <ElementIcon element={char.element} size={16} />
                    </div>
                    <div className="flex flex-col min-w-0">
-                      <span className="text-slate-200 text-[10px] font-bold truncate leading-tight">{char.name}</span>
+                     <span className="text-slate-200 text-[10px] font-bold truncate leading-tight">{char.name}</span>
+                     <div className="flex items-center gap-1">
                       <span className={`text-[8px] font-bold ${
-                         char.role === 'BOTH' ? 'text-purple-300' :
-                         char.role === 'FRONT' ? 'text-red-300' : 'text-blue-300'
+                        char.role === 'BOTH' ? 'text-purple-300' :
+                        char.role === 'FRONT' ? 'text-red-300' : 'text-blue-300'
                       }`}>
                         {char.role === 'BOTH' ? '만능' : char.role === 'FRONT' ? '전열' : '후열'}
                       </span>
+                     </div>
                    </div>
-                </div>
+                 </div>
 
                 <div className="flex flex-wrap gap-1 content-start flex-1">
                    {char.tags.map((tag, i) => (
