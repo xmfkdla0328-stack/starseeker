@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sword, Shield, Sparkles } from 'lucide-react';
+import { Sword, Shield, Wind, Sparkles } from 'lucide-react';
 import { SkillBlock } from './SkillBlock';
 import { calculateStatsByLevel } from '../../data/playerStats';
 
@@ -33,6 +33,12 @@ export const CharacterInfoTab = ({ charData, getSkillInfo }) => {
                 <Shield size={12} /> 방어력
               </span>
               <span className="text-xl font-bold text-slate-200">{charData.baseDef || '-'}</span>
+            </div>
+            <div className="bg-white/5 p-3 rounded-lg border border-white/10">
+              <span className="text-xs text-slate-400 flex items-center gap-1 mb-1">
+                <Wind size={12} /> 속도
+              </span>
+              <span className="text-xl font-bold text-slate-200">{charData.baseSpd || '-'}</span>
             </div>
           </div>
         );
