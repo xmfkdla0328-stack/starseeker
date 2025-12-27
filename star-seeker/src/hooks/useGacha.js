@@ -7,11 +7,12 @@ export const useGacha = (gems, setGems, inventory, setInventory, showToast) => {
     const cost = count * GAME_CONST.GACHA_COST_PER_PULL;
     if (gems < cost) { 
       showToast('별의 조각이 부족합니다!'); 
-      return; 
+      return null;
     }
     
     setGems(prev => prev - cost);
     let payback = 0;
+    const gachaResults = []; // 뽑은 캐릭터들 저장
     
     // 불변성을 지키기 위해 복사본 생성
     const currentInventory = [...inventory]; 
@@ -19,6 +20,7 @@ export const useGacha = (gems, setGems, inventory, setInventory, showToast) => {
     for (let i = 0; i < count; i++) {
       // 랜덤 캐릭터 뽑기 (가중치 로직 등을 추가하려면 여기서 수정)
       const picked = CHAR_DB[Math.floor(Math.random() * CHAR_DB.length)];
+      gachaResults.push(picked); // 뽑은 결과 저장
       const existingIdx = currentInventory.findIndex(c => c.id === picked.id);
       
       if (existingIdx >= 0) {
@@ -44,6 +46,8 @@ export const useGacha = (gems, setGems, inventory, setInventory, showToast) => {
       setGems(prev => prev + payback);
       setTimeout(() => showToast(`${payback} 별의 조각 페이백!`), 500);
     }
+
+    return gachaResults; // 뽑은 캐릭터 배열 반환
   }, [gems, inventory, setGems, setInventory, showToast]);
 
   return handleGacha;
