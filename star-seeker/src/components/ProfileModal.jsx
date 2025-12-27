@@ -54,7 +54,7 @@ export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unl
           <StatsGrid 
             charCount={charCount}
             playerStats={playerStats}
-            unlockedAchievementsCount={unlockedAchievements.length}
+            unlockedAchievements={unlockedAchievements || []}
           />
 
           {/* 대표 캐릭터 */}
