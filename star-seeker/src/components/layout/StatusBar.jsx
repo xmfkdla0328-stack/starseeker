@@ -7,14 +7,6 @@ export const StatusBar = ({ gems, playerInfo, onProfileClick }) => {
   
   // 선택된 타이틀 데이터 (메모이제이션)
   const selectedTitle = useMemo(() => getTitleById(playerInfo.selectedTitle), [playerInfo.selectedTitle]);
-  
-  // 표시할 이름 (타이틀 + 닉네임)
-  const displayName = useMemo(() => 
-    selectedTitle 
-      ? `${selectedTitle.name} ${playerInfo.nickname}`
-      : playerInfo.nickname,
-    [selectedTitle, playerInfo.nickname]
-  );
 
   return (
     <header className="h-14 px-4 md:px-6 flex items-center justify-between border-b border-cyan-500/20 bg-black/30 backdrop-blur-md relative z-50 shrink-0 overflow-hidden">
@@ -39,10 +31,17 @@ export const StatusBar = ({ gems, playerInfo, onProfileClick }) => {
             <User size={14} className="text-white" />
           </div>
           
-          {/* 닉네임 (타이틀 포함) */}
-          <span className="text-xs font-bold text-cyan-200 hidden sm:inline relative z-10 truncate">
-            {displayName}
-          </span>
+          {/* 타이틀과 닉네임 (두 줄) */}
+          <div className="hidden sm:flex flex-col items-start relative z-10 min-w-0 gap-0.5">
+            {selectedTitle && (
+              <span className="text-[9px] text-cyan-300/70 uppercase tracking-wider font-semibold leading-none">
+                {selectedTitle.name}
+              </span>
+            )}
+            <span className="text-xs font-bold text-cyan-200 truncate">
+              {playerInfo.nickname}
+            </span>
+          </div>
           
           {/* 레벨 배지 */}
           <div className="hidden sm:flex items-center gap-1 px-2 py-0.5 bg-purple-500/20 border border-purple-500/30 rounded-full text-purple-300 text-[10px] font-bold relative z-10 flex-shrink-0">
