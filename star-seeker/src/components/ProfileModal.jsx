@@ -1,10 +1,16 @@
-import React from 'react';
-import { X, Award, Sword, Users, Star, TrendingUp } from 'lucide-react';
-import { getExpProgress } from '../data/playerStats';
+import React, { useState } from 'react';
+import { X, Award, Sword, Users, Star, TrendingUp, ChevronRight } from 'lucide-react';
+import { getExpProgress, TITLES } from '../data/playerStats';
 
-export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unlockedAchievements, onClose }) => {
+export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unlockedAchievements, onClose, onSelectTitle }) => {
   const expData = getExpProgress(playerInfo.level, playerInfo.exp);
   const charCount = inventory.length;
+  const [showTitleSelector, setShowTitleSelector] = useState(false);
+  
+  const selectedTitleData = TITLES[playerInfo.selectedTitle?.toUpperCase().replace(/([A-Z])/g, '_$1').substring(1) || 'OPEN_BETA_PIONEER'];
+  const displayName = selectedTitleData 
+    ? `${selectedTitleData.name} ${playerInfo.nickname}` 
+    : playerInfo.nickname;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in">
@@ -35,9 +41,9 @@ export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unl
           
           <div className="relative flex items-center justify-between z-10">
             {/* 왼쪽: 프로필 정보 */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-1 min-w-0">
               {/* 프로필 아바타 */}
-              <div className="w-16 h-16 rounded-full border-2 border-cyan-400/50 bg-gradient-to-br from-cyan-500/30 to-blue-600/30 flex items-center justify-center relative overflow-hidden group">
+              <div className="w-16 h-16 rounded-full border-2 border-cyan-400/50 bg-gradient-to-br from-cyan-500/30 to-blue-600/30 flex items-center justify-center relative overflow-hidden flex-shrink-0 group">
                 <div className="absolute inset-0 rounded-full border border-cyan-400/20 animate-ping opacity-75"></div>
                 <span className="text-2xl font-bold text-cyan-200 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] relative z-10">
                   {playerInfo.nickname[0]}
@@ -45,18 +51,25 @@ export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unl
               </div>
               
               {/* 프로필 텍스트 */}
-              <div>
-                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 to-blue-200 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)]">
-                  {playerInfo.nickname}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  {selectedTitleData && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-600/20 border border-amber-500/30 text-amber-300 font-bold tracking-widest flex-shrink-0">
+                      {selectedTitleData.rarity.toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 to-blue-200 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)] truncate">
+                  {displayName}
                 </h2>
-                <p className="text-xs text-cyan-400/70 tracking-widest uppercase mt-1">Observer • {playerInfo.level} Level</p>
+                <p className="text-xs text-cyan-400/70 tracking-widest uppercase mt-1">LV {playerInfo.level} • {playerInfo.totalBattles} Battles</p>
               </div>
             </div>
             
             {/* 닫기 버튼 */}
             <button
               onClick={onClose}
-              className="p-2 text-cyan-400/60 hover:text-cyan-300 hover:bg-white/5 transition-all rounded-lg relative group"
+              className="p-2 text-cyan-400/60 hover:text-cyan-300 hover:bg-white/5 transition-all rounded-lg relative group flex-shrink-0"
             >
               <X size={24} />
               <div className="absolute inset-0 rounded-lg border border-cyan-400/0 group-hover:border-cyan-400/30 group-hover:shadow-[0_0_10px_rgba(34,211,238,0.2)]"></div>
@@ -66,6 +79,66 @@ export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unl
 
         {/* 모달 내용 */}
         <div className="p-6 max-h-[70vh] overflow-y-auto space-y-4 no-scrollbar relative z-5">
+          
+          {/* 타이틀 선택 섹션 */}
+          <div className="bg-gradient-to-br from-amber-500/15 to-yellow-600/15 border border-amber-500/25 rounded-lg p-5 backdrop-blur-sm">
+            <button
+              onClick={() => setShowTitleSelector(!showTitleSelector)}
+              className="w-full flex items-center justify-between text-left group"
+            >
+              <div className="flex items-center gap-2">
+                <Star size={18} className="text-amber-400" />
+                <h3 className="text-sm font-bold text-amber-200 uppercase tracking-widest">Title Collection</h3>
+              </div>
+              <ChevronRight size={18} className={`text-amber-400 transition-transform duration-300 ${showTitleSelector ? 'rotate-90' : ''}`} />
+            </button>
+            
+            {showTitleSelector && (
+              <div className="mt-4 space-y-2">
+                {Object.entries(TITLES).map(([key, title]) => {
+                  const isUnlocked = playerInfo.unlockedTitles?.includes(title.id) ?? false;
+                  const isSelected = playerInfo.selectedTitle === title.id;
+                  
+                  return (
+                    <button
+                      key={title.id}
+                      onClick={() => {
+                        if (isUnlocked && onSelectTitle) {
+                          onSelectTitle(title.id);
+                        }
+                      }}
+                      disabled={!isUnlocked}
+                      className={`w-full p-3 rounded-lg transition-all duration-300 flex items-center justify-between ${
+                        isUnlocked
+                          ? isSelected
+                            ? 'bg-amber-500/30 border border-amber-400/60 shadow-[0_0_15px_rgba(251,191,36,0.3)]'
+                            : 'bg-amber-500/15 border border-amber-500/30 hover:border-amber-500/60 hover:bg-amber-500/25'
+                          : 'bg-slate-800/30 border border-slate-700/30 opacity-50'
+                      }`}
+                    >
+                      <div className="text-left">
+                        <p className="text-sm font-bold text-amber-200">{title.name}</p>
+                        <p className="text-xs text-amber-400/60 mt-0.5">{title.description}</p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                          title.rarity === 'legendary'
+                            ? 'bg-red-500/20 text-red-300 border border-red-500/30'
+                            : title.rarity === 'epic'
+                            ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                            : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                        }`}>
+                          {title.rarity.toUpperCase()}
+                        </span>
+                        {isSelected && <span className="text-amber-300 text-lg">✓</span>}
+                        {!isUnlocked && <span className="text-slate-500 text-lg">🔒</span>}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
           
           {/* 경험치 섹션 */}
           <div className="bg-gradient-to-br from-purple-500/15 to-indigo-600/15 border border-purple-500/25 rounded-lg p-5 backdrop-blur-sm">

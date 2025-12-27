@@ -23,7 +23,8 @@ export default function StarSeekerApp() {
     battleSystem,
     playerInfo,
     playerStats,
-    unlockedAchievements
+    unlockedAchievements,
+    handleSelectTitle,
   } = useGameLogic();
 
   const [showProfile, setShowProfile] = useState(false);
@@ -78,6 +79,7 @@ export default function StarSeekerApp() {
           inventory={inventory}
           unlockedAchievements={unlockedAchievements}
           onClose={() => setShowProfile(false)}
+          onSelectTitle={handleSelectTitle}
         />
       )}
     </div>

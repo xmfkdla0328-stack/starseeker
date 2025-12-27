@@ -52,7 +52,15 @@ export const useGameLogic = () => {
     if (screen === 'BATTLE' && battleSystem.battleState === 'IDLE') {
       battleSystem.startBattle();
     }
-  }, [screen]); 
+  }, [screen]);
+
+  // 타이틀 선택 핸들러
+  const handleSelectTitle = useCallback((titleId) => {
+    setPlayerInfo(prev => ({
+      ...prev,
+      selectedTitle: titleId,
+    }));
+  }, []);
 
   return {
     screen, setScreen,
@@ -68,5 +76,7 @@ export const useGameLogic = () => {
     playerInfo, setPlayerInfo,
     playerStats, setPlayerStats,
     unlockedAchievements, setUnlockedAchievements,
+    // 타이틀 선택
+    handleSelectTitle,
   };
 };

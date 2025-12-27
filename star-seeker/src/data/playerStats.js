@@ -30,6 +30,52 @@ export const LEVEL_EXP_TABLE = {
   50: 46000,
 };
 
+// 타이틀 정의
+export const TITLES = {
+  OPEN_BETA_PIONEER: {
+    id: 'open_beta_pioneer',
+    name: '오픈베타부터 시작한',
+    rarity: 'legendary',
+    description: '오픈베타 때부터 함께한 반딧불이',
+    unlocked: true, // 시작 시 자동 해금
+  },
+  WITNESS_OF_ABANDONED: {
+    id: 'witness_abandoned',
+    name: '남겨진 자의 증명을 목격한',
+    rarity: 'epic',
+    description: '12레벨 달성 시 해금',
+    unlockCondition: { type: 'level', value: 12 },
+  },
+  BATTLE_VETERAN: {
+    id: 'battle_veteran',
+    name: '백전노장의',
+    rarity: 'epic',
+    description: '50회 전투 완료 시 해금',
+    unlockCondition: { type: 'battles', value: 50 },
+  },
+  COSMIC_COLLECTOR: {
+    id: 'cosmic_collector',
+    name: '우주의 수집가인',
+    rarity: 'rare',
+    description: '모든 캐릭터 수집 시 해금',
+    unlockCondition: { type: 'allCharacters' },
+  },
+  ACHIEVEMENT_HUNTER: {
+    id: 'achievement_hunter',
+    name: '업적 수렵꾼의',
+    rarity: 'rare',
+    description: '10개 업적 달성 시 해금',
+    unlockCondition: { type: 'achievements', value: 10 },
+  },
+  LEGENDARY_WARRIOR: {
+    id: 'legendary_warrior',
+    name: '전설의 전사',
+    rarity: 'legendary',
+    description: '30레벨 달성 시 해금',
+    unlockCondition: { type: 'level', value: 30 },
+  },
+};
+
 // 기본 플레이어 정보
 export const DEFAULT_PLAYER_INFO = {
   nickname: 'Observer', // 나중에 수정 가능
@@ -40,6 +86,8 @@ export const DEFAULT_PLAYER_INFO = {
   joinDate: new Date().toISOString(),
   lastLoginDate: new Date().toISOString(),
   playtime: 0, // 분 단위
+  selectedTitle: 'open_beta_pioneer', // 기본 타이틀
+  unlockedTitles: ['open_beta_pioneer'], // 시작 시 첫 번째 타이틀만 해금
 };
 
 // 플레이어 통계
