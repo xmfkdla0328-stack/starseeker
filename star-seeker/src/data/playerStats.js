@@ -34,9 +34,9 @@ export const LEVEL_EXP_TABLE = {
 export const TITLES = {
   OPEN_BETA_PIONEER: {
     id: 'open_beta_pioneer',
-    name: '오픈베타부터 시작한',
+    name: '별의 생성을 함께한',
     rarity: 'legendary',
-    description: '오픈베타 때부터 함께한 반딧불이',
+    description: '처음부터 반딧불이와 함께한 여행자',
     unlocked: true, // 시작 시 자동 해금
   },
   WITNESS_OF_ABANDONED: {

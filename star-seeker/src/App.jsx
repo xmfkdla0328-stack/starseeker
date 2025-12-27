@@ -40,7 +40,7 @@ export default function StarSeekerApp() {
             {screen === 'HOME' && (
               <HomeScreen 
                 showToast={showToast} mainChar={mainChar} setMainChar={setMainChar} 
-                inventory={inventory} setScreen={setScreen} 
+                inventory={inventory} setScreen={setScreen} playerInfo={playerInfo}
               />
             )}
             {screen === 'PARTY' && (

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Sword, Sparkles } from 'lucide-react';
 import { ELEMENTS } from '../constants';
+import { getTitleById } from '../data/playerStats';
 
-export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScreen }) => {
+export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScreen, playerInfo }) => {
   const cycleMainChar = () => {
     if (inventory.length <= 1) return;
     const currentIndex = inventory.findIndex(c => c.id === mainChar.id);
@@ -10,6 +11,9 @@ export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScr
     setMainChar(inventory[nextIndex]);
     showToast(`${inventory[nextIndex].name}(으)로 변경되었습니다.`);
   };
+
+  // 선택된 타이틀 데이터 (메모이제이션)
+  const selectedTitle = useMemo(() => getTitleById(playerInfo?.selectedTitle), [playerInfo?.selectedTitle]);
 
   if (!mainChar) return null;
 
@@ -74,7 +78,14 @@ export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScr
 
          {/* 하단 텍스트 - 간격 조절 */}
          <div className="mt-3 md:mt-4 lg:mt-6 text-center relative z-20">
-            <h1 className="text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-white to-cyan-200 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] flex items-center justify-center gap-2 flex-wrap">
+            {/* 타이틀 (작은 글씨) */}
+            {selectedTitle && (
+              <p className="text-xs md:text-sm text-cyan-300/70 tracking-widest uppercase font-semibold drop-shadow-[0_0_8px_rgba(34,211,238,0.3)] mb-1">
+                {selectedTitle.name}
+              </p>
+            )}
+            {/* 닉네임 (큰 글씨) */}
+            <h1 className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-white to-cyan-200 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] flex items-center justify-center gap-2 flex-wrap">
                {mainChar.name}
                <span className={`text-[10px] md:text-xs px-1.5 md:px-2 py-0.5 rounded border ${ELEMENTS[mainChar.element].border} ${ELEMENTS[mainChar.element].color} bg-black/40 backdrop-blur-sm shadow-[0_0_10px_rgba(34,211,238,0.2)]`}>
                   {ELEMENTS[mainChar.element].name}
