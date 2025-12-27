@@ -6,7 +6,7 @@ import { Lock, Scroll } from 'lucide-react';
  * 캐릭터 선택 목록 컴포넌트
  * 캐릭터 목록을 표시하고 선택 가능
  */
-export const CharacterList = ({ charList, selectedCharId, onSelectChar }) => {
+export const CharacterList = ({ charList, selectedCharId, onSelectChar, inventory }) => {
   return (
     <div className="w-1/3 max-w-[200px] bg-slate-900/40 backdrop-blur-md rounded-xl border border-white/10 flex flex-col overflow-hidden">
       <h2 className="p-3 text-sm font-bold text-slate-300 border-b border-white/10 bg-white/5 flex items-center gap-2">
@@ -14,7 +14,7 @@ export const CharacterList = ({ charList, selectedCharId, onSelectChar }) => {
       </h2>
       <div className="flex-1 overflow-y-auto no-scrollbar p-2 space-y-2">
         {charList.map(char => {
-          const owned = charList.some(c => c.id === char.id);
+          const owned = inventory.some(c => c.id === char.id);
           return (
             <div
               key={char.id}

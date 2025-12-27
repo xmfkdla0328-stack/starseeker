@@ -27,7 +27,7 @@ export const CodexScreen = ({ inventory }) => {
   return (
     <div className="flex h-full gap-4 p-4 overflow-hidden relative">
       {/* 왼쪽: 캐릭터 목록 */}
-      <CharacterList charList={CHAR_DB} selectedCharId={selectedCharId} onSelectChar={setSelectedCharId} />
+      <CharacterList charList={CHAR_DB} selectedCharId={selectedCharId} onSelectChar={setSelectedCharId} inventory={inventory} />
 
       {/* 오른쪽: 상세 정보 패널 */}
       <div className="flex-1 bg-slate-950/60 backdrop-blur-xl rounded-xl border border-white/10 flex flex-col overflow-hidden relative shadow-2xl">
