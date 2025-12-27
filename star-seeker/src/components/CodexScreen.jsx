@@ -64,7 +64,7 @@ export const CodexScreen = ({ inventory }) => {
           {isOwned && (
             <div className="mb-6 p-4 bg-white/5 border border-red-500/20 rounded-lg relative z-10">
               <h3 className="text-sm font-bold text-red-400 mb-3">인연도</h3>
-              <BondDisplay bondLevel={charData.bondLevel || 1} detailed={true} />
+              <BondDisplay bondLevel={charData.bondLevel || 0} detailed={true} />
             </div>
           )}
 
