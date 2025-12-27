@@ -195,3 +195,44 @@ export const getLevelFromExp = (exp) => {
   }
   return { level, currentExp: exp };
 };
+
+/**
+ * 타이틀 ID로부터 타이틀 데이터 조회
+ * @param {string} titleId 타이틀 ID (예: 'open_beta_pioneer')
+ * @returns {Object|null} 타이틀 객체 또는 null
+ */
+export const getTitleById = (titleId) => {
+  if (!titleId) return null;
+  for (const key in TITLES) {
+    if (TITLES[key].id === titleId) {
+      return TITLES[key];
+    }
+  }
+  return null;
+};
+
+/**
+ * 레어도별 스타일 클래스 반환
+ * @param {string} rarity 레어도 ('legendary', 'epic', 'rare')
+ * @returns {Object} { bg, text, border } 클래스 문자열
+ */
+export const getRarityStyles = (rarity) => {
+  const styles = {
+    legendary: {
+      bg: 'bg-red-500/20',
+      text: 'text-red-300',
+      border: 'border-red-500/30',
+    },
+    epic: {
+      bg: 'bg-purple-500/20',
+      text: 'text-purple-300',
+      border: 'border-purple-500/30',
+    },
+    rare: {
+      bg: 'bg-blue-500/20',
+      text: 'text-blue-300',
+      border: 'border-blue-500/30',
+    },
+  };
+  return styles[rarity] || styles.rare;
+};

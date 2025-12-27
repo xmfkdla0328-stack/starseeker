@@ -1,29 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Star, User } from 'lucide-react';
-import { TITLES } from '../../data/playerStats';
+import { getTitleById } from '../../data/playerStats';
 
 export const StatusBar = ({ gems, playerInfo, onProfileClick }) => {
   const [showHint, setShowHint] = useState(false);
   
-  // 선택된 타이틀 데이터 가져오기
-  const getTitleKey = (titleId) => {
-    if (!titleId) return null;
-    // titleId를 TITLES 객체의 키 형식으로 변환
-    for (const key in TITLES) {
-      if (TITLES[key].id === titleId) {
-        return key;
-      }
-    }
-    return null;
-  };
-  
-  const titleKey = getTitleKey(playerInfo.selectedTitle);
-  const selectedTitle = titleKey ? TITLES[titleKey] : null;
+  // 선택된 타이틀 데이터 (메모이제이션)
+  const selectedTitle = useMemo(() => getTitleById(playerInfo.selectedTitle), [playerInfo.selectedTitle]);
   
   // 표시할 이름 (타이틀 + 닉네임)
-  const displayName = selectedTitle 
-    ? `${selectedTitle.name} ${playerInfo.nickname}`
-    : playerInfo.nickname;
+  const displayName = useMemo(() => 
+    selectedTitle 
+      ? `${selectedTitle.name} ${playerInfo.nickname}`
+      : playerInfo.nickname,
+    [selectedTitle, playerInfo.nickname]
+  );
 
   return (
     <header className="h-14 px-4 md:px-6 flex items-center justify-between border-b border-cyan-500/20 bg-black/30 backdrop-blur-md relative z-50 shrink-0 overflow-hidden">

@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { X, Award, Sword, Users, Star, TrendingUp, ChevronRight } from 'lucide-react';
-import { getExpProgress, TITLES } from '../data/playerStats';
+import { getExpProgress, TITLES, getTitleById, getRarityStyles } from '../data/playerStats';
 
 export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unlockedAchievements, onClose, onSelectTitle }) => {
   const expData = getExpProgress(playerInfo.level, playerInfo.exp);
   const charCount = inventory.length;
   const [showTitleSelector, setShowTitleSelector] = useState(false);
   
-  const selectedTitleData = TITLES[playerInfo.selectedTitle?.toUpperCase().replace(/([A-Z])/g, '_$1').substring(1) || 'OPEN_BETA_PIONEER'];
-  const displayName = selectedTitleData 
-    ? `${selectedTitleData.name} ${playerInfo.nickname}` 
-    : playerInfo.nickname;
+  // 선택된 타이틀 데이터 (메모이제이션)
+  const selectedTitleData = useMemo(() => getTitleById(playerInfo.selectedTitle), [playerInfo.selectedTitle]);
+  
+  // 표시할 이름 (메모이제이션)
+  const displayName = useMemo(() =>
+    selectedTitleData 
+      ? `${selectedTitleData.name} ${playerInfo.nickname}` 
+      : playerInfo.nickname,
+    [selectedTitleData, playerInfo.nickname]
+  );
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in">
@@ -54,9 +60,14 @@ export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unl
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   {selectedTitleData && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-600/20 border border-amber-500/30 text-amber-300 font-bold tracking-widest flex-shrink-0">
-                      {selectedTitleData.rarity.toUpperCase()}
-                    </span>
+                    (() => {
+                      const rarityStyles = getRarityStyles(selectedTitleData.rarity);
+                      return (
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${rarityStyles.bg} border ${rarityStyles.border} ${rarityStyles.text} font-bold tracking-widest flex-shrink-0`}>
+                          {selectedTitleData.rarity.toUpperCase()}
+                        </span>
+                      );
+                    })()
                   )}
                 </div>
                 <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 to-blue-200 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)] truncate">
@@ -98,6 +109,7 @@ export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unl
                 {Object.entries(TITLES).map(([key, title]) => {
                   const isUnlocked = playerInfo.unlockedTitles?.includes(title.id) ?? false;
                   const isSelected = playerInfo.selectedTitle === title.id;
+                  const rarityStyles = getRarityStyles(title.rarity);
                   
                   return (
                     <button
@@ -111,8 +123,8 @@ export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unl
                       className={`w-full p-3 rounded-lg transition-all duration-300 flex items-center justify-between ${
                         isUnlocked
                           ? isSelected
-                            ? 'bg-amber-500/30 border border-amber-400/60 shadow-[0_0_15px_rgba(251,191,36,0.3)]'
-                            : 'bg-amber-500/15 border border-amber-500/30 hover:border-amber-500/60 hover:bg-amber-500/25'
+                            ? `${rarityStyles.bg} border ${rarityStyles.border} shadow-[0_0_15px_rgba(251,191,36,0.3)]`
+                            : `bg-amber-500/15 border border-amber-500/30 hover:border-amber-500/60 hover:bg-amber-500/25`
                           : 'bg-slate-800/30 border border-slate-700/30 opacity-50'
                       }`}
                     >
@@ -121,13 +133,7 @@ export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unl
                         <p className="text-xs text-amber-400/60 mt-0.5">{title.description}</p>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${
-                          title.rarity === 'legendary'
-                            ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                            : title.rarity === 'epic'
-                            ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                            : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                        }`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${rarityStyles.bg} ${rarityStyles.text} border ${rarityStyles.border}`}>
                           {title.rarity.toUpperCase()}
                         </span>
                         {isSelected && <span className="text-amber-300 text-lg">✓</span>}
