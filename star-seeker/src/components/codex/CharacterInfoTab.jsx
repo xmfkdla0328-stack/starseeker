@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sword, Shield, Wind, Sparkles } from 'lucide-react';
+import { Sword, Shield, Wind, Sparkles, Star } from 'lucide-react';
 import { SkillBlock } from './SkillBlock';
 import { calculateStatsByLevel } from '../../data/playerStats';
 
@@ -43,6 +43,32 @@ export const CharacterInfoTab = ({ charData, getSkillInfo }) => {
           </div>
         );
       })()}
+
+      {/* 돌파 정보 */}
+      <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-400/20 rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Star className="w-4 h-4 text-purple-400" />
+            <span className="text-sm font-bold text-purple-300">필살기 돌파</span>
+          </div>
+          <div className="flex items-center gap-1">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                size={16}
+                className={`transition-all ${
+                  i < (charData.ultLevel || 0)
+                    ? 'fill-purple-400 text-purple-400'
+                    : 'text-slate-600'
+                }`}
+              />
+            ))}
+            <span className="ml-2 text-sm font-bold text-purple-200">
+              {charData.ultLevel || 0} / 5
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* 스킬 목록 */}
       <div>
