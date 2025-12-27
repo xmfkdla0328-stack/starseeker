@@ -13,6 +13,13 @@ export const GachaResultModal = ({ results, onClose }) => {
   if (showAnimation) {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        {/* 스킵 버튼 */}
+        <button
+          onClick={() => setShowAnimation(false)}
+          className="absolute top-4 right-4 px-3 py-1.5 rounded-lg border border-cyan-400/40 text-cyan-300 bg-white/5 hover:bg-white/10 hover:border-cyan-400/60 transition-all text-xs font-bold tracking-widest"
+        >
+          스킵
+        </button>
         {/* 가챠 애니메이션 */}
         <div className="flex flex-col items-center justify-center gap-8">
           {/* 회전하는 빛 */}
