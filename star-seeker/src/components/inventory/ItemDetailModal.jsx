@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Package } from 'lucide-react';
+import { X } from 'lucide-react';
 import { GradientDivider } from '../common/GradientDivider';
 import { IconCircle } from '../common/IconCircle';
 

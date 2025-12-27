@@ -1,6 +1,5 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import { ELEMENTS } from '../../constants';
 import { ElementIcon } from '../common/ElementIcon';
 
 export const PartySlot = ({ char, line, idx, removeChar, setSelectedSlot, highlightedSynergy }) => {

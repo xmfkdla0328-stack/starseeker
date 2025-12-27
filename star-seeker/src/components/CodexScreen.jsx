@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ELEMENTS, BOND_LEVELS } from '../constants';         
+import { ELEMENTS } from '../constants';         
 import { CHAR_DB } from '../data/characters';
 import { CharacterList } from './codex/CharacterList';
 import { CharacterHeader } from './codex/CharacterHeader';

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
 import { ProfileHeader } from './profile/ProfileHeader';
 import { TitleSelector } from './profile/TitleSelector';
 import { ExperienceSection } from './profile/ExperienceSection';
