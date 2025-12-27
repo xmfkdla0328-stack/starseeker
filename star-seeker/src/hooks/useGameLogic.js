@@ -1,8 +1,10 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { SYNERGIES } from '../constants';
+import { useState, useEffect, useCallback } from 'react';
 import { CHAR_DB } from '../data/characters';
-// 전투 시스템 훅 가져오기
+
+// 분리한 하위 훅들 가져오기
 import { useBattleSystem } from './useBattleSystem';
+import { useSynergy } from './useSynergy';
+import { useGacha } from './useGacha';
 
 export const useGameLogic = () => {
   const [screen, setScreen] = useState('HOME');
@@ -12,10 +14,21 @@ export const useGameLogic = () => {
   const [toast, setToast] = useState(null);
   const [mainChar, setMainChar] = useState(null);
 
-  // 전투 시스템 연결 (party 상태를 넘겨줍니다)
-  const battleSystem = useBattleSystem(party);
+  const showToast = useCallback((msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  }, []);
 
-  // 초기화 로직
+  // 1. 시너지 계산 (전투 시스템보다 먼저 계산되어야 함)
+  const activeSynergies = useSynergy(party);
+  
+  // 2. 전투 시스템 (activeSynergies 전달)
+  const battleSystem = useBattleSystem(party, activeSynergies);
+  
+  // 3. 가챠 로직
+  const handleGacha = useGacha(gems, setGems, inventory, setInventory, showToast);
+
+  // 초기화 및 자동 처리
   useEffect(() => {
     if (inventory.length === 0) {
       const starter = { ...CHAR_DB[0], ultLevel: 0, bond: 0, uid: Date.now() };
@@ -29,69 +42,11 @@ export const useGameLogic = () => {
     }
   }, [inventory, mainChar]);
 
-  // 화면 전환 시 전투 자동 시작/종료 처리
   useEffect(() => {
     if (screen === 'BATTLE' && battleSystem.battleState === 'IDLE') {
       battleSystem.startBattle();
     }
-  }, [screen]); // battleSystem은 의존성에서 제외하여 무한 루프 방지
-
-  const showToast = useCallback((msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
-  }, []);
-
-  const activeSynergies = useMemo(() => {
-    const counts = {};
-    const activeChars = [...party.front, ...party.back].filter(c => c !== null);
-    activeChars.forEach(char => {
-      char.tags.forEach(tag => { counts[tag] = (counts[tag] || 0) + 1; });
-    });
-    const results = [];
-    Object.entries(counts).forEach(([tag, count]) => {
-      const synData = SYNERGIES[tag];
-      if (!synData) return;
-      const effects = synData.levels.filter(l => count >= l.count);
-      if (effects.length > 0) {
-        results.push({ name: tag, count, effect: effects[effects.length - 1].effect });
-      }
-    });
-    return results;
-  }, [party]);
-
-  const handleGacha = useCallback((count) => {
-    const cost = count * 100;
-    if (gems < cost) { showToast('별의 조각이 부족합니다!'); return; }
-    
-    setGems(prev => prev - cost);
-    const newChars = [];
-    let payback = 0;
-    
-    const currentInventory = [...inventory]; 
-
-    for (let i = 0; i < count; i++) {
-      const picked = CHAR_DB[Math.floor(Math.random() * CHAR_DB.length)];
-      const existingIdx = currentInventory.findIndex(c => c.id === picked.id);
-      
-      if (existingIdx >= 0) {
-        const target = currentInventory[existingIdx];
-        if (target.ultLevel < 5) {
-          currentInventory[existingIdx] = { ...target, ultLevel: target.ultLevel + 1 };
-          showToast(`${picked.name} 중복! 필살기 강화!`);
-        } else { payback += 20; }
-      } else {
-        const newChar = { ...picked, ultLevel: 0, bond: 0, uid: Date.now() + i };
-        newChars.push(newChar);
-        currentInventory.push(newChar);
-      }
-    }
-    setInventory(currentInventory);
-
-    if (payback > 0) {
-      setGems(prev => prev + payback);
-      setTimeout(() => showToast(`${payback} 별의 조각 페이백!`), 500);
-    }
-  }, [gems, inventory, showToast]);
+  }, [screen]); 
 
   return {
     screen, setScreen,
@@ -102,6 +57,6 @@ export const useGameLogic = () => {
     toast, showToast,
     activeSynergies,
     handleGacha,
-    battleSystem // 전투 시스템 전체를 반환하여 컴포넌트에서 쓸 수 있게 함
+    battleSystem
   };
 };

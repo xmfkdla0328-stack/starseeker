@@ -1,3 +1,67 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 커스텀 스크롤바 숨기기 */
+.no-scrollbar::-webkit-scrollbar { 
+  display: none; 
+}
+.no-scrollbar { 
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+
+/* 애니메이션 정의 */
+@keyframes float-slow { 
+  0%, 100% { transform: translateY(0); } 
+  50% { transform: translateY(-10px); } 
+}
+.animate-float-slow { 
+  animation: float-slow 6s ease-in-out infinite; 
+}
+
+@keyframes pulse-slow { 
+  0%, 100% { opacity: 1; } 
+  50% { opacity: 0.5; } 
+}
+.animate-pulse-slow { 
+  animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
+}
+
+@keyframes pan-slow { 
+  0% { background-position: 0% 0%; } 
+  100% { background-position: 100% 100%; } 
+}
+.animate-pan-slow { 
+  animation: pan-slow 60s linear infinite; 
+}
+
+@keyframes twinkle { 
+  0%, 100% { opacity: 0.2; transform: scale(1); } 
+  50% { opacity: 0.8; transform: scale(1.5); } 
+}
+.animate-twinkle { 
+  animation: twinkle 3s ease-in-out infinite; 
+}
+
+@keyframes bounce-slight { 
+  0%, 100% { transform: translate(-50%, 0); } 
+  50% { transform: translate(-50%, -10px); } 
+}
+.animate-bounce-slight { 
+  animation: bounce-slight 2s ease-in-out infinite; 
+}
+
+@keyframes fade-in { 
+  from { opacity: 0; } 
+  to { opacity: 1; } 
+}
+.animate-fade-in { 
+  animation: fade-in 0.3s ease-out forwards; 
+}
+
+/* 렌즈 회전 애니메이션 (App.jsx 버튼용) */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

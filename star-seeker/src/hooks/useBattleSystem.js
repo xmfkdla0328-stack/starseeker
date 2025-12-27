@@ -1,128 +1,149 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+// 분리한 유틸리티 함수들 가져오기
+import { BOSS_DATA, getElementalMultiplier, getSynergyBonus } from '../utils/battleUtils';
 
-// 적 정보 (임시로 하드코딩, 나중에 데이터 파일로 분리 가능)
-const BOSS_DATA = {
-  name: '화염룡',
-    maxHp: 5000,
-      atk: 150,
-        element: 'FIRE',
-          img: 'BOSS'
-          };
+export const useBattleSystem = (party, activeSynergies) => {
+  const [battleState, setBattleState] = useState('IDLE');
+  const [logs, setLogs] = useState([]);
+  const [enemy, setEnemy] = useState(null);
+  const [allies, setAllies] = useState([]);
+  const [turnCount, setTurnCount] = useState(0);
+  
+  const battleFlags = useRef({ johoReviveUsed: false });
+  const battleInterval = useRef(null);
 
-          export const useBattleSystem = (party) => {
-            const [battleState, setBattleState] = useState('IDLE'); // IDLE, FIGHTING, VICTORY, DEFEAT
-              const [logs, setLogs] = useState([]);
-                const [enemy, setEnemy] = useState(null);
-                  const [allies, setAllies] = useState([]);
-                    const [turnCount, setTurnCount] = useState(0);
+  const addLog = useCallback((msg) => {
+    setLogs(prev => [...prev.slice(-4), msg]);
+  }, []);
 
-                      // 전투 루프를 위한 Interval Ref
-                        const battleInterval = useRef(null);
+  // --- 전투 시작 ---
+  const startBattle = useCallback(() => {
+    const { atkBonusPct, defBonusPct, johoRevive } = getSynergyBonus(activeSynergies);
+    
+    battleFlags.current = { johoReviveUsed: !johoRevive }; 
 
-                          // 로그 추가 함수
-                            const addLog = useCallback((msg) => {
-                                setLogs(prev => [...prev.slice(-4), msg]); // 최근 5개만 유지
-                                  }, []);
+    const tempAllies = [];
+    party.front.forEach(c => { if (c) tempAllies.push({ ...c, position: 'FRONT' }); });
+    party.back.forEach(c => { if (c) tempAllies.push({ ...c, position: 'BACK' }); });
 
-                                    // 전투 시작 초기화
-                                      const startBattle = useCallback(() => {
-                                          // 파티원 데이터를 전투용 객체로 변환 (현재 체력 hp 추가)
-                                              const battleAllies = [...party.front, ...party.back]
-                                                    .filter(c => c !== null)
-                                                          .map(c => ({
-                                                                  ...c,
-                                                                          maxHp: c.baseHp, // 실제론 레벨/장비 보정 필요
-                                                                                  hp: c.baseHp,
-                                                                                          atk: c.baseAtk,
-                                                                                                  isDead: false
-                                                                                                        }));
+    const battleAllies = tempAllies.map(c => {
+        const finalAtk = Math.floor(c.baseAtk * (1 + atkBonusPct / 100));
+        return {
+          ...c,
+          maxHp: c.baseHp,
+          hp: c.baseHp,
+          atk: finalAtk,
+          defPct: defBonusPct,
+          isDead: false
+        };
+      });
 
-                                                                                                            if (battleAllies.length === 0) {
-                                                                                                                  addLog("출전할 캐릭터가 없습니다!");
-                                                                                                                        return;
-                                                                                                                            }
+    if (battleAllies.length === 0) {
+      addLog("출전할 캐릭터가 없습니다!");
+      return;
+    }
 
-                                                                                                                                setAllies(battleAllies);
-                                                                                                                                    setEnemy({ ...BOSS_DATA, hp: BOSS_DATA.maxHp });
-                                                                                                                                        setBattleState('FIGHTING');
-                                                                                                                                            setLogs(['> 전투가 시작되었습니다!', `> BOSS [${BOSS_DATA.name}] 등장!`]);
-                                                                                                                                                setTurnCount(0);
-                                                                                                                                                  }, [party, addLog]);
+    setAllies(battleAllies);
+    setEnemy({ ...BOSS_DATA, hp: BOSS_DATA.maxHp });
+    setBattleState('FIGHTING');
+    setLogs([
+      '> 전투 개시!', 
+      atkBonusPct > 0 ? `> [시너지] 공격력 +${atkBonusPct}%` : null,
+      defBonusPct > 0 ? `> [시너지] 방어력 +${defBonusPct}%` : null,
+      !battleFlags.current.johoReviveUsed ? `> [시너지] '조호' 부활 준비됨` : null,
+      `> BOSS [${BOSS_DATA.name}] 등장!`
+    ].filter(Boolean));
+    setTurnCount(0);
+  }, [party, activeSynergies, addLog]);
 
-                                                                                                                                                    // 턴 진행 로직 (1초마다 실행)
-                                                                                                                                                      const processTurn = useCallback(() => {
-                                                                                                                                                          if (battleState !== 'FIGHTING') return;
+  // --- 턴 진행 로직 ---
+  const processTurn = useCallback(() => {
+    if (battleState !== 'FIGHTING') return;
 
-                                                                                                                                                              setTurnCount(prev => prev + 1);
-                                                                                                                                                                  let currentEnemy = { ...enemy };
-                                                                                                                                                                      let currentAllies = [...allies];
-                                                                                                                                                                          let turnLogs = [];
+    setTurnCount(prev => prev + 1);
+    let currentEnemy = { ...enemy };
+    let currentAllies = [...allies];
+    let turnLogs = [];
 
-                                                                                                                                                                              // 1. 아군 턴: 살아있는 아군들이 보스를 공격
-                                                                                                                                                                                  currentAllies.forEach(ally => {
-                                                                                                                                                                                        if (ally.isDead) return;
+    // 1. 아군 턴
+    currentAllies.forEach(ally => {
+      if (ally.isDead) return;
 
-                                                                                                                                                                                              // 공격 (임시 데미지 공식: 공격력 ±10%)
-                                                                                                                                                                                                    const dmg = Math.floor(ally.atk * (0.9 + Math.random() * 0.2));
-                                                                                                                                                                                                          currentEnemy.hp = Math.max(0, currentEnemy.hp - dmg);
-                                                                                                                                                                                                                turnLogs.push(`> [${ally.name}]의 공격! ${dmg} 피해.`);
+      const elemMod = getElementalMultiplier(ally.element, currentEnemy.element);
+      const randMod = 0.9 + Math.random() * 0.2;
+      const finalDmg = Math.floor(ally.atk * elemMod * randMod);
 
-                                                                                                                                                                                                                      // 보스 사망 체크
-                                                                                                                                                                                                                            if (currentEnemy.hp <= 0) {
-                                                                                                                                                                                                                                    setBattleState('VICTORY');
-                                                                                                                                                                                                                                            turnLogs.push(`> [${currentEnemy.name}] 처치! 승리했습니다!`);
-                                                                                                                                                                                                                                                  }
-                                                                                                                                                                                                                                                      });
+      currentEnemy.hp = Math.max(0, currentEnemy.hp - finalDmg);
 
-                                                                                                                                                                                                                                                          // 2. 적군 턴: 보스가 살아있다면 랜덤 아군 공격
-                                                                                                                                                                                                                                                              if (currentEnemy.hp > 0) {
-                                                                                                                                                                                                                                                                    const livingAllies = currentAllies.filter(a => !a.isDead);
-                                                                                                                                                                                                                                                                          if (livingAllies.length > 0) {
-                                                                                                                                                                                                                                                                                  const targetIdx = Math.floor(Math.random() * livingAllies.length);
-                                                                                                                                                                                                                                                                                          const target = livingAllies[targetIdx];
-                                                                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                                                                          // 보스 공격 (속성 상성 등은 나중에 추가)
-                                                                                                                                                                                                                                                                                                                  const dmg = Math.floor(currentEnemy.atk * (0.8 + Math.random() * 0.4));
-                                                                                                                                                                                                                                                                                                                          target.hp = Math.max(0, target.hp - dmg);
-                                                                                                                                                                                                                                                                                                                                  turnLogs.push(`> [${currentEnemy.name}]의 공격! [${target.name}]에게 ${dmg} 피해.`);
+      let logMsg = `[${ally.name}] 공격! ${finalDmg}`;
+      if (elemMod > 1.0) logMsg += " (효과적!)";
+      else if (elemMod < 1.0) logMsg += " (반감)";
+      turnLogs.push(logMsg);
 
-                                                                                                                                                                                                                                                                                                                                          if (target.hp <= 0) {
-                                                                                                                                                                                                                                                                                                                                                    target.isDead = true;
-                                                                                                                                                                                                                                                                                                                                                              turnLogs.push(`> [${target.name}] 전투 불능...`);
-                                                                                                                                                                                                                                                                                                                                                                      }
-                                                                                                                                                                                                                                                                                                                                                                            } else {
-                                                                                                                                                                                                                                                                                                                                                                                    // 아군 전멸
-                                                                                                                                                                                                                                                                                                                                                                                            setBattleState('DEFEAT');
-                                                                                                                                                                                                                                                                                                                                                                                                    turnLogs.push(`> 아군이 전멸했습니다. 패배...`);
-                                                                                                                                                                                                                                                                                                                                                                                                          }
-                                                                                                                                                                                                                                                                                                                                                                                                              }
+      if (currentEnemy.hp <= 0) {
+        setBattleState('VICTORY');
+        turnLogs.push(`> [${currentEnemy.name}] 처치! 승리!`);
+      }
+    });
 
-                                                                                                                                                                                                                                                                                                                                                                                                                  // 상태 업데이트
-                                                                                                                                                                                                                                                                                                                                                                                                                      setEnemy(currentEnemy);
-                                                                                                                                                                                                                                                                                                                                                                                                                          setAllies(currentAllies);
-                                                                                                                                                                                                                                                                                                                                                                                                                              turnLogs.forEach(log => addLog(log));
+    // 2. 적군 턴
+    if (currentEnemy.hp > 0) {
+      const livingAllies = currentAllies.map((a, i) => ({ ...a, originalIdx: i })).filter(a => !a.isDead);
+      
+      if (livingAllies.length > 0) {
+        const targetRef = livingAllies[Math.floor(Math.random() * livingAllies.length)];
+        const targetIdx = targetRef.originalIdx;
+        const target = currentAllies[targetIdx];
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                }, [battleState, enemy, allies, addLog]);
+        const elemMod = getElementalMultiplier(currentEnemy.element, target.element);
+        const defMod = 1 - (target.defPct || 0) / 100;
+        const randMod = 0.9 + Math.random() * 0.2;
+        const finalDmg = Math.floor(currentEnemy.atk * elemMod * defMod * randMod);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                  // 전투 타이머 관리
-                                                                                                                                                                                                                                                                                                                                                                                                                                    useEffect(() => {
-                                                                                                                                                                                                                                                                                                                                                                                                                                        if (battleState === 'FIGHTING') {
-                                                                                                                                                                                                                                                                                                                                                                                                                                              battleInterval.current = setInterval(processTurn, 1000); // 1초마다 턴 진행
-                                                                                                                                                                                                                                                                                                                                                                                                                                                  } else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        if (battleInterval.current) clearInterval(battleInterval.current);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                return () => {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                      if (battleInterval.current) clearInterval(battleInterval.current);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                          };
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }, [battleState, processTurn]);
+        let newHp = target.hp - finalDmg;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                              return {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  battleState, // 상태
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      logs,        // 전투 로그
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          enemy,       // 적 정보 (체력 포함)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              allies,      // 아군 정보 (체력 포함)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  startBattle, // 전투 시작 함수
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      turnCount    // 턴 수
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        };
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        };
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+        let logMsg = `[${currentEnemy.name}]의 반격! [${target.name}]에게 ${finalDmg}`;
+        if (elemMod > 1.0) logMsg += " (아프다!)";
+        turnLogs.push(logMsg);
+
+        if (newHp <= 0) {
+          // 캐릭터의 실제 위치(position)가 'FRONT'인 경우에만 부활 체크
+          const isRealFrontJoho = target.position === 'FRONT' && target.tags.includes('조호');
+          
+          if (isRealFrontJoho && !battleFlags.current.johoReviveUsed) {
+            battleFlags.current.johoReviveUsed = true;
+            newHp = Math.floor(target.maxHp * 0.2);
+            turnLogs.push(`> [시너지] '조호' 발동! [${target.name}] 부활!`);
+          } else {
+            newHp = 0;
+            target.isDead = true;
+            turnLogs.push(`> [${target.name}] 전투 불능...`);
+          }
+        }
+        
+        target.hp = newHp;
+        currentAllies[targetIdx] = target;
+
+      } else {
+        setBattleState('DEFEAT');
+        turnLogs.push(`> 아군 전멸... 패배했습니다.`);
+      }
+    }
+
+    setEnemy(currentEnemy);
+    setAllies(currentAllies);
+    turnLogs.forEach(log => addLog(log));
+
+  }, [battleState, enemy, allies, addLog]);
+
+  useEffect(() => {
+    if (battleState === 'FIGHTING') {
+      battleInterval.current = setInterval(processTurn, 1000);
+    } else {
+      clearInterval(battleInterval.current);
+    }
+    return () => clearInterval(battleInterval.current);
+  }, [battleState, processTurn]);
+
+  return { battleState, logs, enemy, allies, startBattle, turnCount };
+};
