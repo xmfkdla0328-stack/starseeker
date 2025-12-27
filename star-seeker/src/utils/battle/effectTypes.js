@@ -1,0 +1,10 @@
+/**
+ * 스킬 효과 타입 상수 정의
+ */
+
+export const EFFECT_TYPES = {
+  BUFF_FRONT_ATK: 'BUFF_FRONT_ATK',
+  BUFF_FRONT_DEF: 'BUFF_FRONT_DEF',
+  HEAL_LOWEST: 'HEAL_LOWEST',
+  GRANT_TURN: 'GRANT_TURN',
+};
