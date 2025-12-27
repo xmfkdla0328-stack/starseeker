@@ -65,7 +65,7 @@ export const GachaResultModal = ({ results, onClose }) => {
   // 결과 창
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-md bg-gradient-to-br from-slate-900/80 via-indigo-950/70 to-black/80 border border-cyan-400/20 rounded-2xl shadow-[0_0_60px_rgba(34,211,238,0.3)] overflow-hidden">
+      <div className="relative w-full max-w-2xl max-h-[90vh] bg-gradient-to-br from-slate-900/80 via-indigo-950/70 to-black/80 border border-cyan-400/20 rounded-2xl shadow-[0_0_60px_rgba(34,211,238,0.3)] overflow-hidden flex flex-col">
         
         {/* 성운 배경 */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-radial from-cyan-500/15 via-blue-600/8 to-transparent rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
@@ -88,8 +88,8 @@ export const GachaResultModal = ({ results, onClose }) => {
         </div>
 
         {/* 결과 */}
-        <div className="relative p-8 z-5">
-          <div className="space-y-6">
+        <div className="relative p-6 z-5 flex-1 overflow-y-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {results.map((char, idx) => (
               <div
                 key={idx}
@@ -97,16 +97,16 @@ export const GachaResultModal = ({ results, onClose }) => {
                 style={{ animationDelay: `${idx * 0.2}s` }}
               >
                 {/* 캐릭터 카드 */}
-                <div className={`p-4 rounded-xl border backdrop-blur-sm transition-all ${
+                <div className={`p-3 rounded-xl border backdrop-blur-sm transition-all h-full ${
                   char.rarity >= 5
                     ? 'bg-gradient-to-br from-yellow-500/15 to-amber-600/15 border-yellow-400/30 shadow-[0_0_20px_rgba(250,204,21,0.2)]'
                     : char.rarity === 4
                     ? 'bg-gradient-to-br from-purple-500/15 to-pink-600/15 border-purple-400/30'
                     : 'bg-gradient-to-br from-cyan-500/15 to-blue-600/15 border-cyan-400/30'
                 }`}>
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col items-center text-center gap-2">
                     {/* 아바타 */}
-                    <div className={`w-16 h-16 rounded-full border-2 flex items-center justify-center flex-shrink-0 font-bold text-xl ${
+                    <div className={`w-14 h-14 rounded-full border-2 flex items-center justify-center flex-shrink-0 font-bold text-lg ${
                       char.rarity >= 5
                         ? 'border-yellow-400/50 bg-yellow-500/20 text-yellow-300'
                         : char.rarity === 4
@@ -117,12 +117,12 @@ export const GachaResultModal = ({ results, onClose }) => {
                     </div>
 
                     {/* 정보 */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-lg font-serif font-bold text-white truncate">
+                    <div className="flex-1 w-full">
+                      <div className="flex items-center justify-center gap-1.5 mb-1">
+                        <h3 className="text-sm font-serif font-bold text-white truncate">
                           {char.name}
                         </h3>
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap ${
+                        <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold whitespace-nowrap ${
                           char.rarity >= 5
                             ? 'bg-yellow-500/30 text-yellow-200 border border-yellow-400/30'
                             : char.rarity === 4
@@ -133,14 +133,14 @@ export const GachaResultModal = ({ results, onClose }) => {
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2 text-xs text-slate-300">
+                      <div className="flex flex-col items-center justify-center gap-1 text-xs text-slate-300 mb-2">
                         <span className={`px-2 py-0.5 rounded border ${ELEMENTS[char.element].border} ${ELEMENTS[char.element].color} bg-black/30`}>
                           {ELEMENTS[char.element].name}
                         </span>
-                        <span>{char.role === 'FRONT' ? '전열' : char.role === 'BACK' ? '후열' : '만능'}</span>
+                        <span className="text-slate-400">{char.role === 'FRONT' ? '전열' : char.role === 'BACK' ? '후열' : '만능'}</span>
                       </div>
 
-                      <p className="text-xs text-slate-400 italic mt-2 line-clamp-2">
+                      <p className="text-xs text-slate-400 italic line-clamp-2">
                         "{char.desc}"
                       </p>
                     </div>
