@@ -26,6 +26,7 @@ export const GachaCharacterCard = ({ char, idx, isSingle }) => {
                   <div className="absolute top-0 left-1/2 w-1 h-1 bg-yellow-300 rounded-full blur-[1px]"></div>
                   <div className="absolute top-1/2 right-0 w-1 h-1 bg-amber-300 rounded-full blur-[1px]"></div>
                   <div className="absolute bottom-0 left-1/2 w-1 h-1 bg-yellow-300 rounded-full blur-[1px]"></div>
+                  <div className="absolute top-1/2 left-0 w-1 h-1 bg-amber-300 rounded-full blur-[1px]"></div>
                 </div>
               </>
             )}
