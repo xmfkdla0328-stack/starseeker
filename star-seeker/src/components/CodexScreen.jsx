@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { ELEMENTS } from '../constants';         
-import { CHAR_DB } from '../data/characters';    
-import { Sword, Shield, Lock, Scroll, User, Sparkles, Tag, Wind } from 'lucide-react'; // ★ Wind 아이콘 추가
+import { CHAR_DB } from '../data/characters';
+import { calculateStatsByLevel } from '../data/playerStats';
+import { Sword, Shield, Lock, Scroll, User, Sparkles, Tag, Wind } from 'lucide-react';
 
 export const CodexScreen = ({ inventory }) => {
   const [selectedCharId, setSelectedCharId] = useState(CHAR_DB[0].id);
@@ -88,7 +89,7 @@ export const CodexScreen = ({ inventory }) => {
                </div>
                
                <h1 className="text-3xl font-serif font-bold text-white flex items-end gap-2">
-                 {charData.name} <span className="text-sm font-normal text-slate-400 mb-1.5 opacity-80">Lv.{charData.id * 10 + 5}</span>
+                 {charData.name} <span className="text-sm font-normal text-slate-400 mb-1.5 opacity-80">Lv.{charData.level || 1}</span>
                </h1>
                <p className="text-slate-400 text-sm italic">"{charData.desc}"</p>
             </div>
@@ -112,22 +113,26 @@ export const CodexScreen = ({ inventory }) => {
 
             {tab === 'INFO' && (
               <div className="space-y-6 relative z-10 animate-fade-in">
-                 {/* ★ 스탯 (grid-cols-2 -> grid-cols-3 로 변경 및 속도 추가) */}
-                 <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-white/5 p-3 rounded-lg border border-white/10">
-                       <span className="text-xs text-slate-400 flex items-center gap-1 mb-1"><Sword size={12}/> 공격력</span>
-                       <span className="text-xl font-bold text-slate-200">{charData.baseAtk}</span>
-                    </div>
-                    <div className="bg-white/5 p-3 rounded-lg border border-white/10">
-                       <span className="text-xs text-slate-400 flex items-center gap-1 mb-1"><Shield size={12}/> 체력</span>
-                       <span className="text-xl font-bold text-slate-200">{charData.baseHp}</span>
-                    </div>
-                    {/* ★ 속도 스탯 추가 */}
-                    <div className="bg-white/5 p-3 rounded-lg border border-white/10">
-                       <span className="text-xs text-slate-400 flex items-center gap-1 mb-1"><Wind size={12}/> 속도</span>
-                       <span className="text-xl font-bold text-slate-200">{charData.baseSpd || '-'}</span>
-                    </div>
-                 </div>
+                 {/* 스탯 (레벨에 따른 실제 스탯 표시) */}
+                 {(() => {
+                   const actualStats = calculateStatsByLevel(charData.baseAtk, charData.baseHp, charData.level || 1);
+                   return (
+                     <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-white/5 p-3 rounded-lg border border-white/10">
+                           <span className="text-xs text-slate-400 flex items-center gap-1 mb-1"><Sword size={12}/> 공격력</span>
+                           <span className="text-xl font-bold text-slate-200">{actualStats.atk}</span>
+                        </div>
+                        <div className="bg-white/5 p-3 rounded-lg border border-white/10">
+                           <span className="text-xs text-slate-400 flex items-center gap-1 mb-1"><Shield size={12}/> 체력</span>
+                           <span className="text-xl font-bold text-slate-200">{actualStats.hp}</span>
+                        </div>
+                        <div className="bg-white/5 p-3 rounded-lg border border-white/10">
+                           <span className="text-xs text-slate-400 flex items-center gap-1 mb-1"><Wind size={12}/> 속도</span>
+                           <span className="text-xl font-bold text-slate-200">{charData.baseSpd || '-'}</span>
+                        </div>
+                     </div>
+                   );
+                 })()}
                  
                  {/* 스킬 목록 */}
                  <div>

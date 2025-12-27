@@ -21,17 +21,11 @@ export const ProfileModal = ({ playerInfo, playerStats, mainChar, inventory, unl
         
         {/* 별 입자 효과 */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[60, 40, 32, 20, 20].map((top, idx) => (
-            <div
-              key={idx}
-              className={`absolute w-${idx === 0 ? 1 : 0.5} h-${idx === 0 ? 1 : 0.5} bg-${['cyan-300', 'blue-200', 'purple-300', 'cyan-200', 'blue-300'][idx]} rounded-full animate-twinkle opacity-${[60, 40, 50, 30, 40][idx]}`}
-              style={{
-                left: ['left-12', 'right-16', 'left-1/4', 'right-1/3', 'right-20'][idx],
-                top: [`${top}px`, '20px', 'bottom-32', 'top-1/3', 'bottom-20'][idx],
-                animationDelay: [0, '1.5s', '3s', '2s', '4s'][idx]
-              }}
-            />
-          ))}
+          <div className="absolute top-[60px] left-12 w-1 h-1 bg-cyan-300 rounded-full animate-twinkle opacity-60"></div>
+          <div className="absolute top-[40px] right-16 w-0.5 h-0.5 bg-blue-200 rounded-full animate-twinkle opacity-40" style={{ animationDelay: '1.5s' }}></div>
+          <div className="absolute bottom-32 left-1/4 w-1 h-1 bg-purple-300 rounded-full animate-twinkle opacity-50" style={{ animationDelay: '3s' }}></div>
+          <div className="absolute top-1/3 right-1/3 w-0.5 h-0.5 bg-cyan-200 rounded-full animate-twinkle opacity-30" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-20 right-20 w-1 h-1 bg-blue-300 rounded-full animate-twinkle opacity-40" style={{ animationDelay: '4s' }}></div>
         </div>
         
         {/* 우주 성운 배경 효과 */}

@@ -62,7 +62,7 @@ export const GardenScreen = ({ inventory, showToast }) => {
       {gardenChars.map((char, idx) => (
         <div 
           key={idx}
-          className={`absolute transition-all duration-[2000ms] ease-in-out cursor-pointer group flex flex-col items-center z-20 hover:scale-${Math.round(GARDEN_CONFIG.HOVER_SCALE * 100)}`}
+          className="absolute transition-all duration-[2000ms] ease-in-out cursor-pointer group flex flex-col items-center z-20 hover:scale-110"
           style={{ left: `${char.x}%`, top: `${char.y}%` }}
           onClick={() => showToast(`${char.name}: "이곳의 공기는 맑군요."`)}
         >
