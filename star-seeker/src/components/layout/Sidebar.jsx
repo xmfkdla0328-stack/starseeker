@@ -54,13 +54,9 @@ export const Sidebar = ({ screen, setScreen }) => {
       
       <NavItem id="HOME" icon={Home} label="홈" />
       <NavItem id="PARTY" icon={Users} label="편성" />
-      <NavItem id="GACHA" icon={Sparkles} label="모집" />
-      <NavItem id="GARDEN" icon={Sprout} label="정원" />
-      
-      {/* 구분선 */}
-      <div className="w-10 h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent my-2"></div>
-      
       <NavItem id="CODEX" icon={Book} label="관리" />
+      <NavItem id="GARDEN" icon={Sprout} label="정원" />
+      <NavItem id="GACHA" icon={Sparkles} label="모집" />
       
       {/* 하단 장식 */}
       <div className="mt-auto pt-4 flex flex-col gap-1 items-center">
