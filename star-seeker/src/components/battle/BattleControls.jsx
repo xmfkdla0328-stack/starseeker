@@ -20,7 +20,7 @@ export const BattleControls = ({ isAuto, setIsAuto, battleState, processTurn }) 
        {/* 수동 공격 버튼 */}
        {!isAuto && battleState === 'FIGHTING' && (
          <button 
-           onClick={processTurn}
+           onClick={() => processTurn(true)} // ★ true(isManualStep) 전달!
            className="w-12 h-12 rounded-full bg-red-600 border-2 border-red-400 flex items-center justify-center text-white shadow-lg active:scale-95 hover:bg-red-500 hover:scale-105 transition-all animate-pulse-slow"
            title="턴 진행"
          >

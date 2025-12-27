@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ELEMENTS } from '../constants';         
 import { CHAR_DB } from '../data/characters';    
-import { Sword, Shield, Lock, Scroll, User, Sparkles, Tag, HeartHandshake } from 'lucide-react';
+import { Sword, Shield, Lock, Scroll, User, Sparkles, Tag, Wind } from 'lucide-react'; // ★ Wind 아이콘 추가
 
 export const CodexScreen = ({ inventory }) => {
   const [selectedCharId, setSelectedCharId] = useState(CHAR_DB[0].id);
@@ -10,6 +10,7 @@ export const CodexScreen = ({ inventory }) => {
   const selectedChar = CHAR_DB.find(c => c.id === selectedCharId);
   const isOwned = inventory.some(c => c.id === selectedCharId);
   
+  // 보유 중이면 인벤토리 정보(성장 수치 등) 사용, 아니면 DB 기본 정보 사용
   const charData = isOwned 
     ? { ...selectedChar, ...inventory.find(c => c.id === selectedCharId) } 
     : { ...selectedChar, bond: 0 };
@@ -111,8 +112,8 @@ export const CodexScreen = ({ inventory }) => {
 
             {tab === 'INFO' && (
               <div className="space-y-6 relative z-10 animate-fade-in">
-                 {/* 스탯 */}
-                 <div className="grid grid-cols-2 gap-4">
+                 {/* ★ 스탯 (grid-cols-2 -> grid-cols-3 로 변경 및 속도 추가) */}
+                 <div className="grid grid-cols-3 gap-3">
                     <div className="bg-white/5 p-3 rounded-lg border border-white/10">
                        <span className="text-xs text-slate-400 flex items-center gap-1 mb-1"><Sword size={12}/> 공격력</span>
                        <span className="text-xl font-bold text-slate-200">{charData.baseAtk}</span>
@@ -121,14 +122,19 @@ export const CodexScreen = ({ inventory }) => {
                        <span className="text-xs text-slate-400 flex items-center gap-1 mb-1"><Shield size={12}/> 체력</span>
                        <span className="text-xl font-bold text-slate-200">{charData.baseHp}</span>
                     </div>
+                    {/* ★ 속도 스탯 추가 */}
+                    <div className="bg-white/5 p-3 rounded-lg border border-white/10">
+                       <span className="text-xs text-slate-400 flex items-center gap-1 mb-1"><Wind size={12}/> 속도</span>
+                       <span className="text-xl font-bold text-slate-200">{charData.baseSpd || '-'}</span>
+                    </div>
                  </div>
                  
-                 {/* 스킬 목록: 역할에 따라 다르게 표시 */}
+                 {/* 스킬 목록 */}
                  <div>
                     <h3 className="text-yellow-100 font-bold mb-3 text-sm flex items-center gap-2"><Sparkles size={14}/> 보유 스킬</h3>
                     <div className="space-y-4">
                        
-                       {/* 전열 스킬 세트 (전열 or 만능) */}
+                       {/* 전열 스킬 세트 */}
                        {(charData.role === 'FRONT' || charData.role === 'BOTH') && (
                          <div className="space-y-2">
                            {charData.role === 'BOTH' && <h4 className="text-xs text-red-300 font-bold border-l-2 border-red-500 pl-2 mb-1">전열 배치 시</h4>}
@@ -138,7 +144,7 @@ export const CodexScreen = ({ inventory }) => {
                          </div>
                        )}
 
-                       {/* 후열 스킬 세트 (후열 or 만능) */}
+                       {/* 후열 스킬 세트 */}
                        {(charData.role === 'BACK' || charData.role === 'BOTH') && (
                          <div className="space-y-2">
                            {charData.role === 'BOTH' && <h4 className="text-xs text-blue-300 font-bold border-l-2 border-blue-500 pl-2 mb-1 mt-2">후열 배치 시</h4>}
