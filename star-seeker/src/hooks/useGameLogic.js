@@ -43,7 +43,7 @@ export const useGameLogic = () => {
   // 초기화 및 자동 처리
   useEffect(() => {
     if (inventory.length === 0) {
-      const starter = { ...CHAR_DB[0], ultLevel: 0, bondLevel: 1, uid: Date.now(), level: 1 };
+      const starter = { ...CHAR_DB[0], ultLevel: 0, bondLevel: 0, uid: Date.now(), level: 1 };
       setInventory([starter]);
     }
   }, []);
@@ -59,7 +59,7 @@ export const useGameLogic = () => {
     setInventory(prev =>
       prev.map(char => {
         const inParty = [...party.front, ...party.back].some(p => p && p.id === char.id);
-        return inParty ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 1) + 1) } : char;
+        return inParty ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 0) + 1) } : char;
       })
     );
   }, [party]);
@@ -69,7 +69,7 @@ export const useGameLogic = () => {
     setInventory(prev =>
       prev.map(char => {
         const inGarden = prev.slice(0, 5).some(c => c.id === char.id);
-        return inGarden ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 1) + 0.02) } : char;
+        return inGarden ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 0) + 0.02) } : char;
       })
     );
   }, []);

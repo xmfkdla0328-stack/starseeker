@@ -35,7 +35,7 @@ export const useGacha = (items, setItems, inventory, setInventory, showToast, pl
         }
       } else {
         // 신규 캐릭터 획득 - 플레이어 레벨로 초기화
-        const newChar = { ...picked, ultLevel: 0, bondLevel: 1, uid: Date.now() + i, level: playerLevel };
+        const newChar = { ...picked, ultLevel: 0, bondLevel: 0, uid: Date.now() + i, level: playerLevel };
         currentInventory.push(newChar);
       }
     }

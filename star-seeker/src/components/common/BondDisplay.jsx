@@ -7,8 +7,8 @@ import { BOND_LEVELS } from '../../data/characters';
  * @param {number} bondLevel - 현재 인연도 (1-5)
  * @param {boolean} detailed - 상세 정보 표시 여부
  */
-export const BondDisplay = ({ bondLevel = 1, detailed = false }) => {
-  const level = Math.min(5, Math.max(1, Math.floor(bondLevel)));
+export const BondDisplay = ({ bondLevel = 0, detailed = false }) => {
+  const level = Math.min(5, Math.max(0, Math.floor(bondLevel)));
   const progress = (bondLevel % 1) * 100; // 소수점 부분을 진행도로 표현
   const levelInfo = BOND_LEVELS[level];
 
