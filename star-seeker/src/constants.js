@@ -9,6 +9,9 @@ export const ELEMENTS = {
   DARK: { name: '어둠', color: 'text-purple-400', bg: 'bg-purple-500/20', border: 'border-purple-500/50' },
 };
 
+// 요소 목록 (UI 반복에 사용)
+export const ELEMENT_LIST = ['FIRE', 'WATER', 'EARTH', 'LIGHT', 'DARK'];
+
 export const SYNERGIES = {
   '조영': {
     name: '조영',

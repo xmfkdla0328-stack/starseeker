@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CHAR_DB } from '../data/characters';
-import { DEFAULT_PLAYER_INFO, DEFAULT_PLAYER_STATS, ACHIEVEMENTS } from '../data/playerStats';
+import { DEFAULT_PLAYER_INFO, DEFAULT_PLAYER_STATS } from '../data/playerStats';
 
 // 분리한 하위 훅들 가져오기
 import { useBattleSystem } from './useBattleSystem';
 import { useSynergy } from './useSynergy';
 import { useGacha } from './useGacha';
 import { useLevelSync } from './useLevelSync';
-import { getTitleById } from '../data/playerStats';
 
 export const useGameLogic = () => {
   const [screen, setScreen] = useState('HOME');
