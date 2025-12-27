@@ -22,6 +22,11 @@ export const useGameLogic = () => {
   const [playerStats, setPlayerStats] = useState(DEFAULT_PLAYER_STATS);
   const [unlockedAchievements, setUnlockedAchievements] = useState([]);
 
+  // 아이템 인벤토리
+  const [items, setItems] = useState({
+    stardust: 0, // 별의 먼지
+  });
+
   const showToast = useCallback((msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
@@ -93,5 +98,7 @@ export const useGameLogic = () => {
     handleSelectTitle,
     // 경험치 추가
     addExp,
+    // 아이템
+    items, setItems,
   };
 };

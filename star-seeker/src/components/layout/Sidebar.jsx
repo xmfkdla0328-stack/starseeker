@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Users, Sparkles, Sprout, Book, Circle } from 'lucide-react';
+import { Home, Users, Sparkles, Sprout, Book, Package } from 'lucide-react';
 
 export const Sidebar = ({ screen, setScreen }) => {
   const NavItem = ({ id, icon: Icon, label }) => (
@@ -57,6 +57,7 @@ export const Sidebar = ({ screen, setScreen }) => {
       <NavItem id="CODEX" icon={Book} label="관리" />
       <NavItem id="GARDEN" icon={Sprout} label="정원" />
       <NavItem id="GACHA" icon={Sparkles} label="모집" />
+      <NavItem id="INVENTORY" icon={Package} label="창고" />
       
       {/* 하단 장식 */}
       <div className="mt-auto pt-4 flex flex-col gap-1 items-center">

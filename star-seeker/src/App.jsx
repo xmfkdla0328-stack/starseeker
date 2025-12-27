@@ -8,7 +8,7 @@ import { StatusBar } from './components/layout/StatusBar';
 import { Background } from './components/layout/Background';
 import { ProfileModal } from './components/ProfileModal';
 
-import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, BattleScreen, CodexScreen } from './components/Screens';
+import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, BattleScreen, CodexScreen, InventoryScreen } from './components/Screens';
 
 export default function StarSeekerApp() {
   const {
@@ -26,6 +26,7 @@ export default function StarSeekerApp() {
     unlockedAchievements,
     handleSelectTitle,
     addExp,
+    items,
   } = useGameLogic();
 
   const [showProfile, setShowProfile] = useState(false);
@@ -61,6 +62,9 @@ export default function StarSeekerApp() {
             )}
             {screen === 'CODEX' && (
               <CodexScreen inventory={inventory} />
+            )}
+            {screen === 'INVENTORY' && (
+              <InventoryScreen items={items} />
             )}
         </div>
       </main>

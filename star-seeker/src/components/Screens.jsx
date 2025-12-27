@@ -6,4 +6,5 @@ export { PartyScreen } from './PartyScreen';
 export { GachaScreen } from './GachaScreen';
 export { GardenScreen } from './GardenScreen';
 export { BattleScreen } from './BattleScreen';
-export { CodexScreen } from './CodexScreen'; // 추가됨
+export { CodexScreen } from './CodexScreen';
+export { InventoryScreen } from './InventoryScreen';
