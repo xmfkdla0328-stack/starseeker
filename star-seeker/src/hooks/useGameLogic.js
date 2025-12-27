@@ -54,6 +54,26 @@ export const useGameLogic = () => {
     }
   }, [inventory, mainChar]);
 
+  // 인연도 증가 함수 (전투 승리 시)
+  const increaseBondFromBattle = useCallback(() => {
+    setInventory(prev =>
+      prev.map(char => {
+        const inParty = [...party.front, ...party.back].some(p => p && p.id === char.id);
+        return inParty ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 1) + 1) } : char;
+      })
+    );
+  }, [party]);
+
+  // 인연도 증가 함수 (정원 배치 시 - 초당 증가)
+  const increaseBondFromGarden = useCallback(() => {
+    setInventory(prev =>
+      prev.map(char => {
+        const inGarden = prev.slice(0, 5).some(c => c.id === char.id);
+        return inGarden ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 1) + 0.02) } : char;
+      })
+    );
+  }, []);
+
   // 정원 시간 경과에 따른 인연도 증가
   useEffect(() => {
     if (screen === 'GARDEN') {
@@ -81,26 +101,6 @@ export const useGameLogic = () => {
       ...prev,
       exp: prev.exp + expAmount,
     }));
-  }, []);
-
-  // 인연도 증가 함수 (전투 승리 시)
-  const increaseBondFromBattle = useCallback(() => {
-    setInventory(prev =>
-      prev.map(char => {
-        const inParty = [...party.front, ...party.back].some(p => p && p.id === char.id);
-        return inParty ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 1) + 1) } : char;
-      })
-    );
-  }, [party]);
-
-  // 인연도 증가 함수 (정원 배치 시 - 초당 증가)
-  const increaseBondFromGarden = useCallback(() => {
-    setInventory(prev =>
-      prev.map(char => {
-        const inGarden = prev.slice(0, 5).some(c => c.id === char.id);
-        return inGarden ? { ...char, bondLevel: Math.min(5, (char.bondLevel || 1) + 0.02) } : char;
-      })
-    );
   }, []);
 
   return {
