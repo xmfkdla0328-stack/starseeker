@@ -11,7 +11,7 @@ export const BOND_LEVELS = {
 export const CHAR_DB = [
   { 
     id: 1, name: '서주목', rarity: 5, element: 'LIGHT', role: 'BOTH', tags: ['조영', '조호', '신장의 의지'], 
-    baseAtk: 100, baseHp: 500, baseSpd: 130, // ★ 속도 추가
+    baseAtk: 100, baseHp: 500, baseSpd: 130, baseDef: 80,
     desc: '별의 인도를 받는 사령관',
     skills: { 
       normal: '지휘 사격', skill: '전술 명령: 돌격', ultimate: '성운의 포격',
@@ -37,7 +37,7 @@ export const CHAR_DB = [
   },
   { 
     id: 2, name: '루나', rarity: 4, element: 'DARK', role: 'BACK', tags: ['별의 여행자', '조영'], 
-    baseAtk: 80, baseHp: 300, baseSpd: 115, 
+    baseAtk: 80, baseHp: 300, baseSpd: 115, baseDef: 60, 
     desc: '달빛 아래 노래하는 음유시인',
     skills: { 
       supportSkill: '치유의 노래', supportUlt: '월광 소나타' 
@@ -58,7 +58,7 @@ export const CHAR_DB = [
   },
   { 
     id: 3, name: '이그니스', rarity: 4, element: 'FIRE', role: 'FRONT', tags: ['조호', '신장의 의지'], 
-    baseAtk: 120, baseHp: 600, baseSpd: 125, 
+    baseAtk: 120, baseHp: 600, baseSpd: 125, baseDef: 75, 
     desc: '불꽃을 다루는 검사',
     skills: { 
       normal: '화염 베기', skill: '불꽃의 춤', ultimate: '인페르노 슬래시'
@@ -76,7 +76,7 @@ export const CHAR_DB = [
   },
   { 
     id: 4, name: '아쿠아', rarity: 3, element: 'WATER', role: 'BACK', tags: ['별의 여행자'], 
-    baseAtk: 60, baseHp: 350, baseSpd: 110, 
+    baseAtk: 60, baseHp: 350, baseSpd: 110, baseDef: 55, 
     desc: '치유의 물방울',
     skills: { 
       supportSkill: '정화의 비', supportUlt: '대해일' 
@@ -97,7 +97,7 @@ export const CHAR_DB = [
   },
   { 
     id: 5, name: '테라', rarity: 3, element: 'EARTH', role: 'FRONT', tags: ['조호'], 
-    baseAtk: 90, baseHp: 700, baseSpd: 95, // 탱커라 느림
+    baseAtk: 90, baseHp: 700, baseSpd: 95, baseDef: 120,
     desc: '대지의 방패',
     skills: { 
       normal: '바위 던지기', skill: '철벽 방어', ultimate: '지진파'
@@ -115,7 +115,7 @@ export const CHAR_DB = [
   },
   { 
     id: 6, name: '솔라', rarity: 5, element: 'LIGHT', role: 'BOTH', tags: ['조영', '신장의 의지'], 
-    baseAtk: 110, baseHp: 550, baseSpd: 135, 
+    baseAtk: 110, baseHp: 550, baseSpd: 135, baseDef: 85, 
     desc: '태양의 기사',
     skills: { 
       normal: '빛의 일격', skill: '태양의 가호', ultimate: '솔라 이클립스',
@@ -141,7 +141,7 @@ export const CHAR_DB = [
   },
   { 
     id: 7, name: '녹스', rarity: 4, element: 'DARK', role: 'FRONT', tags: ['조영', '별의 여행자'], 
-    baseAtk: 130, baseHp: 450, baseSpd: 145, // 암살자라 빠름
+    baseAtk: 130, baseHp: 450, baseSpd: 145, baseDef: 65,
     desc: '어둠 속의 암살자',
     skills: { 
       normal: '단검 투척', skill: '그림자 숨기', ultimate: '팬텀 엑시큐션' 
@@ -159,7 +159,7 @@ export const CHAR_DB = [
   },
   { 
     id: 8, name: '박주옥', rarity: 3, element: 'EARTH', role: 'BACK', tags: ['조호'], 
-    baseAtk: 50, baseHp: 400, baseSpd: 105, 
+    baseAtk: 50, baseHp: 400, baseSpd: 105, baseDef: 90, 
     desc: '깐깐한 보급관',
     skills: { 
       supportSkill: '방어 태세 명령', 
