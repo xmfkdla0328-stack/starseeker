@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ELEMENTS } from '../constants';         
 import { CHAR_DB } from '../data/characters';    
-import { Sword, Shield, Lock, Scroll, User, Sparkles, Tag } from 'lucide-react';
+import { Sword, Shield, Lock, Scroll, User, Sparkles, Tag, HeartHandshake } from 'lucide-react';
 
 export const CodexScreen = ({ inventory }) => {
   const [selectedCharId, setSelectedCharId] = useState(CHAR_DB[0].id);
@@ -10,10 +10,22 @@ export const CodexScreen = ({ inventory }) => {
   const selectedChar = CHAR_DB.find(c => c.id === selectedCharId);
   const isOwned = inventory.some(c => c.id === selectedCharId);
   
-  // 보유 중이면 인벤토리 정보 사용, 아니면 DB 기본 정보 사용
   const charData = isOwned 
     ? { ...selectedChar, ...inventory.find(c => c.id === selectedCharId) } 
     : { ...selectedChar, bond: 0 };
+
+  // 스킬 표시용 컴포넌트
+  const SkillBlock = ({ type, name, desc, colorClass }) => (
+    <div className="bg-slate-900/50 p-3 rounded-lg border border-white/5 flex gap-3 items-center">
+        <div className={`w-8 h-8 rounded flex items-center justify-center text-[10px] shrink-0 border bg-opacity-20 ${colorClass}`}>
+            {type}
+        </div>
+        <div>
+            <div className={`text-sm font-bold ${colorClass.split(' ')[0].replace('border-','text-')}`}>{name}</div>
+            <div className="text-xs text-slate-500">{desc}</div>
+        </div>
+    </div>
+  );
 
   return (
     <div className="flex h-full gap-4 p-4 overflow-hidden relative">
@@ -61,15 +73,12 @@ export const CodexScreen = ({ inventory }) => {
             </div>
             <div className="mb-2 flex-1">
                <div className="flex flex-wrap items-center gap-2 mb-2">
-                 {/* 속성 배지 */}
                  <span className={`px-2 py-0.5 rounded-full text-[10px] border ${ELEMENTS[charData.element].border} ${ELEMENTS[charData.element].color} bg-slate-950/50`}>
                    {ELEMENTS[charData.element].name} 속성
                  </span>
-                 {/* 역할 배지 */}
                  <span className="px-2 py-0.5 rounded-full text-[10px] border border-white/20 text-slate-300 bg-slate-950/50">
                    {charData.role === 'FRONT' ? '전열' : charData.role === 'BACK' ? '후열' : '만능'}
                  </span>
-                 {/* ★ 태그(특성) 배지 표시 영역 추가 ★ */}
                  {charData.tags && charData.tags.map((tag, idx) => (
                    <span key={idx} className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] border border-indigo-400/30 text-indigo-300 bg-indigo-950/50">
                      <Tag size={10} /> {tag}
@@ -102,6 +111,7 @@ export const CodexScreen = ({ inventory }) => {
 
             {tab === 'INFO' && (
               <div className="space-y-6 relative z-10 animate-fade-in">
+                 {/* 스탯 */}
                  <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white/5 p-3 rounded-lg border border-white/10">
                        <span className="text-xs text-slate-400 flex items-center gap-1 mb-1"><Sword size={12}/> 공격력</span>
@@ -113,30 +123,29 @@ export const CodexScreen = ({ inventory }) => {
                     </div>
                  </div>
                  
+                 {/* 스킬 목록: 역할에 따라 다르게 표시 */}
                  <div>
-                    <h3 className="text-yellow-100 font-bold mb-3 text-sm flex items-center gap-2"><Sparkles size={14}/> 스킬 정보</h3>
-                    <div className="space-y-2">
-                       <div className="bg-slate-900/50 p-3 rounded-lg border border-white/5 flex gap-3 items-center">
-                          <div className="w-8 h-8 rounded bg-slate-800 flex items-center justify-center text-[10px] text-slate-400 shrink-0 border border-white/10">일반</div>
-                          <div>
-                             <div className="text-sm font-bold text-slate-300">{charData.skills?.normal || '기본 공격'}</div>
-                             <div className="text-xs text-slate-500">적 1체에게 공격력의 100% 피해를 입힙니다.</div>
-                          </div>
-                       </div>
-                       <div className="bg-slate-900/50 p-3 rounded-lg border border-white/5 flex gap-3 items-center">
-                          <div className="w-8 h-8 rounded bg-blue-900/30 flex items-center justify-center text-[10px] text-blue-300 shrink-0 border border-blue-500/30">스킬</div>
-                          <div>
-                             <div className="text-sm font-bold text-blue-200">{charData.skills?.skill || '특수 기술'}</div>
-                             <div className="text-xs text-slate-500">쿨타임 3턴. 강력한 효과를 발휘합니다.</div>
-                          </div>
-                       </div>
-                       <div className="bg-slate-900/50 p-3 rounded-lg border border-white/5 flex gap-3 items-center">
-                          <div className="w-8 h-8 rounded bg-red-900/30 flex items-center justify-center text-[10px] text-red-300 shrink-0 border border-red-500/30">필살</div>
-                          <div>
-                             <div className="text-sm font-bold text-red-200">{charData.skills?.ultimate || '필살기'}</div>
-                             <div className="text-xs text-slate-500">SP 100 소모. 전황을 뒤집는 일격입니다.</div>
-                          </div>
-                       </div>
+                    <h3 className="text-yellow-100 font-bold mb-3 text-sm flex items-center gap-2"><Sparkles size={14}/> 보유 스킬</h3>
+                    <div className="space-y-4">
+                       
+                       {/* 전열 스킬 세트 (전열 or 만능) */}
+                       {(charData.role === 'FRONT' || charData.role === 'BOTH') && (
+                         <div className="space-y-2">
+                           {charData.role === 'BOTH' && <h4 className="text-xs text-red-300 font-bold border-l-2 border-red-500 pl-2 mb-1">전열 배치 시</h4>}
+                           <SkillBlock type="일반" name={charData.skills.normal} desc="적 1체에게 공격력의 100% 피해" colorClass="bg-slate-500 text-slate-300 border-slate-500" />
+                           <SkillBlock type="스킬" name={charData.skills.skill} desc="쿨타임 3턴. 강력한 효과 발동" colorClass="bg-blue-500 text-blue-300 border-blue-500" />
+                           <SkillBlock type="필살" name={charData.skills.ultimate} desc="SP 100 소모. 전황을 뒤집는 일격" colorClass="bg-red-500 text-red-300 border-red-500" />
+                         </div>
+                       )}
+
+                       {/* 후열 스킬 세트 (후열 or 만능) */}
+                       {(charData.role === 'BACK' || charData.role === 'BOTH') && (
+                         <div className="space-y-2">
+                           {charData.role === 'BOTH' && <h4 className="text-xs text-blue-300 font-bold border-l-2 border-blue-500 pl-2 mb-1 mt-2">후열 배치 시</h4>}
+                           <SkillBlock type="지원" name={charData.skills.supportSkill} desc="아군에게 이로운 효과 부여" colorClass="bg-emerald-500 text-emerald-300 border-emerald-500" />
+                           <SkillBlock type="필살" name={charData.skills.supportUlt} desc="SP 100 소모. 아군 전체 강력 지원" colorClass="bg-purple-500 text-purple-300 border-purple-500" />
+                         </div>
+                       )}
                     </div>
                  </div>
               </div>
@@ -169,9 +178,6 @@ export const CodexScreen = ({ inventory }) => {
                               </div>
                            )
                         })}
-                        {(!charData.stories || charData.stories.length === 0) && (
-                           <div className="text-center text-slate-500 text-xs py-4">등록된 스토리가 없습니다.</div>
-                        )}
                      </div>
                   </div>
               </div>

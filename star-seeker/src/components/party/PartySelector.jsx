@@ -1,0 +1,80 @@
+import React, { useMemo } from 'react';
+import { Sword, Shield, X, Lock } from 'lucide-react';
+import { ELEMENTS } from '../../constants';
+
+export const PartySelector = ({ inventory, party, selectedSlot, setSelectedSlot, handleAssign }) => {
+  // 인벤토리 정렬 (배치된 캐릭터를 뒤로 보냄)
+  const sortedInventory = useMemo(() => {
+    if (!selectedSlot) return [];
+    return [...inventory].sort((a, b) => {
+      const isPlacedA = [...party.front, ...party.back].some(p => p && p.id === a.id);
+      const isPlacedB = [...party.front, ...party.back].some(p => p && p.id === b.id);
+      if (isPlacedA === isPlacedB) return 0;
+      return isPlacedA ? 1 : -1; 
+    });
+  }, [inventory, party, selectedSlot]);
+
+  return (
+    <div className="absolute inset-0 z-[60] bg-slate-950/90 backdrop-blur-md flex flex-col p-4 animate-fade-in">
+      <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2 shrink-0">
+        <h3 className="text-lg text-white font-bold font-serif flex items-center gap-2">
+            {selectedSlot.line === 'front' ? <Sword size={18} className="text-red-400"/> : <Shield size={18} className="text-blue-400"/>}
+            {selectedSlot.line === 'front' ? '전열' : '후열'} 배치 선택
+        </h3>
+        <button onClick={() => setSelectedSlot(null)} className="p-1 bg-white/10 hover:bg-white/20 rounded-full"><X size={18} className="text-slate-300"/></button>
+      </div>
+      
+      <div className="overflow-y-auto p-1 no-scrollbar flex-1">
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
+          {sortedInventory.map((char) => {
+            const isPlaced = [...party.front, ...party.back].some(p => p && p.id === char.id);
+            const isRoleMatch = char.role === 'BOTH' || char.role.toLowerCase() === selectedSlot.line;
+            
+            return (
+              <div key={char.uid} 
+                onClick={() => handleAssign(char, isPlaced, isRoleMatch)}
+                className={`bg-slate-900/80 p-2 rounded-xl border flex flex-col gap-2 transition-all relative overflow-hidden min-h-[120px]
+                  ${isPlaced 
+                      ? 'opacity-50 border-slate-700 cursor-not-allowed grayscale' 
+                      : !isRoleMatch 
+                        ? 'opacity-60 border-slate-700 cursor-not-allowed' 
+                        : `border-white/10 cursor-pointer hover:scale-105 hover:${ELEMENTS[char.element].border} group`
+                  }
+                `}>
+                
+                <div className="flex items-center gap-2">
+                   <div className={`w-8 h-8 rounded-full ${ELEMENTS[char.element].bg} border ${ELEMENTS[char.element].border} flex items-center justify-center shrink-0`}>
+                      <div className={`w-2 h-2 rounded-full ${ELEMENTS[char.element].bg.replace('/20','/80')}`}></div>
+                   </div>
+                   <div className="flex flex-col min-w-0">
+                      <span className="text-slate-200 text-[10px] font-bold truncate leading-tight">{char.name}</span>
+                      <span className={`text-[8px] font-bold ${
+                         char.role === 'BOTH' ? 'text-purple-300' :
+                         char.role === 'FRONT' ? 'text-red-300' : 'text-blue-300'
+                      }`}>
+                        {char.role === 'BOTH' ? '만능' : char.role === 'FRONT' ? '전열' : '후열'}
+                      </span>
+                   </div>
+                </div>
+
+                <div className="flex flex-wrap gap-1 content-start flex-1">
+                   {char.tags.map((tag, i) => (
+                     <span key={i} className="text-[8px] px-1.5 py-0.5 rounded-sm bg-white/5 text-slate-400 border border-white/5 whitespace-nowrap">
+                        {tag}
+                     </span>
+                   ))}
+                </div>
+
+                {isPlaced && (
+                  <div className="absolute inset-0 bg-slate-950/60 flex items-center justify-center z-10 backdrop-blur-[1px]">
+                     <span className="text-xs font-bold text-white flex items-center gap-1 bg-black/50 px-2 py-1 rounded-full"><Lock size={10}/> 배치됨</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
