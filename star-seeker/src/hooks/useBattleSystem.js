@@ -118,6 +118,14 @@ export const useBattleSystem = (party, activeSynergies) => {
 
   }, [battleState, enemy, allies, addLog]);
 
+  const stepTurn = useCallback(() => {
+    processTurn(true);
+  }, [processTurn]);
+
+  const toggleAuto = useCallback(() => {
+    setIsAuto((prev) => !prev);
+  }, []);
+
   useEffect(() => {
     // 자동 모드일 때만 인터벌 작동
     if (battleState === 'FIGHTING' && isAuto) {
@@ -128,5 +136,5 @@ export const useBattleSystem = (party, activeSynergies) => {
     return () => { if (battleInterval.current) clearInterval(battleInterval.current); };
   }, [battleState, isAuto, processTurn]);
 
-  return { battleState, logs, enemy, allies, startBattle, turnCount, processTurn, isAuto, setIsAuto };
+  return { battleState, logs, enemy, allies, startBattle, turnCount, processTurn, isAuto, setIsAuto, stepTurn, toggleAuto };
 };
