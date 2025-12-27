@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Users, Sparkles, Sprout, Book, Package } from 'lucide-react';
+import { Home, Users, Sparkles, Sprout, Book, Package, Circle } from 'lucide-react';
 
 export const Sidebar = ({ screen, setScreen }) => {
   const NavItem = ({ id, icon: Icon, label }) => (
