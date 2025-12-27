@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CHAR_DB } from '../data/characters';
+import { DEFAULT_PLAYER_INFO, DEFAULT_PLAYER_STATS, ACHIEVEMENTS } from '../data/playerStats';
 
 // 분리한 하위 훅들 가져오기
 import { useBattleSystem } from './useBattleSystem';
@@ -13,6 +14,11 @@ export const useGameLogic = () => {
   const [party, setParty] = useState({ front: [null, null, null, null], back: [null, null, null, null] });
   const [toast, setToast] = useState(null);
   const [mainChar, setMainChar] = useState(null);
+  
+  // 플레이어 정보
+  const [playerInfo, setPlayerInfo] = useState(DEFAULT_PLAYER_INFO);
+  const [playerStats, setPlayerStats] = useState(DEFAULT_PLAYER_STATS);
+  const [unlockedAchievements, setUnlockedAchievements] = useState([]);
 
   const showToast = useCallback((msg) => {
     setToast(msg);
@@ -57,6 +63,10 @@ export const useGameLogic = () => {
     toast, showToast,
     activeSynergies,
     handleGacha,
-    battleSystem
+    battleSystem,
+    // 플레이어 정보 추가
+    playerInfo, setPlayerInfo,
+    playerStats, setPlayerStats,
+    unlockedAchievements, setUnlockedAchievements,
   };
 };
