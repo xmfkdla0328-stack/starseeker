@@ -131,9 +131,9 @@ export const CodexScreen = ({ inventory }) => {
                        {(charData.role === 'FRONT' || charData.role === 'BOTH') && (
                          <div className="space-y-2">
                            {charData.role === 'BOTH' && <h4 className="text-xs text-red-300 font-bold border-l-2 border-red-500 pl-2 mb-1">전열 배치 시</h4>}
-                           <SkillBlock type="일반" name={charData.skills.normal} desc="적 1체에게 공격력의 100% 피해" colorClass="bg-slate-500 text-slate-300 border-slate-500" />
-                           <SkillBlock type="스킬" name={charData.skills.skill} desc="쿨타임 3턴. 강력한 효과 발동" colorClass="bg-blue-500 text-blue-300 border-blue-500" />
-                           <SkillBlock type="필살" name={charData.skills.ultimate} desc="SP 100 소모. 전황을 뒤집는 일격" colorClass="bg-red-500 text-red-300 border-red-500" />
+                           <SkillBlock type="일반" name={charData.skills.normal} desc="적 1체에게 공격력의 100% 피해" colorClass="bg-slate-500 text-slate-300 border-slate-500" level={charData.skillLevels?.normal || 1} />
+                           <SkillBlock type="스킬" name={charData.skills.skill} desc="쿨타임 3턴. 강력한 효과 발동" colorClass="bg-blue-500 text-blue-300 border-blue-500" level={charData.skillLevels?.skill || 1} />
+                           <SkillBlock type="필살" name={charData.skills.ultimate} desc="SP 100 소모. 전황을 뒤집는 일격" colorClass="bg-red-500 text-red-300 border-red-500" level={charData.skillLevels?.ultimate || 1} />
                          </div>
                        )}
 
@@ -141,8 +141,8 @@ export const CodexScreen = ({ inventory }) => {
                        {(charData.role === 'BACK' || charData.role === 'BOTH') && (
                          <div className="space-y-2">
                            {charData.role === 'BOTH' && <h4 className="text-xs text-blue-300 font-bold border-l-2 border-blue-500 pl-2 mb-1 mt-2">후열 배치 시</h4>}
-                           <SkillBlock type="지원" name={charData.skills.supportSkill} desc="아군에게 이로운 효과 부여" colorClass="bg-emerald-500 text-emerald-300 border-emerald-500" />
-                           <SkillBlock type="필살" name={charData.skills.supportUlt} desc="SP 100 소모. 아군 전체 강력 지원" colorClass="bg-purple-500 text-purple-300 border-purple-500" />
+                           <SkillBlock type="지원" name={charData.skills.supportSkill} desc="아군에게 이로운 효과 부여" colorClass="bg-emerald-500 text-emerald-300 border-emerald-500" level={charData.skillLevels?.supportSkill || 1} />
+                           <SkillBlock type="필살" name={charData.skills.supportUlt} desc="SP 100 소모. 아군 전체 강력 지원" colorClass="bg-purple-500 text-purple-300 border-purple-500" level={charData.skillLevels?.supportUlt || 1} />
                          </div>
                        )}
                     </div>

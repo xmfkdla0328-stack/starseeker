@@ -7,7 +7,11 @@ export const CHAR_DB = [
       normal: '지휘 사격', skill: '전술 명령: 돌격', ultimate: '성운의 포격',
       supportSkill: '정밀 관측', supportUlt: '성운의 가호' 
     },
-    supportEffects: {
+     skillLevels: {
+       normal: 1, skill: 1, ultimate: 1,
+       supportSkill: 1, supportUlt: 1
+     },
+     supportEffects: {
       skill: { type: 'BUFF_FRONT_ATK', params: { value: 10 } },
       ultimate: { type: 'BUFF_FRONT_ATK', params: { value: 30 } }
     },
@@ -21,7 +25,10 @@ export const CHAR_DB = [
     skills: { 
       supportSkill: '치유의 노래', supportUlt: '월광 소나타' 
     },
-    supportEffects: {
+     skillLevels: {
+       supportSkill: 1, supportUlt: 1
+     },
+     supportEffects: {
       skill: { type: 'HEAL_LOWEST', params: { ratio: 1.2 } },
       ultimate: { type: 'HEAL_LOWEST', params: { ratio: 2.5 } }
     },
@@ -35,7 +42,10 @@ export const CHAR_DB = [
     skills: { 
       normal: '화염 베기', skill: '불꽃의 춤', ultimate: '인페르노 슬래시'
     },
-    profile: { age: '24', height: '178cm', like: '대련', hate: '차가운 것' },
+     skillLevels: {
+       normal: 1, skill: 1, ultimate: 1
+     },
+     profile: { age: '24', height: '178cm', like: '대련', hate: '차가운 것' },
     stories: [{ title: '검의 맹세', unlockBond: 1 }]
   },
   { 
@@ -45,7 +55,10 @@ export const CHAR_DB = [
     skills: { 
       supportSkill: '정화의 비', supportUlt: '대해일' 
     },
-    supportEffects: {
+     skillLevels: {
+       supportSkill: 1, supportUlt: 1
+     },
+     supportEffects: {
       skill: { type: 'HEAL_LOWEST', params: { ratio: 1.2 } },
       ultimate: { type: 'HEAL_LOWEST', params: { ratio: 2.5 } }
     },
@@ -59,7 +72,10 @@ export const CHAR_DB = [
     skills: { 
       normal: '바위 던지기', skill: '철벽 방어', ultimate: '지진파'
     },
-    profile: { age: '28', height: '185cm', like: '명상', hate: '가벼운 행동' },
+     skillLevels: {
+       normal: 1, skill: 1, ultimate: 1
+     },
+     profile: { age: '28', height: '185cm', like: '명상', hate: '가벼운 행동' },
     stories: [{ title: '묵묵한 수호', unlockBond: 1 }]
   },
   { 
@@ -70,7 +86,11 @@ export const CHAR_DB = [
       normal: '빛의 일격', skill: '태양의 가호', ultimate: '솔라 이클립스',
       supportSkill: '태양의 축복', supportUlt: '여명의 빛' 
     },
-    supportEffects: {
+     skillLevels: {
+       normal: 1, skill: 1, ultimate: 1,
+       supportSkill: 1, supportUlt: 1
+     },
+     supportEffects: {
       skill: { type: 'BUFF_FRONT_ATK', params: { value: 10 } },
       ultimate: { type: 'BUFF_FRONT_ATK', params: { value: 30 } }
     },
@@ -84,7 +104,10 @@ export const CHAR_DB = [
     skills: { 
       normal: '단검 투척', skill: '그림자 숨기', ultimate: '팬텀 엑시큐션' 
     },
-    profile: { age: '25', height: '175cm', like: '고요함', hate: '눈에 띄는 것' },
+     skillLevels: {
+       normal: 1, skill: 1, ultimate: 1
+     },
+     profile: { age: '25', height: '175cm', like: '고요함', hate: '눈에 띄는 것' },
     stories: [{ title: '그림자', unlockBond: 1 }]
   },
   { 
@@ -95,7 +118,10 @@ export const CHAR_DB = [
       supportSkill: '방어 태세 명령', 
       supportUlt: '남겨진 자의 증명' // ★ 스킬명 수정됨
     },
-    supportEffects: {
+     skillLevels: {
+       supportSkill: 1, supportUlt: 1
+     },
+     supportEffects: {
       skill: { type: 'BUFF_FRONT_DEF', params: { value: 20 } },
       ultimate: { type: 'GRANT_TURN', params: { targetTag: '조호' } }
     },
