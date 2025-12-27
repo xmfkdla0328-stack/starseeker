@@ -1,37 +1,39 @@
 import React, { useState } from 'react';
 import { Package, Sparkles, Star, X } from 'lucide-react';
+import { GradientDivider } from './common/GradientDivider';
+import { IconCircle } from './common/IconCircle';
+
+// 아이템 정의 (컴포넌트 외부로 분리)
+const ITEM_DEFINITIONS = {
+  stardust: {
+    id: 'stardust',
+    name: '별의 먼지',
+    icon: Sparkles,
+    description: '캐릭터의 스킬 레벨을 올리는 데 사용되는 신비로운 가루. 스킬 1레벨 상승 당 10개가 필요합니다.',
+    rarity: 'rare',
+    color: 'text-yellow-300',
+    bgGradient: 'from-yellow-500/20 to-amber-600/20',
+    borderColor: 'border-yellow-400/30',
+  },
+  gems: {
+    id: 'gems',
+    name: '별의 조각',
+    icon: Star,
+    description: '성운을 관측하기 위해 필요한 신비로운 조각. 가챠를 돌릴 때 사용됩니다. 1회 모집에 100개, 10회 모집에 1000개가 필요합니다.',
+    rarity: 'epic',
+    color: 'text-blue-300',
+    bgGradient: 'from-blue-500/20 to-indigo-600/20',
+    borderColor: 'border-blue-400/30',
+  }
+};
 
 export const InventoryScreen = ({ items = {} }) => {
   const [selectedItem, setSelectedItem] = useState(null);
 
-  // 아이템 정의
-  const itemDefinitions = {
-    stardust: {
-      id: 'stardust',
-      name: '별의 먼지',
-      icon: Sparkles,
-      description: '캐릭터의 스킬 레벨을 올리는 데 사용되는 신비로운 가루. 스킬 1레벨 상승 당 10개가 필요합니다.',
-      rarity: 'rare',
-      color: 'text-yellow-300',
-      bgGradient: 'from-yellow-500/20 to-amber-600/20',
-      borderColor: 'border-yellow-400/30',
-    },
-    gems: {
-      id: 'gems',
-      name: '별의 조각',
-      icon: Star,
-      description: '성운을 관측하기 위해 필요한 신비로운 조각. 가챠를 돌릴 때 사용됩니다. 1회 모집에 100개, 10회 모집에 1000개가 필요합니다.',
-      rarity: 'epic',
-      color: 'text-blue-300',
-      bgGradient: 'from-blue-500/20 to-indigo-600/20',
-      borderColor: 'border-blue-400/30',
-    }
-  };
-
   // 보유한 아이템만 필터링
-  const ownedItems = Object.keys(itemDefinitions)
+  const ownedItems = Object.keys(ITEM_DEFINITIONS)
     .map(key => ({
-      ...itemDefinitions[key],
+      ...ITEM_DEFINITIONS[key],
       count: items[key] || 0,
     }))
     .filter(item => item.count > 0);
@@ -108,9 +110,14 @@ export const InventoryScreen = ({ items = {} }) => {
 
             {/* 아이템 정보 */}
             <div className="flex items-start gap-4 mb-6">
-              <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${selectedItem.bgGradient} border-2 ${selectedItem.borderColor} flex items-center justify-center shadow-lg flex-shrink-0`}>
-                <selectedItem.icon size={32} className={selectedItem.color} />
-              </div>
+              <IconCircle
+                icon={selectedItem.icon}
+                size={20}
+                bgGradient={selectedItem.bgGradient}
+                borderColor={selectedItem.borderColor}
+                iconColor={selectedItem.color}
+                className="border-2"
+              />
               <div className="flex-1">
                 <h2 className={`text-2xl font-bold ${selectedItem.color} font-serif mb-1`}>{selectedItem.name}</h2>
                 <p className="text-xs text-slate-400 uppercase tracking-wide mb-2">{selectedItem.rarity}</p>
@@ -122,7 +129,7 @@ export const InventoryScreen = ({ items = {} }) => {
             </div>
 
             {/* 구분선 */}
-            <div className="h-px bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent mb-4"></div>
+            <GradientDivider color="cyan-400" className="mb-4" />
 
             {/* 설명 */}
             <div className="mb-6">
