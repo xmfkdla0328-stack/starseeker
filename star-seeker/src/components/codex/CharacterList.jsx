@@ -1,5 +1,5 @@
 import React from 'react';
-import { ELEMENTS } from '../../constants';
+import { ELEMENTS } from '../../constants/index';
 import { Lock, Scroll } from 'lucide-react';
 
 /**

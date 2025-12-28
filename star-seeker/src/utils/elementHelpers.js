@@ -1,4 +1,4 @@
-import { ELEMENTS } from '../constants';
+import { ELEMENTS } from '../constants/index';
 
 /**
  * 요소에 해당하는 Tailwind 클래스 반환

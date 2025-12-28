@@ -1,6 +1,6 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
-import { BOND_LEVELS } from '../../data/characters';
+import { BOND_LEVELS } from '../../data/characters/index';
 
 /**
  * 캐릭터 인연도 표시 컴포넌트

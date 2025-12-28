@@ -1,6 +1,6 @@
 import { getElementalMultiplier } from './formulas';
 import { applyUltLevelBonus } from './skillLogic';
-import { GAME_CONST } from '../../constants';
+import { GAME_CONST } from '../../constants/index';
 
 /**
  * 전열 캐릭터의 공격 처리

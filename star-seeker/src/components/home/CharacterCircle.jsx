@@ -1,5 +1,5 @@
 import React from 'react';
-import { ELEMENTS } from '../../constants';
+import { ELEMENTS } from '../../constants/index';
 
 /**
  * 메인 캐릭터 원형 디스플레이

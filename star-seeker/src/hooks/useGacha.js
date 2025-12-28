@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { CHAR_DB } from '../data/characters';
-import { GAME_CONST } from '../constants';
+import { CHAR_DB } from '../data/characters/index';
+import { GAME_CONST } from '../constants/index';
 
 export const useGacha = (items, setItems, inventory, setInventory, showToast, playerLevel = 1) => {
   const handleGacha = useCallback((count) => {

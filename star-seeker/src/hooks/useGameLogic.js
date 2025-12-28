@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CHAR_DB } from '../data/characters';
+import { CHAR_DB } from '../data/characters/index';
 import { DEFAULT_PLAYER_INFO, DEFAULT_PLAYER_STATS } from '../data/playerStats';
 
 // 분리한 하위 훅들 가져오기

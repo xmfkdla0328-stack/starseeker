@@ -1,5 +1,5 @@
 import { getElementalMultiplier } from './formulas';
-import { GAME_CONST } from '../../constants';
+import { GAME_CONST } from '../../constants/index';
 
 /**
  * 버프 지속시간 감소 및 만료된 버프 제거

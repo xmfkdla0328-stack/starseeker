@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles } from 'lucide-react';
-import { ELEMENTS } from '../constants.js';
+import { ELEMENTS } from '../constants/index';
 
 // 정원 설정 상수
 const GARDEN_CONFIG = {

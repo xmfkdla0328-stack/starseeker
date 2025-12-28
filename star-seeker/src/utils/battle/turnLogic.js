@@ -1,4 +1,4 @@
-import { GAME_CONST } from '../../constants';
+import { GAME_CONST } from '../../constants/index';
 import { applySupportEffect } from './skillLogic';
 import { updateBuffDurations, getBuffValue } from './buffLogic';
 import { executeAllyAttack, executeAllySupport } from './allyLogic';

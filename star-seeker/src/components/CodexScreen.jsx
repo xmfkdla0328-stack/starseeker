@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ELEMENTS } from '../constants';         
-import { CHAR_DB } from '../data/characters';
+import { ELEMENTS } from '../constants/index';         
+import { CHAR_DB } from '../data/characters/index';
 import { CharacterList } from './codex/CharacterList';
 import { CharacterHeader } from './codex/CharacterHeader';
 import { CharacterInfoTab } from './codex/CharacterInfoTab';

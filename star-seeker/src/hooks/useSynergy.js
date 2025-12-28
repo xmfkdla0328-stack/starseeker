@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { SYNERGIES } from '../constants';
+import { SYNERGIES } from '../constants/index';
 
 export const useSynergy = (party) => {
   const activeSynergies = useMemo(() => {

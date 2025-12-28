@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Sword, Shield, X, Lock } from 'lucide-react';
-import { ELEMENTS } from '../../constants';
+import { ELEMENTS } from '../../constants/index';
 import { ElementIcon } from '../common/ElementIcon';
 
 export const PartySelector = ({ inventory, party, selectedSlot, setSelectedSlot, handleAssign }) => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Skull, Shield, Sword } from 'lucide-react';
-import { ELEMENTS } from '../../constants';
+import { ELEMENTS } from '../../constants/index';
 
 export const AllyCard = ({ char, isBack }) => {
     const hpPercent = (char.hp / char.maxHp) * 100;

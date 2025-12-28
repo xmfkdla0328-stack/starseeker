@@ -1,5 +1,5 @@
 import { getElementalMultiplier } from './formulas';
-import { GAME_CONST } from '../../constants';
+import { GAME_CONST } from '../../constants/index';
 
 /**
  * 보스의 공격 데미지 계산
