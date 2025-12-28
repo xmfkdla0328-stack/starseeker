@@ -3,9 +3,31 @@ import { Sparkles } from 'lucide-react';
 import { SkillBlock } from './SkillBlock';
 
 /**
+ * 필살기 설명에서 위력을 계산하는 함수
+ * 기본 위력과 한계 돌파 보너스를 구분하여 표시
+ * @param {string} desc 원본 설명
+ * @param {number} ultLevel 한계 돌파 레벨
+ * @returns {string} 한계 돌파 보너스가 포함된 설명
+ */
+const enhanceUltimateDesc = (desc, ultLevel) => {
+  if (!ultLevel || ultLevel === 0) return desc;
+  
+  // 한계 돌파 레벨별 보너스: 1: 20%, 2: 30%, 3: 40%, 4: 50%, 5: 70%
+  const bonusLevels = [20, 30, 40, 50, 70];
+  const breakthroughBonus = bonusLevels[ultLevel - 1] || 0;
+  
+  // "220%"와 같은 패턴을 찾아서 "(+20%)"를 추가
+  return desc.replace(/(\d+)%(?![\w%])/g, (match, num) => {
+    const baseNum = parseInt(num);
+    const enhancedNum = baseNum + breakthroughBonus;
+    return `${enhancedNum}%(+${breakthroughBonus}%)`;
+  });
+};
+
+/**
  * 캐릭터 스킬 목록 컴포넌트
  */
-export const CharacterSkillsList = ({ charData, getSkillInfo }) => {
+export const CharacterSkillsList = ({ charData, getSkillInfo, ultLevel = 0 }) => {
   return (
     <div>
       <h3 className="text-yellow-100 font-bold mb-3 text-sm flex items-center gap-2">
@@ -40,10 +62,13 @@ export const CharacterSkillsList = ({ charData, getSkillInfo }) => {
               type="필살"
               name={charData.skills.ultimate}
               desc={getSkillInfo('ultimate', 'SP 100 소모. 전황을 뒤집는 일격').desc}
+              descWithBonus={enhanceUltimateDesc(getSkillInfo('ultimate', 'SP 100 소모. 전황을 뒤집는 일격').desc, ultLevel)}
               cooldown={getSkillInfo('ultimate').cooldown}
               colorClass="bg-red-500 text-red-300 border-red-500"
               accentClass="text-red-200"
               level={charData.skillLevels?.ultimate || 1}
+              isUltimate={true}
+              ultLevel={ultLevel}
             />
           </div>
         )}
@@ -67,10 +92,13 @@ export const CharacterSkillsList = ({ charData, getSkillInfo }) => {
               type="필살"
               name={charData.skills.supportUlt}
               desc={getSkillInfo('supportUlt', 'SP 100 소모. 아군 전체 강력 지원').desc}
+              descWithBonus={enhanceUltimateDesc(getSkillInfo('supportUlt', 'SP 100 소모. 아군 전체 강력 지원').desc, ultLevel)}
               cooldown={getSkillInfo('supportUlt').cooldown}
               colorClass="bg-purple-500 text-purple-300 border-purple-500"
               accentClass="text-purple-200"
               level={charData.skillLevels?.supportUlt || 1}
+              isUltimate={true}
+              ultLevel={ultLevel}
             />
           </div>
         )}

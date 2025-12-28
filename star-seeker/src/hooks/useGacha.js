@@ -24,7 +24,7 @@ export const useGacha = (items, setItems, inventory, setInventory, showToast, pl
       const existingIdx = currentInventory.findIndex(c => c.id === picked.id);
       
       if (existingIdx >= 0) {
-        // 중복 캐릭터: 필살기 레벨 강화
+        // 중복 캐릭터: 한계 돌파 레벨 강화
         const target = currentInventory[existingIdx];
         if (target.ultLevel < GAME_CONST.MAX_ULTIMATE_LEVEL) {
           currentInventory[existingIdx] = { ...target, ultLevel: target.ultLevel + 1 };
@@ -35,7 +35,15 @@ export const useGacha = (items, setItems, inventory, setInventory, showToast, pl
         }
       } else {
         // 신규 캐릭터 획득 - 플레이어 레벨로 초기화
-        const newChar = { ...picked, ultLevel: 0, bondLevel: 0, uid: Date.now() + i, level: playerLevel };
+        const newChar = { 
+          ...picked, 
+          ultLevel: 0, 
+          bondLevel: 0, 
+          uid: Date.now() + i, 
+          level: playerLevel,
+          // 초기 스킬 레벨 설정 (기존 skillLevels 유지)
+          skillLevels: picked.skillLevels ? { ...picked.skillLevels } : { normal: 1, skill: 1, ultimate: 1, supportSkill: 1, supportUlt: 1 }
+        };
         currentInventory.push(newChar);
       }
     }

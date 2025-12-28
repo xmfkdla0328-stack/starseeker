@@ -17,7 +17,7 @@ export const CharacterInfoTab = ({ charData, getSkillInfo }) => {
       <BreakthroughDisplay ultLevel={charData.ultLevel} />
 
       {/* 스킬 목록 */}
-      <CharacterSkillsList charData={charData} getSkillInfo={getSkillInfo} />
+      <CharacterSkillsList charData={charData} getSkillInfo={getSkillInfo} ultLevel={charData.ultLevel || 0} />
     </div>
   );
 };
