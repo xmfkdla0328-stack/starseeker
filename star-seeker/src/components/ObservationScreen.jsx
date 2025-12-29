@@ -222,8 +222,8 @@ export const ObservationScreen = ({ setScreen }) => {
               
               if (obs.size === 'edge') {
                 // 테두리에 위치하는 경우 - 더 크게
-                buttonSize = 'w-48 h-48';
-                offset = 96;
+                buttonSize = 'w-64 h-64';
+                offset = 128;
                 // 망원경 하단 테두리 위치 (반지름 약 40vh ≈ 280-300px)
                 posX = 0;
                 posY = 260;  // 테두리 근처
@@ -352,8 +352,18 @@ export const ObservationScreen = ({ setScreen }) => {
                             className="absolute inset-0 w-full h-full object-contain"
                             style={{
                               filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.8))',
+                              transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+                              transition: 'transform 0.3s ease',
                             }}
                           />
+                          {/* 호버 시 텍스트 */}
+                          {isHovered && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-full transition-all duration-300">
+                              <span className="text-red-200 text-xl font-bold drop-shadow-lg">
+                                재앙 관측
+                              </span>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
