@@ -346,7 +346,7 @@ export const ObservationScreen = ({ setScreen }) => {
                         // 성운/가스층 스타일 - 검은 손 모양
                         <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center">
                           {/* 아래에서 올라오는 검은 손 SVG */}
-                          <svg viewBox="0 0 200 240" className="absolute inset-0 w-full h-full" style={{ overflow: 'visible' }}>
+                          <svg viewBox="-60 -60 320 320" className="absolute inset-0 w-full h-full" style={{ overflow: 'visible' }}>
                             <defs>
                               <linearGradient id="blackHandGrad" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stopColor="rgba(10,10,10,0.95)" />
@@ -359,14 +359,14 @@ export const ObservationScreen = ({ setScreen }) => {
                             </defs>
                             
                             {/* 배경 작은 손들 (여러 각도) */}
-                            {[...Array(8)].map((_, idx) => {
-                              const angle = (idx * 45);
-                              const distance = 55;
-                              const scale = 0.35;
+                            {[...Array(12)].map((_, idx) => {
+                              const angle = (idx * 30);
+                              const distance = 48;
+                              const scale = 0.38;
                               const x = 100 + distance * Math.cos((angle - 90) * Math.PI / 180);
                               const y = 120 + distance * Math.sin((angle - 90) * Math.PI / 180);
                               return (
-                                <g key={idx} transform={`translate(${x}, ${y}) scale(${scale}) rotate(${angle})`} opacity="0.35" filter="url(#handShadow)">
+                                <g key={idx} transform={`translate(${x}, ${y}) scale(${scale}) rotate(${angle})`} opacity="0.55" filter="url(#handShadow)">
                                   {/* 작은 손 실루엣 */}
                                   <ellipse cx="0" cy="0" rx="20" ry="24" fill="url(#blackHandGrad)" />
                                   <path d="M -8 -10 Q -8 -20, -8 -32 Q -8 -35, -4 -35 Q 0 -35 0 -32 Q 0 -20 2 -10 Z" fill="url(#blackHandGrad)" />
