@@ -40,7 +40,7 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, activeSyner
         highlightedSynergy={highlightedSynergy} 
         toggleSynergyHighlight={toggleSynergyHighlight}
         handleAutoParty={handleAutoParty} 
-        onStartBattle={() => setScreen('BATTLE')}
+        onStartBattle={() => setScreen('OBSERVATION')}
       />
 
       {/* 캐릭터 선택 모달 */}

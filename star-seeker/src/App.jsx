@@ -8,7 +8,7 @@ import { StatusBar } from './components/layout/StatusBar';
 import { Background } from './components/layout/Background';
 import { ProfileModal } from './components/ProfileModal';
 
-import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, BattleScreen, CodexScreen, InventoryScreen } from './components/Screens';
+import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, BattleScreen, CodexScreen, InventoryScreen, ObservationScreen } from './components/Screens';
 
 export default function StarSeekerApp() {
   const {
@@ -56,6 +56,9 @@ export default function StarSeekerApp() {
             )}
             {screen === 'GARDEN' && (
               <GardenScreen inventory={inventory} showToast={showToast} />
+            )}
+            {screen === 'OBSERVATION' && (
+              <ObservationScreen setScreen={setScreen} />
             )}
             {screen === 'BATTLE' && (
               <BattleScreen battleSystem={battleSystem} addExp={addExp} setScreen={setScreen} increaseBondFromBattle={increaseBondFromBattle} />

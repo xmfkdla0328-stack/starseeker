@@ -28,7 +28,7 @@ export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScr
 
       {/* 전투 진입 버튼 */}
       <div className="w-full flex justify-center z-20 shrink-0">
-        <MissionButton onClick={() => setScreen('BATTLE')} />
+        <MissionButton onClick={() => setScreen('OBSERVATION')} />
       </div>
     </div>
   );
