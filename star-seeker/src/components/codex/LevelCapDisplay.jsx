@@ -12,18 +12,6 @@ export const LevelCapDisplay = ({ charData, items, onBreakthrough }) => {
   const breakthroughInfo = checkBreakthroughRequired(charData);
   const isLevelCapped = charData.level >= maxLevel && breakthroughInfo;
   
-  // 디버그: 서주목 캐릭터 정보 출력
-  if (charData.id === 1) {
-    console.log('LevelCapDisplay - 서주목:', {
-      level: charData.level,
-      breakthrough,
-      maxLevel,
-      breakthroughInfo,
-      isLevelCapped,
-      element: charData.element,
-    });
-  }
-  
   // 최대 돌파 단계(3)에 도달했고 레벨도 최대(60)이면 표시 안 함
   if (breakthrough >= 3 && charData.level >= 60) {
     return null;

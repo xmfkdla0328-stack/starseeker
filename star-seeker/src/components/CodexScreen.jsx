@@ -6,7 +6,7 @@ import { CharacterHeader } from './codex/CharacterHeader';
 import { CharacterInfoTab } from './codex/CharacterInfoTab';
 import { CharacterProfileTab } from './codex/CharacterProfileTab';
 import { BondDisplay } from './common/BondDisplay';
-import { performBreakthrough } from '../data/breakthroughItems';
+import { performBreakthrough, getNextBreakthroughRequiredLevel } from '../data/breakthroughItems';
 
 export const CodexScreen = ({ inventory, items, setItems, setInventory, showToast }) => {
   const [selectedCharId, setSelectedCharId] = useState(CHAR_DB[0].id);
@@ -27,20 +27,7 @@ export const CodexScreen = ({ inventory, items, setItems, setInventory, showToas
           if (currBt === maxBt && curr.level > max.level) return curr;
           return max;
         }, sameIdChars[0]);
-        const result = { ...selectedChar, ...maxBreakthroughChar };
-        
-        // 디버그: 서주목 캐릭터 정보 출력
-        if (selectedCharId === 1) {
-          console.log('서주목 charData:', {
-            id: result.id,
-            name: result.name,
-            level: result.level,
-            breakthrough: result.breakthrough,
-            element: result.element,
-          });
-        }
-        
-        return result;
+        return { ...selectedChar, ...maxBreakthroughChar };
       })()
     : { ...selectedChar, bondLevel: 0 };
 
@@ -51,9 +38,7 @@ export const CodexScreen = ({ inventory, items, setItems, setInventory, showToas
 
   // 돌파 핸들러
   const handleBreakthrough = (character) => {
-    console.log('돌파 시도:', character);
     const result = performBreakthrough(character, items);
-    console.log('돌파 결과:', result);
     
     if (result.success) {
       // 아이템 업데이트
@@ -64,17 +49,18 @@ export const CodexScreen = ({ inventory, items, setItems, setInventory, showToas
         const updated = prev.map(c => {
           // 같은 id를 가진 모든 캐릭터의 breakthrough를 업데이트
           if (c.id === character.id) {
-            console.log(`캐릭터 ${c.name} (uid: ${c.uid}) breakthrough 업데이트: ${c.breakthrough} -> ${result.updatedCharacter.breakthrough}`);
+            const newBreakthrough = result.updatedCharacter.breakthrough;
+            const nextRequiredLevel = getNextBreakthroughRequiredLevel(newBreakthrough);
+            
             return {
               ...c,
-              breakthrough: result.updatedCharacter.breakthrough,
+              breakthrough: newBreakthrough,
               // 돌파 후 현재 레벨을 다음 돌파 요구 레벨로 자동 상향
-              level: Math.max(c.level, result.updatedCharacter.breakthrough * 20)
+              level: Math.max(c.level, nextRequiredLevel)
             };
           }
           return c;
         });
-        console.log('업데이트된 인벤토리:', updated);
         return updated;
       });
       

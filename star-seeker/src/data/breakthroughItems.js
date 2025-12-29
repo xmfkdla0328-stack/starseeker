@@ -163,3 +163,16 @@ export const getMaxLevelByBreakthrough = (breakthrough = 0) => {
     default: return 20;
   }
 };
+
+/**
+ * 특정 돌파 단계의 다음 돌파에 필요한 레벨 계산
+ * @param {number} breakthrough 현재 돌파 단계 (0, 1, 2, 3)
+ * @returns {number} 다음 돌파 요구 레벨 (돌파 불가능하면 최대 레벨)
+ */
+export const getNextBreakthroughRequiredLevel = (breakthrough = 0) => {
+  const nextStage = breakthrough + 1;
+  if (!BREAKTHROUGH_STAGES[nextStage]) {
+    return getMaxLevelByBreakthrough(breakthrough); // 다음 돌파가 없으면 현재 최대 레벨 반환
+  }
+  return BREAKTHROUGH_STAGES[nextStage].level;
+};
