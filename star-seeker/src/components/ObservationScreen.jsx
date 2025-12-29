@@ -343,84 +343,17 @@ export const ObservationScreen = ({ setScreen }) => {
                           </div>
                         </div>
                       ) : (
-                        // 성운/가스층 스타일 - 검은 손 모양
+                        // 성운/가스층 스타일 - 검은 손 이미지
                         <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center">
-                          {/* 아래에서 올라오는 검은 손 SVG */}
-                          <svg viewBox="-60 -60 320 320" className="absolute inset-0 w-full h-full" style={{ overflow: 'visible' }}>
-                            <defs>
-                              <linearGradient id="blackHandGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="rgba(10,10,10,0.95)" />
-                                <stop offset="50%" stopColor="rgba(8,8,8,0.95)" />
-                                <stop offset="100%" stopColor="rgba(5,5,5,0.95)" />
-                              </linearGradient>
-                              <linearGradient id="smallHandGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="rgba(60,60,60,0.95)" />
-                                <stop offset="50%" stopColor="rgba(45,45,45,0.95)" />
-                                <stop offset="100%" stopColor="rgba(30,30,30,0.95)" />
-                              </linearGradient>
-                              <filter id="handShadow">
-                                <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.6" floodColor="#000000" />
-                              </filter>
-                              <filter id="smallHandGlow">
-                                <feDropShadow dx="0" dy="0" stdDeviation="2" floodOpacity="0.4" floodColor="#ffffff" />
-                              </filter>
-                            </defs>
-                            
-                            {/* 배경 작은 손들 (아래에서 불규칙하게 산개) */}
-                            {[...Array(12)].map((_, idx) => {
-                              // 불규칙한 위치 배열 (아래쪽부터 올라오는 형태)
-                              const positions = [
-                                { x: 30, y: 160, angle: -25, scale: 0.5 },
-                                { x: 70, y: 145, angle: -10, scale: 0.48 },
-                                { x: 130, y: 150, angle: 15, scale: 0.52 },
-                                { x: 170, y: 155, angle: 25, scale: 0.46 },
-                                { x: 45, y: 125, angle: -18, scale: 0.44 },
-                                { x: 100, y: 135, angle: 5, scale: 0.5 },
-                                { x: 155, y: 130, angle: 20, scale: 0.47 },
-                                { x: 20, y: 105, angle: -30, scale: 0.42 },
-                                { x: 85, y: 100, angle: -8, scale: 0.45 },
-                                { x: 180, y: 110, angle: 28, scale: 0.43 },
-                                { x: 55, y: 85, angle: -15, scale: 0.40 },
-                                { x: 145, y: 90, angle: 18, scale: 0.41 },
-                              ];
-                              const pos = positions[idx];
-                              return (
-                                <g key={idx} transform={`translate(${pos.x}, ${pos.y}) scale(${pos.scale}) rotate(${pos.angle})`} opacity="0.85" filter="url(#smallHandGlow)">
-                                  {/* 작은 손 실루엣 */}
-                                  <ellipse cx="0" cy="0" rx="20" ry="24" fill="url(#smallHandGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-                                  <path d="M -8 -10 Q -8 -20, -8 -32 Q -8 -35, -4 -35 Q 0 -35 0 -32 Q 0 -20 2 -10 Z" fill="url(#smallHandGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="0.8" />
-                                  <path d="M 0 -12 Q 0 -22, 0 -34 Q 0 -37 4 -37 Q 8 -37 8 -34 Q 8 -22 8 -12 Z" fill="url(#smallHandGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="0.8" />
-                                  <path d="M 8 -10 Q 8 -20, 10 -32 Q 10 -35 14 -35 Q 18 -35 18 -32 Q 16 -20 14 -10 Z" fill="url(#smallHandGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="0.8" />
-                                  <path d="M -14 -4 Q -22 -12, -28 -20 Q -30 -25, -28 -28 Q -25 -28 -20 -18 Z" fill="url(#smallHandGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="0.8" />
-                                  <path d="M 14 -6 Q 22 -14, 28 -22 Q 30 -27 28 -30 Q 25 -30 20 -20 Z" fill="url(#smallHandGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="0.8" />
-                                </g>
-                              );
-                            })}
-
-                            {/* 손 메인 실루엣 (아래에서 올라오는 형태) - 크기 확대 */}
-                            <g filter="url(#handShadow)" transform="scale(1.4) translate(-15, -30)">
-                              {/* 손목 */}
-                              <path d="M 70 240 L 70 160 Q 70 140, 85 140 L 115 140 Q 130 140, 130 160 L 130 240 Z" fill="url(#blackHandGrad)" />
-                              
-                              {/* 손바닥 */}
-                              <ellipse cx="100" cy="110" rx="32" ry="38" fill="url(#blackHandGrad)" />
-                              
-                              {/* 검지 */}
-                              <path d="M 75 90 Q 72 50, 70 10 Q 70 0, 78 0 Q 86 0, 86 10 Q 88 50, 92 90 Z" fill="url(#blackHandGrad)" />
-                              
-                              {/* 중지 */}
-                              <path d="M 92 85 Q 92 40, 92 0 Q 92 -8, 100 -8 Q 108 -8, 108 0 Q 108 40, 110 85 Z" fill="url(#blackHandGrad)" />
-                              
-                              {/* 약지 */}
-                              <path d="M 110 90 Q 112 50, 116 10 Q 116 0, 124 0 Q 132 0, 132 10 Q 130 50, 128 90 Z" fill="url(#blackHandGrad)" />
-                              
-                              {/* 엄지 */}
-                              <path d="M 62 100 Q 48 85, 38 60 Q 32 48, 35 38 Q 40 32, 48 36 Q 58 50, 70 80 Z" fill="url(#blackHandGrad)" />
-                              
-                              {/* 새끼손가락 */}
-                              <path d="M 128 95 Q 142 80, 152 50 Q 158 38, 165 32 Q 172 30, 175 40 Q 172 54, 160 80 Z" fill="url(#blackHandGrad)" />
-                            </g>
-                          </svg>
+                          {/* 검은 손 이미지 */}
+                          <img 
+                            src="/images/calamity-hand.png" 
+                            alt="Calamity Hand" 
+                            className="absolute inset-0 w-full h-full object-contain"
+                            style={{
+                              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.8))',
+                            }}
+                          />
                         </div>
                       )}
                     </div>
