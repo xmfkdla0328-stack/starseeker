@@ -4,8 +4,15 @@ import { BattleLog } from './battle/BattleLog';
 import { AllyCard } from './battle/AllyCard';
 import { BattleControls } from './battle/BattleControls';
 
-export const BattleScreen = ({ battleSystem, addExp, setScreen, increaseBondFromBattle }) => {
+export const BattleScreen = ({ battleSystem, addExp, setScreen, increaseBondFromBattle, startBattle }) => {
   const { enemy, allies, logs, battleState, processTurn, isAuto, setIsAuto } = battleSystem;
+
+  // 전투 시작 (처음 진입 시)
+  useEffect(() => {
+    if (battleState === 'IDLE' && startBattle) {
+      startBattle();
+    }
+  }, [battleState, startBattle]);
 
   // 승리 시 경험치 획득 및 인연도 증가
   useEffect(() => {

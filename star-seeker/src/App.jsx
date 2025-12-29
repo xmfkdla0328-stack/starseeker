@@ -58,10 +58,10 @@ export default function StarSeekerApp() {
               <GardenScreen inventory={inventory} showToast={showToast} />
             )}
             {screen === 'OBSERVATION' && (
-              <ObservationScreen setScreen={setScreen} />
+              <ObservationScreen setScreen={setScreen} startBattle={battleSystem.startBattle} party={party} />
             )}
             {screen === 'BATTLE' && (
-              <BattleScreen battleSystem={battleSystem} addExp={addExp} setScreen={setScreen} increaseBondFromBattle={increaseBondFromBattle} />
+              <BattleScreen battleSystem={battleSystem} addExp={addExp} setScreen={setScreen} increaseBondFromBattle={increaseBondFromBattle} startBattle={battleSystem.startBattle} />
             )}
             {screen === 'CODEX' && (
               <CodexScreen 

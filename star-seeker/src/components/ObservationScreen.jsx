@@ -11,7 +11,7 @@ import { resolveObservationLayout, LENS_CONFIG, OBS_ANIM } from '../utils/screen
  * 어두운 우주 공간에서 망원경으로 관측하는 컨셉
  * 망원경 내부에서만 선명하게 보이는 비네팅 효과
  */
-export const ObservationScreen = ({ setScreen }) => {
+export const ObservationScreen = ({ setScreen, startBattle, party }) => {
   const [selectedObservation, setSelectedObservation] = useState(null);
   const [hoveredObservation, setHoveredObservation] = useState(null);
   const [rotating, setRotating] = useState(false);
@@ -24,6 +24,7 @@ export const ObservationScreen = ({ setScreen }) => {
       setTimeout(() => {
         if (obs.id === 'CALAMITY') {
           // 재앙 관측은 화염룡 전투로 직접 이동
+          startBattle();
           setScreen('BATTLE');
         } else {
           // 다른 관측은 전투 준비 화면 (PARTY)으로 이동
