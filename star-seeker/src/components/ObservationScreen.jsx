@@ -105,6 +105,17 @@ export const ObservationScreen = ({ setScreen }) => {
             0%, 100% { opacity: 0.3; transform: translateY(-50%) scale(1); }
             50% { opacity: 0.7; transform: translateY(-55%) scale(1.1); }
           }
+          /* 재앙 손 효과: 위로 뻗어오르는 + 좌우 미세 흔들림 */
+          @keyframes handReach {
+            0% { transform: translateY(16%) scale(0.98); opacity: 0.6; }
+            50% { transform: translateY(8%) scale(1.02); opacity: 0.9; }
+            100% { transform: translateY(16%) scale(0.98); opacity: 0.6; }
+          }
+          @keyframes handSway {
+            0% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+            100% { transform: rotate(-2deg); }
+          }
         `}</style>
       </div>
 
@@ -342,7 +353,7 @@ export const ObservationScreen = ({ setScreen }) => {
                         </div>
                       ) : (
                         // 성운/가스층 스타일 - 테두리에서 침범
-                        <div className="relative w-full h-full">
+                        <div className="relative w-full h-full rounded-full overflow-hidden">
                           {/* 별의 먼지 파티클들 (많이) */}
                           <div className="absolute inset-0">
                             {[...Array(20)].map((_, i) => {
@@ -369,6 +380,64 @@ export const ObservationScreen = ({ setScreen }) => {
                             })}
                           </div>
                           
+                          {/* 그림자 손(클로) 무리 - 아래에서 위로 뻗음 */}
+                          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-1/2 pointer-events-none">
+                            {[...Array(4)].map((_, idx) => {
+                              const baseRotate = [-20, -5, 10, 25][idx];
+                              const delay = idx * 0.6;
+                              const swayDuration = 6 + idx;
+                              const reachDuration = 4.8 + idx * 0.4;
+                              return (
+                                <svg key={idx} viewBox="0 0 200 200" className="absolute bottom-0 left-1/2 -translate-x-1/2" style={{
+                                  width: '56%',
+                                  height: '56%',
+                                  transformOrigin: '50% 100%',
+                                  filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.8))',
+                                  opacity: 0.85,
+                                  animation: `handReach ${reachDuration}s ease-in-out ${delay}s infinite alternate`,
+                                }}>
+                                  <defs>
+                                    <linearGradient id={`handGrad${idx}`} x1="0" y1="0" x2="0" y2="1">
+                                      <stop offset="0%" stopColor="rgba(12,16,20,1)" />
+                                      <stop offset="60%" stopColor="rgba(10,12,14,1)" />
+                                      <stop offset="100%" stopColor="rgba(6,8,10,1)" />
+                                    </linearGradient>
+                                    <linearGradient id={`shineGrad${idx}`} x1="0" y1="0" x2="1" y2="0">
+                                      <stop offset="0%" stopColor="rgba(255,255,255,0.10)" />
+                                      <stop offset="40%" stopColor="rgba(255,255,255,0.04)" />
+                                      <stop offset="100%" stopColor="rgba(255,255,255,0.0)" />
+                                    </linearGradient>
+                                  </defs>
+                                  <g transform={`translate(100,180) rotate(${baseRotate})`} style={{ transformOrigin: '50% 100%', animation: `handSway ${swayDuration}s ease-in-out ${delay}s infinite alternate` }}>
+                                    {/* 손바닥 덩어리 */}
+                                    <path d="M -26 0 C -36 -22, -32 -46, -16 -64 C 2 -84, 26 -82, 36 -60 C 46 -38, 36 -10, 22 0 Z" fill={`url(#handGrad${idx})`} />
+                                    {/* 손가락들 (약지/중지/검지/엄지, 각각 끝에 갈고리) */}
+                                    <g>
+                                      <path d="M -18 -8 C -28 -36, -26 -62, -14 -88 C -8 -96, 4 -98, 10 -92 C 6 -86, 2 -80, 0 -70 C -4 -58, -6 -44, -8 -30 Z" fill={`url(#handGrad${idx})`} />
+                                      <path d="M 2 -6 C -2 -40, 4 -70, 18 -96 C 24 -104, 38 -106, 44 -100 C 38 -92, 32 -84, 28 -72 C 24 -58, 20 -44, 16 -30 Z" fill={`url(#handGrad${idx})`} />
+                                      <path d="M 20 -2 C 18 -34, 26 -62, 42 -88 C 50 -100, 66 -102, 72 -96 C 66 -88, 60 -80, 56 -68 C 52 -54, 46 -40, 40 -26 Z" fill={`url(#handGrad${idx})`} />
+                                      <path d="M -30 6 C -44 -18, -46 -40, -40 -62 C -36 -76, -22 -86, -10 -86 C -16 -74, -22 -62, -26 -50 C -30 -38, -30 -26, -30 -14 Z" fill={`url(#handGrad${idx})`} />
+                                    </g>
+                                    {/* 갈고리 손톱 하이라이트 */}
+                                    <g opacity="0.22">
+                                      <path d="M -18 -88 C -8 -92, 2 -88, 4 -82" stroke={`url(#shineGrad${idx})`} strokeWidth="2" fill="none" />
+                                      <path d="M 18 -96 C 30 -100, 40 -96, 42 -90" stroke={`url(#shineGrad${idx})`} strokeWidth="2" fill="none" />
+                                      <path d="M 42 -88 C 54 -92, 66 -88, 68 -82" stroke={`url(#shineGrad${idx})`} strokeWidth="2" fill="none" />
+                                      <path d="M -40 -62 C -32 -66, -22 -66, -16 -62" stroke={`url(#shineGrad${idx})`} strokeWidth="2" fill="none" />
+                                    </g>
+                                    {/* 점적(드립) 표현 */}
+                                    <g opacity="0.35">
+                                      <path d="M -6 6 C -6 14, -6 22, -6 30" stroke="rgba(0,0,0,0.8)" strokeWidth="2" />
+                                      <circle cx="-6" cy="32" r="2.4" fill="rgba(0,0,0,0.85)" />
+                                      <path d="M 10 8 C 10 18, 10 26, 10 34" stroke="rgba(0,0,0,0.8)" strokeWidth="2" />
+                                      <circle cx="10" cy="36" r="2.2" fill="rgba(0,0,0,0.85)" />
+                                    </g>
+                                  </g>
+                                </svg>
+                              );
+                            })}
+                          </div>
+
                           {/* 중앙 밝은 코어 */}
                           <div 
                             className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full"
