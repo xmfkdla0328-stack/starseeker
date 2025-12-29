@@ -183,15 +183,6 @@ export const ObservationScreen = ({ setScreen }) => {
                       ></div>
                     )}
                   </button>
-
-                  {/* 라벨 */}
-                  <div className={`absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap transition-all duration-300 ${
-                    isHovered ? 'scale-110 opacity-100' : 'opacity-70'
-                  }`}>
-                    <p className={`text-sm font-bold ${obs.textColor} drop-shadow-lg`}>
-                      {obs.name}
-                    </p>
-                  </div>
                 </div>
               );
             })}
