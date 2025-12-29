@@ -489,13 +489,6 @@ export const ObservationScreen = ({ setScreen }) => {
                               filter: 'blur(1px)',
                             }}
                           ></div>
-                          
-                          {/* 아이콘 */}
-                          <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
-                            isHovered ? 'scale-110' : ''
-                          }`} style={{ marginTop: '-20%' }}>
-                            <obs.icon className="w-16 h-16 text-white drop-shadow-2xl" strokeWidth={2.5} />
-                          </div>
                         </div>
                       )}
                     </div>
