@@ -22,7 +22,13 @@ export const ObservationScreen = ({ setScreen }) => {
       // 같은 버튼 재클릭 시 회전 시작
       setRotating(true);
       setTimeout(() => {
-        setScreen('BATTLE');
+        if (obs.id === 'CALAMITY') {
+          // 재앙 관측은 화염룡 전투로 직접 이동
+          setScreen('BATTLE');
+        } else {
+          // 다른 관측은 전투 준비 화면 (PARTY)으로 이동
+          setScreen('PARTY');
+        }
       }, 1200);
     } else {
       // 다른 버튼 클릭 시 선택만 변경
