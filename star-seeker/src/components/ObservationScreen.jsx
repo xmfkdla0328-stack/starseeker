@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { ChevronLeft, Star, Zap, Skull } from 'lucide-react';
 
 /**
- * 망원경 관측 화면 (개선된 UI)
- * 사용자가 망원경을 통해 각 관측 대상을 선택하는 인터랙티브 컨셉
+ * 망원경 관측 화면 (서정적 UI)
+ * 어두운 우주 공간에서 망원경으로 관측하는 컨셉
+ * 망원경 내부에서만 선명하게 보이는 비네팅 효과
  */
 export const ObservationScreen = ({ setScreen }) => {
   const [selectedObservation, setSelectedObservation] = useState(null);
@@ -61,113 +62,146 @@ export const ObservationScreen = ({ setScreen }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950/30 to-slate-900 p-4 md:p-8 flex flex-col overflow-hidden relative">
-      {/* 별 배경 효과 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(30)].map((_, i) => (
+    <div className="min-h-screen bg-black overflow-hidden relative">
+      {/* 암흑 우주 배경 - 거의 검은색 */}
+      <div className="absolute inset-0 bg-gradient-radial from-slate-950/50 via-black to-black"></div>
+
+      {/* 희미한 별 배경 (망원경 밖의 어두운 우주) */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+        {[...Array(100)].map((_, i) => (
           <div
             key={i}
             className="absolute rounded-full bg-white"
             style={{
-              width: Math.random() * 3 + 0.5 + 'px',
-              height: Math.random() * 3 + 0.5 + 'px',
+              width: Math.random() * 2 + 0.3 + 'px',
+              height: Math.random() * 2 + 0.3 + 'px',
               left: Math.random() * 100 + '%',
               top: Math.random() * 100 + '%',
-              opacity: Math.random() * 0.6 + 0.2,
-              animation: `twinkle ${Math.random() * 3 + 2}s infinite`,
+              opacity: Math.random() * 0.3 + 0.1,
+              animation: `twinkle ${Math.random() * 5 + 3}s infinite ease-in-out`,
             }}
           />
         ))}
         <style>{`
           @keyframes twinkle {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 0.8; }
+            0%, 100% { opacity: 0.05; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.2); }
+          }
+          @keyframes telescopeBreath {
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.02); opacity: 0.6; }
           }
         `}</style>
       </div>
 
-      {/* 헤더 */}
-      <div className="flex items-center gap-4 mb-6 md:mb-10 relative z-10">
-        <button
-          onClick={() => setScreen('HOME')}
-          className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-300 hover:shadow-lg"
+      {/* 망원경 비네팅 효과 - 가장자리가 점점 어두워짐 */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-40"
+        style={{
+          background: 'radial-gradient(circle at center, transparent 0%, transparent 25%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0.95) 70%, black 85%)',
+        }}
+      />
+
+      {/* 망원경 렌즈 테두리 */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
+        <div 
+          className="relative w-[90vh] h-[90vh] max-w-[90vw] max-h-[90vw]"
+          style={{
+            background: 'radial-gradient(circle, transparent 48%, rgba(30,41,59,0.8) 50%, rgba(15,23,42,0.95) 52%, transparent 54%)',
+          }}
         >
-          <ChevronLeft className="w-6 h-6 text-slate-100" />
-        </button>
-        <div>
-          <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400">
-            우주 망원경
-          </h1>
-          <p className="text-sm md:text-base text-slate-300 mt-1">✨ 관측할 천체를 선택하세요</p>
+          {/* 망원경 금속 테두리 효과 */}
+          <div className="absolute inset-0 rounded-full" style={{
+            background: 'radial-gradient(circle, transparent 48%, rgba(71,85,105,0.5) 49%, rgba(51,65,85,0.8) 50%, rgba(30,41,59,0.9) 51%, transparent 53%)',
+            boxShadow: 'inset 0 0 60px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5)',
+          }}></div>
+          
+          {/* 망원경 렌즈 반사광 */}
+          <div className="absolute inset-0 rounded-full" style={{
+            background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 20%)',
+          }}></div>
         </div>
       </div>
 
-      {/* 메인 컨텐츠 영역 */}
-      <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-8 relative z-20">
-        {/* 망원경 뷰포트 */}
-        <div className="flex-1 flex items-center justify-center min-h-96">
-          <div className="relative w-full max-w-lg aspect-square">
-            {/* 망원경 외부 구조 */}
-            <div className="absolute inset-0 rounded-full border-8 border-slate-600 shadow-2xl">
-              {/* 외부 렌즈 광학 반사 */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/15 via-transparent to-black/30"></div>
+      {/* 헤더 (망원경 밖의 어두운 영역) */}
+      <div className="absolute top-4 left-4 md:top-8 md:left-8 flex items-center gap-4 z-50 opacity-60 hover:opacity-100 transition-opacity duration-300">
+        <button
+          onClick={() => setScreen('HOME')}
+          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 backdrop-blur-sm border border-white/10"
+        >
+          <ChevronLeft className="w-5 h-5 text-slate-300" />
+        </button>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-400">
+            우주 망원경
+          </h1>
+          <p className="text-xs md:text-sm text-slate-500 mt-0.5">관측 대기 중...</p>
+        </div>
+      </div>
 
-              {/* 망원경 포커싱 라인 */}
-              <div className="absolute inset-0 rounded-full border-2 border-slate-500/40 animate-pulse"></div>
+      {/* 망원경 뷰포트 중앙 컨텐츠 */}
+      <div className="absolute inset-0 flex items-center justify-center z-30">
+        {/* 망원경 뷰포트 - 중앙 원형 영역 */}
+        <div className="relative w-[70vh] h-[70vh] max-w-[70vw] max-h-[70vw]">
+{/* 망원경 뷰포트 - 중앙 원형 영역 */}
+        <div className="relative w-[70vh] h-[70vh] max-w-[70vw] max-h-[70vw]">
+          {/* 망원경 내부 - 우주 공간 (선명하게 보이는 영역) */}
+          <div className="absolute inset-0 rounded-full overflow-hidden">
+            {/* 깊은 우주 배경 그라디언트 */}
+            <div className="absolute inset-0 bg-gradient-radial from-indigo-950/80 via-slate-950 to-black"></div>
 
-              {/* 외부 테두리 광채 */}
-              <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-blue-500/20 via-cyan-500/20 to-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            {/* 망원경 안의 선명한 별들 */}
+            <div className="absolute inset-0">
+              {[...Array(50)].map((_, i) => {
+                const size = Math.random() * 3 + 1;
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                return (
+                  <div
+                    key={i}
+                    className="absolute rounded-full bg-white"
+                    style={{
+                      width: size + 'px',
+                      height: size + 'px',
+                      left: left + '%',
+                      top: top + '%',
+                      opacity: Math.random() * 0.8 + 0.2,
+                      animation: `twinkle ${Math.random() * 4 + 2}s infinite ease-in-out`,
+                      animationDelay: `${Math.random() * 2}s`,
+                      boxShadow: `0 0 ${size * 2}px rgba(255,255,255,${Math.random() * 0.5 + 0.3})`,
+                    }}
+                  />
+                );
+              })}
             </div>
 
-            {/* 중앙 뷰포트 배경 */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-slate-900/60 via-slate-950/80 to-slate-950/95 backdrop-blur-md flex items-center justify-center overflow-hidden">
-              {/* 내부 그리드 패턴 */}
-              <div className="absolute inset-0 rounded-full opacity-20">
-                <svg className="w-full h-full" viewBox="0 0 400 400">
-                  {/* 동심원 */}
-                  <circle cx="200" cy="200" r="150" fill="none" stroke="currentColor" className="text-slate-400" strokeWidth="1" strokeDasharray="4,4" />
-                  <circle cx="200" cy="200" r="100" fill="none" stroke="currentColor" className="text-slate-400" strokeWidth="1" strokeDasharray="4,4" />
-                  <circle cx="200" cy="200" r="50" fill="none" stroke="currentColor" className="text-slate-400" strokeWidth="2" />
-                  {/* 십자선 */}
-                  <line x1="200" y1="20" x2="200" y2="380" stroke="currentColor" className="text-slate-500" strokeWidth="1" opacity="0.5" />
-                  <line x1="20" y1="200" x2="380" y2="200" stroke="currentColor" className="text-slate-500" strokeWidth="1" opacity="0.5" />
-                  {/* 대각선 */}
-                  <line x1="60" y1="60" x2="340" y2="340" stroke="currentColor" className="text-slate-500" strokeWidth="0.5" opacity="0.3" />
-                  <line x1="340" y1="60" x2="60" y2="340" stroke="currentColor" className="text-slate-500" strokeWidth="0.5" opacity="0.3" />
-                </svg>
-              </div>
+            {/* 망원경 포커스 그리드 (희미하게) */}
+            <div className="absolute inset-0 opacity-10">
+              <svg className="w-full h-full" viewBox="0 0 400 400">
+                <circle cx="200" cy="200" r="180" fill="none" stroke="currentColor" className="text-cyan-400" strokeWidth="0.5" strokeDasharray="8,8" />
+                <circle cx="200" cy="200" r="120" fill="none" stroke="currentColor" className="text-cyan-400" strokeWidth="0.5" strokeDasharray="8,8" />
+                <circle cx="200" cy="200" r="60" fill="none" stroke="currentColor" className="text-cyan-400" strokeWidth="1" />
+                <line x1="200" y1="0" x2="200" y2="400" stroke="currentColor" className="text-cyan-500" strokeWidth="0.5" opacity="0.3" />
+                <line x1="0" y1="200" x2="400" y2="200" stroke="currentColor" className="text-cyan-500" strokeWidth="0.5" opacity="0.3" />
+              </svg>
+            </div>
 
-              {/* 중앙 포커스 포인트 */}
-              <div className="absolute w-2 h-2 bg-cyan-400 rounded-full animate-pulse shadow-lg shadow-cyan-400/50"></div>
-
-              {/* 궤도 경로들 */}
-              <div className="absolute inset-0 rounded-full">
-                {observations.map((obs, idx) => {
-                  const angle = (obs.position * Math.PI) / 180;
-                  const radius = 90;
-                  return (
-                    <svg key={`orbit-${idx}`} className="absolute inset-0 w-full h-full">
-                      <circle
-                        cx="50%"
-                        cy="50%"
-                        r={radius}
-                        fill="none"
-                        stroke={obs.color.split(' ')[1]}
-                        className={obs.color.split(' ')[0]}
-                        strokeWidth="1"
-                        opacity="0.3"
-                        strokeDasharray="5,5"
-                      />
-                    </svg>
-                  );
-                })}
+            {/* 중앙 조준점 */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div className="relative w-8 h-8">
+                <div className="absolute inset-0 rounded-full border border-cyan-400/40"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-cyan-400 rounded-full animate-pulse shadow-lg shadow-cyan-400/80"></div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-3 bg-cyan-400/60"></div>
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-px h-3 bg-cyan-400/60"></div>
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-px w-3 bg-cyan-400/60"></div>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 h-px w-3 bg-cyan-400/60"></div>
               </div>
             </div>
 
-            {/* 관측 대상들 (행성/별) - 훨씬 더 큼 */}
+            {/* 관측 대상들 (행성/별) */}
             {observations.map((obs) => {
               const angle = (obs.position * Math.PI) / 180;
-              const radius = 120;
+              const radius = 110;
               const x = Math.cos(angle) * radius;
               const y = Math.sin(angle) * radius;
               const isSelected = selectedObservation?.id === obs.id;
@@ -176,12 +210,12 @@ export const ObservationScreen = ({ setScreen }) => {
               return (
                 <div
                   key={obs.id}
-                  className={`absolute transition-all duration-500 ${
-                    rotating && isSelected ? 'scale-200 opacity-0' : 'scale-100 opacity-100'
+                  className={`absolute transition-all duration-700 ${
+                    rotating && isSelected ? 'scale-[3] opacity-0' : 'scale-100 opacity-100'
                   }`}
                   style={{
-                    left: `calc(50% + ${x}px - 60px)`,
-                    top: `calc(50% + ${y}px - 60px)`,
+                    left: `calc(50% + ${x}px - 48px)`,
+                    top: `calc(50% + ${y}px - 48px)`,
                   }}
                 >
                   <button
@@ -189,116 +223,165 @@ export const ObservationScreen = ({ setScreen }) => {
                     onMouseEnter={() => setHoveredObservation(obs)}
                     onMouseLeave={() => setHoveredObservation(null)}
                     disabled={rotating}
-                    className={`relative w-32 h-32 transition-all duration-300 disabled:cursor-not-allowed`}
+                    className={`relative w-24 h-24 transition-all duration-500 disabled:cursor-not-allowed ${
+                      isHovered ? 'scale-125' : 'scale-100'
+                    }`}
                   >
-                    {/* 외부 글로우 (선택/호버 시) */}
+                    {/* 외부 글로우 효과 */}
                     <div
-                      className={`absolute -inset-8 rounded-full blur-2xl bg-gradient-to-r ${obs.glowColor} transition-all duration-300 ${
-                        isHovered || isSelected ? 'opacity-100 scale-150' : 'opacity-0 scale-75'
+                      className={`absolute -inset-8 rounded-full blur-3xl bg-gradient-to-r ${obs.glowColor} transition-all duration-500 ${
+                        isHovered || isSelected ? 'opacity-80 scale-150' : 'opacity-0 scale-75'
                       }`}
                     ></div>
 
-                    {/* 궤도 라인 (선택 시) */}
-                    {(isSelected || isHovered) && (
-                      <div className="absolute -inset-12 rounded-full border-2 border-dashed border-white/20 animate-spin" style={{ animationDuration: '10s' }}></div>
+                    {/* 호버/선택 시 궤도 링 */}
+                    {(isHovered || isSelected) && (
+                      <div 
+                        className="absolute -inset-6 rounded-full border border-dashed opacity-40 animate-spin" 
+                        style={{ 
+                          borderColor: obs.color.split(' ')[1].replace('to-', ''),
+                          animationDuration: '20s',
+                        }}
+                      ></div>
                     )}
 
                     {/* 행성/별 본체 */}
-                    <div className="relative w-full h-full rounded-full overflow-hidden group">
-                      {/* 기본 그라디언트 배경 */}
-                      <div className={`absolute inset-0 bg-gradient-to-br ${obs.color} ${isHovered ? 'brightness-125' : ''} transition-all duration-300`}></div>
+                    <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl">
+                      {/* 행성 베이스 */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${obs.color}`}></div>
 
-                      {/* 입체 음영 효과 */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-black/60 rounded-full"></div>
+                      {/* 입체감 - 구형 음영 */}
+                      <div 
+                        className="absolute inset-0 rounded-full"
+                        style={{
+                          background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 30%, rgba(0,0,0,0.4) 80%)',
+                        }}
+                      ></div>
 
-                      {/* 표면 디테일 (행성의 질감) */}
-                      <div className="absolute inset-0 opacity-40">
-                        <div className="absolute w-full h-full bg-radial-gradient from-transparent via-transparent to-black/40 rounded-full"></div>
-                      </div>
-
-                      {/* 하이라이트 (빛 반사) */}
-                      <div className="absolute top-2 left-2 w-1/3 h-1/3 bg-white/40 rounded-full blur-lg"></div>
+                      {/* 하이라이트 */}
+                      <div 
+                        className="absolute top-2 left-3 w-8 h-8 rounded-full bg-white/50 blur-md"
+                      ></div>
 
                       {/* 아이콘 */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <obs.icon className={`w-14 h-14 text-white drop-shadow-lg ${isHovered ? 'scale-125' : ''} transition-transform duration-300`} />
+                      <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
+                        isHovered ? 'scale-110' : ''
+                      }`}>
+                        <obs.icon className="w-10 h-10 text-white drop-shadow-2xl" strokeWidth={2.5} />
                       </div>
 
-                      {/* 테두리 */}
-                      <div className={`absolute inset-0 rounded-full border-3 ${isSelected ? 'border-white animate-pulse' : isHovered ? 'border-white/80' : 'border-white/40'} transition-all duration-300`}></div>
+                      {/* 대기권 효과 (선택적) */}
+                      <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
                     </div>
+
+                    {/* 펄스 효과 (호버 시) */}
+                    {isHovered && (
+                      <div 
+                        className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.color} opacity-30 animate-ping`}
+                      ></div>
+                    )}
                   </button>
 
                   {/* 라벨 */}
-                  <div className={`mt-4 text-center pointer-events-none transition-all duration-300 ${isHovered ? 'scale-110' : ''}`}>
-                    <p className={`text-sm md:text-base font-bold ${obs.textColor}`}>{obs.name}</p>
-                    <p className="text-xs text-slate-400 mt-1">{obs.level}</p>
+                  <div className={`absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap transition-all duration-300 ${
+                    isHovered ? 'scale-110 opacity-100' : 'opacity-70'
+                  }`}>
+                    <p className={`text-sm font-bold ${obs.textColor} drop-shadow-lg`}>
+                      {obs.name}
+                    </p>
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
 
-        {/* 오른쪽 정보 패널 */}
-        <div className="flex-1 flex flex-col gap-4 items-center lg:items-start justify-center min-h-96 relative z-10">
-          {/* 상세 정보 패널 */}
-          <div className={`w-full max-w-md transition-all duration-500 ${selectedObservation ? 'opacity-100 translate-y-0' : 'opacity-60 translate-y-4'}`}>
-            {selectedObservation ? (
-              <div className="p-6 md:p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-2xl border border-white/20 backdrop-blur-md shadow-2xl">
-                <div className="flex items-start gap-4 mb-4">
-                  <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${selectedObservation.color} flex items-center justify-center flex-shrink-0 shadow-lg`}>
-                    <selectedObservation.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h2 className={`text-2xl font-bold ${selectedObservation.textColor}`}>
-                      {selectedObservation.name}
-                    </h2>
-                    <p className="text-xs text-slate-400 mt-1">난이도: {selectedObservation.level}</p>
-                  </div>
-                </div>
-                <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                  {selectedObservation.description}
-                </p>
-                <div className="flex items-center gap-2 text-sm text-slate-400 animate-pulse">
-                  <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${selectedObservation.color}`}></div>
-                  🔭 망원경 정조중... 진입 준비 중
-                </div>
-              </div>
-            ) : (
-              <div className="p-6 md:p-8 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md">
-                <p className="text-center text-slate-300 text-sm md:text-base leading-relaxed">
-                  <span className="block mb-2">🌌 망원경 대기 중</span>
-                  망원경 뷰포트에서 천체를 선택하여 관측하세요.
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* 기본 안내 */}
-          {!selectedObservation && (
-            <div className="w-full max-w-md p-4 md:p-6 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-xl border border-blue-400/30 backdrop-blur-sm">
-              <div className="text-xs md:text-sm text-slate-300 space-y-2">
-                <p>💡 <span className="font-semibold">각 천체의 특징:</span></p>
-                <div className="grid grid-cols-1 gap-2 text-slate-400 ml-2">
-                  <p>⭐ <span className="text-blue-300">행성 관측</span> - 메인 스토리</p>
-                  <p>⚡ <span className="text-yellow-300">성흔 관측</span> - 아이템 파밍</p>
-                  <p>💀 <span className="text-red-300">재앙 관측</span> - 도전 컨텐츠</p>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* 망원경 렌즈 내부 테두리 빛 반사 */}
+          <div 
+            className="absolute inset-0 rounded-full pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle at 25% 25%, rgba(255,255,255,0.08) 0%, transparent 30%)',
+            }}
+          ></div>
         </div>
       </div>
 
-      {/* 하단 망원경 조절 UI */}
-      <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-8 z-10 hidden lg:flex">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-slate-500 flex items-center justify-center text-lg text-slate-300 hover:border-slate-400 cursor-pointer transition-all hover:scale-110">
+      {/* 하단 정보 패널 (망원경 밖의 어두운 영역) */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-50">
+        {selectedObservation ? (
+          <div 
+            className="p-4 rounded-xl backdrop-blur-md border transition-all duration-500 transform"
+            style={{
+              background: 'rgba(15, 23, 42, 0.6)',
+              borderColor: 'rgba(71, 85, 105, 0.4)',
+            }}
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${selectedObservation.color} flex items-center justify-center shadow-lg flex-shrink-0`}>
+                <selectedObservation.icon className="w-5 h-5 text-white" strokeWidth={2.5} />
+              </div>
+              <div className="flex-1">
+                <h3 className={`text-lg font-bold ${selectedObservation.textColor}`}>
+                  {selectedObservation.name}
+                </h3>
+                <p className="text-xs text-slate-400">난이도: {selectedObservation.level}</p>
+              </div>
+            </div>
+            <p className="text-sm text-slate-300 leading-relaxed mb-3">
+              {selectedObservation.description}
+            </p>
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${selectedObservation.color} animate-pulse`}></div>
+              관측 데이터 수집 중...
+            </div>
+          </div>
+        ) : (
+          <div 
+            className="p-4 rounded-xl backdrop-blur-md border text-center"
+            style={{
+              background: 'rgba(15, 23, 42, 0.4)',
+              borderColor: 'rgba(71, 85, 105, 0.3)',
+            }}
+          >
+            <p className="text-sm text-slate-400">
+              🔭 망원경을 통해 관측할 천체를 선택하세요
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* 망원경 조절 UI (좌하단) */}
+      <div className="absolute bottom-8 left-8 z-50 hidden md:flex flex-col gap-3 opacity-40 hover:opacity-80 transition-opacity duration-300">
+        <div 
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-slate-400 cursor-pointer transition-all hover:text-slate-200 hover:scale-110"
+          style={{
+            background: 'rgba(30, 41, 59, 0.6)',
+            border: '1px solid rgba(71, 85, 105, 0.4)',
+          }}
+        >
           +
         </div>
-        <div className="w-1 h-32 bg-gradient-to-b from-slate-600 to-slate-700 rounded-full border border-slate-500"></div>
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-slate-500 flex items-center justify-center text-lg text-slate-300 hover:border-slate-400 cursor-pointer transition-all hover:scale-110">
+        <div 
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-slate-400 cursor-pointer transition-all hover:text-slate-200 hover:scale-110"
+          style={{
+            background: 'rgba(30, 41, 59, 0.6)',
+            border: '1px solid rgba(71, 85, 105, 0.4)',
+          }}
+        >
           −
+        </div>
+      </div>
+
+      {/* 망원경 정보 (우하단) */}
+      <div className="absolute bottom-8 right-8 z-50 hidden md:block opacity-40 hover:opacity-80 transition-opacity duration-300">
+        <div 
+          className="px-4 py-2 rounded-lg text-xs text-slate-400"
+          style={{
+            background: 'rgba(30, 41, 59, 0.6)',
+            border: '1px solid rgba(71, 85, 105, 0.4)',
+          }}
+        >
+          <p>배율: x250</p>
+          <p className="mt-1">초점: AUTO</p>
         </div>
       </div>
     </div>
