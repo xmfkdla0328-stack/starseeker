@@ -343,6 +343,60 @@ export const ObservationScreen = ({ setScreen }) => {
                       ) : (
                         // 성운/가스층 스타일 - 테두리에서 침범
                         <div className="relative w-full h-full">
+                          {/* 검은 촉수들 - 사방으로 뻗침 */}
+                          {[...Array(16)].map((_, i) => {
+                            const angle = (i * 360 / 16);
+                            const distance = 60 + Math.random() * 80;
+                            const width = 3 + Math.random() * 5;
+                            return (
+                              <div
+                                key={`black-tendril-${i}`}
+                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-70"
+                                style={{
+                                  width: `${width}px`,
+                                  height: `${distance}px`,
+                                  background: `linear-gradient(to bottom, 
+                                    rgba(0, 0, 0, 0.8) 0%, 
+                                    rgba(0, 0, 0, ${0.5 + Math.random() * 0.3}) 40%,
+                                    rgba(20, 20, 20, ${0.3 + Math.random() * 0.2}) 70%, 
+                                    transparent 100%)`,
+                                  transform: `rotate(${angle}deg) translateY(-50%)`,
+                                  transformOrigin: 'top center',
+                                  filter: 'blur(3px)',
+                                  animation: `tendrilPulse ${3 + Math.random() * 3}s infinite ease-in-out`,
+                                  animationDelay: `${Math.random() * 3}s`,
+                                }}
+                              />
+                            );
+                          })}
+                          
+                          {/* 붉은 촉수들 - 약간 */}
+                          {[...Array(8)].map((_, i) => {
+                            const angle = (i * 360 / 8) + 22.5;
+                            const distance = 50 + Math.random() * 60;
+                            const width = 2 + Math.random() * 3;
+                            return (
+                              <div
+                                key={`red-tendril-${i}`}
+                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-50"
+                                style={{
+                                  width: `${width}px`,
+                                  height: `${distance}px`,
+                                  background: `linear-gradient(to bottom, 
+                                    rgba(139, 0, 0, 0.7) 0%, 
+                                    rgba(185, 28, 28, ${0.4 + Math.random() * 0.3}) 50%,
+                                    rgba(220, 38, 38, ${0.2 + Math.random() * 0.2}) 80%, 
+                                    transparent 100%)`,
+                                  transform: `rotate(${angle}deg) translateY(-50%)`,
+                                  transformOrigin: 'top center',
+                                  filter: 'blur(2px)',
+                                  animation: `tendrilPulse ${2.5 + Math.random() * 2}s infinite ease-in-out`,
+                                  animationDelay: `${Math.random() * 2}s`,
+                                }}
+                              />
+                            );
+                          })}
+
                           {/* 침범하는 가스 촉수들 */}
                           {[...Array(12)].map((_, i) => {
                             const angle = (i * 30) - 165;  // -165도부터 165도까지 (하단 반원)
