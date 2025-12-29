@@ -459,17 +459,6 @@ export const ObservationScreen = ({ setScreen }) => {
                           }`} style={{ marginTop: '-20%' }}>
                             <obs.icon className="w-16 h-16 text-white drop-shadow-2xl" strokeWidth={2.5} />
                           </div>
-                          
-                          {/* 테두리 글로우 */}
-                          <div 
-                            className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-2 rounded-full animate-pulse"
-                            style={{
-                              background: 'linear-gradient(to right, transparent, rgba(239, 68, 68, 0.8), transparent)',
-                              boxShadow: '0 0 20px rgba(239, 68, 68, 0.8)',
-                              filter: 'blur(2px)',
-                              animationDuration: '2s',
-                            }}
-                          ></div>
                         </div>
                       )}
                     </div>
