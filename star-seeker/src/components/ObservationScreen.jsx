@@ -343,57 +343,6 @@ export const ObservationScreen = ({ setScreen }) => {
                       ) : (
                         // 성운/가스층 스타일 - 테두리에서 침범
                         <div className="relative w-full h-full">
-                          {/* 테두리 밖에서 안으로 퍼지는 먼지 구름 */}
-                          <div 
-                            className="absolute inset-0"
-                            style={{
-                              background: `radial-gradient(ellipse at 50% 0%, 
-                                transparent 0%,
-                                rgba(239, 68, 68, 0.1) 15%,
-                                rgba(239, 68, 68, 0.3) 25%,
-                                rgba(220, 38, 38, 0.5) 35%,
-                                rgba(185, 28, 28, 0.7) 45%,
-                                rgba(153, 27, 27, 0.85) 55%,
-                                rgba(127, 29, 29, 0.9) 65%,
-                                rgba(127, 29, 29, 0.95) 75%,
-                                rgba(153, 27, 27, 0.9) 85%,
-                                transparent 100%)`,
-                              transform: 'translateY(-50%) scale(1.8, 2.5)',
-                              filter: 'blur(3px)',
-                            }}
-                          ></div>
-                          
-                          {/* 퍼지는 구름 레이어 1 */}
-                          <div 
-                            className="absolute inset-0 animate-pulse"
-                            style={{
-                              background: `radial-gradient(circle at 50% 0%, 
-                                rgba(248, 113, 113, 0.6) 0%,
-                                rgba(239, 68, 68, 0.4) 20%,
-                                rgba(220, 38, 38, 0.3) 35%,
-                                transparent 50%)`,
-                              transform: 'translateY(-40%) scale(2, 3)',
-                              filter: 'blur(8px)',
-                              animationDuration: '4s',
-                            }}
-                          ></div>
-                          
-                          {/* 퍼지는 구름 레이어 2 */}
-                          <div 
-                            className="absolute inset-0 animate-pulse"
-                            style={{
-                              background: `radial-gradient(ellipse at 50% 10%, 
-                                rgba(239, 68, 68, 0.5) 0%,
-                                rgba(220, 38, 38, 0.4) 25%,
-                                rgba(185, 28, 28, 0.3) 40%,
-                                transparent 60%)`,
-                              transform: 'translateY(-35%) scale(1.6, 2.2)',
-                              filter: 'blur(5px)',
-                              animationDuration: '5s',
-                              animationDelay: '1s',
-                            }}
-                          ></div>
-
                           {/* 침범하는 가스 촉수들 */}
                           {[...Array(12)].map((_, i) => {
                             const angle = (i * 30) - 165;  // -165도부터 165도까지 (하단 반원)
