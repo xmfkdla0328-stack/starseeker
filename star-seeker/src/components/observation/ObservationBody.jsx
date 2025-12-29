@@ -74,6 +74,13 @@ export const ObservationBody = ({ obs, isHovered }) => {
   // nebula: 이미지 기반 검은 손
   return (
     <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center">
+      {/* 은은한 회색 글로우 배경 */}
+      <div
+        className="absolute inset-0 rounded-full blur-2xl"
+        style={{
+          background: 'radial-gradient(circle, rgba(148,163,184,0.4) 0%, rgba(148,163,184,0.2) 40%, transparent 70%)',
+        }}
+      ></div>
       <img
         src="/images/calamity-hand.png"
         alt="Calamity Hand"
