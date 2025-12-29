@@ -23,9 +23,6 @@ export const InventoryScreen = ({ items = {}, setItems, setPlayerInfo, showToast
       return;
     }
     
-    // 아이템 정의 가져오기
-    const item = ITEM_DEFINITIONS[itemId];
-    
     // 아이템 효과 적용
     const success = applyItemEffect(itemId, item, { setPlayerInfo, showToast });
     
