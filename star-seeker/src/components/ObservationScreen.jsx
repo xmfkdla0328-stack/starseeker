@@ -358,6 +358,26 @@ export const ObservationScreen = ({ setScreen }) => {
                               </filter>
                             </defs>
                             
+                            {/* 배경 작은 손들 (여러 각도) */}
+                            {[...Array(8)].map((_, idx) => {
+                              const angle = (idx * 45);
+                              const distance = 55;
+                              const scale = 0.35;
+                              const x = 100 + distance * Math.cos((angle - 90) * Math.PI / 180);
+                              const y = 120 + distance * Math.sin((angle - 90) * Math.PI / 180);
+                              return (
+                                <g key={idx} transform={`translate(${x}, ${y}) scale(${scale}) rotate(${angle})`} opacity="0.35" filter="url(#handShadow)">
+                                  {/* 작은 손 실루엣 */}
+                                  <ellipse cx="0" cy="0" rx="20" ry="24" fill="url(#blackHandGrad)" />
+                                  <path d="M -8 -10 Q -8 -20, -8 -32 Q -8 -35, -4 -35 Q 0 -35 0 -32 Q 0 -20 2 -10 Z" fill="url(#blackHandGrad)" />
+                                  <path d="M 0 -12 Q 0 -22, 0 -34 Q 0 -37 4 -37 Q 8 -37 8 -34 Q 8 -22 8 -12 Z" fill="url(#blackHandGrad)" />
+                                  <path d="M 8 -10 Q 8 -20, 10 -32 Q 10 -35 14 -35 Q 18 -35 18 -32 Q 16 -20 14 -10 Z" fill="url(#blackHandGrad)" />
+                                  <path d="M -14 -4 Q -22 -12, -28 -20 Q -30 -25, -28 -28 Q -25 -28 -20 -18 Z" fill="url(#blackHandGrad)" />
+                                  <path d="M 14 -6 Q 22 -14, 28 -22 Q 30 -27 28 -30 Q 25 -30 20 -20 Z" fill="url(#blackHandGrad)" />
+                                </g>
+                              );
+                            })}
+
                             {/* 손 메인 실루엣 (아래에서 올라오는 형태) */}
                             <g filter="url(#handShadow)">
                               {/* 손목 */}
