@@ -366,15 +366,26 @@ export const ObservationScreen = ({ setScreen }) => {
                               </filter>
                             </defs>
                             
-                            {/* 배경 작은 손들 (여러 각도) */}
+                            {/* 배경 작은 손들 (아래에서 불규칙하게 산개) */}
                             {[...Array(12)].map((_, idx) => {
-                              const angle = (idx * 30);
-                              const distance = 48;
-                              const scale = 0.38;
-                              const x = 100 + distance * Math.cos((angle - 90) * Math.PI / 180);
-                              const y = 120 + distance * Math.sin((angle - 90) * Math.PI / 180);
+                              // 불규칙한 위치 배열 (아래쪽부터 올라오는 형태)
+                              const positions = [
+                                { x: 30, y: 160, angle: -25, scale: 0.5 },
+                                { x: 70, y: 145, angle: -10, scale: 0.48 },
+                                { x: 130, y: 150, angle: 15, scale: 0.52 },
+                                { x: 170, y: 155, angle: 25, scale: 0.46 },
+                                { x: 45, y: 125, angle: -18, scale: 0.44 },
+                                { x: 100, y: 135, angle: 5, scale: 0.5 },
+                                { x: 155, y: 130, angle: 20, scale: 0.47 },
+                                { x: 20, y: 105, angle: -30, scale: 0.42 },
+                                { x: 85, y: 100, angle: -8, scale: 0.45 },
+                                { x: 180, y: 110, angle: 28, scale: 0.43 },
+                                { x: 55, y: 85, angle: -15, scale: 0.40 },
+                                { x: 145, y: 90, angle: 18, scale: 0.41 },
+                              ];
+                              const pos = positions[idx];
                               return (
-                                <g key={idx} transform={`translate(${x}, ${y}) scale(${scale}) rotate(${angle})`} opacity="0.85" filter="url(#smallHandGlow)">
+                                <g key={idx} transform={`translate(${pos.x}, ${pos.y}) scale(${pos.scale}) rotate(${pos.angle})`} opacity="0.85" filter="url(#smallHandGlow)">
                                   {/* 작은 손 실루엣 */}
                                   <ellipse cx="0" cy="0" rx="20" ry="24" fill="url(#smallHandGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
                                   <path d="M -8 -10 Q -8 -20, -8 -32 Q -8 -35, -4 -35 Q 0 -35 0 -32 Q 0 -20 2 -10 Z" fill="url(#smallHandGrad)" stroke="rgba(255,255,255,0.3)" strokeWidth="0.8" />
@@ -386,8 +397,8 @@ export const ObservationScreen = ({ setScreen }) => {
                               );
                             })}
 
-                            {/* 손 메인 실루엣 (아래에서 올라오는 형태) */}
-                            <g filter="url(#handShadow)">
+                            {/* 손 메인 실루엣 (아래에서 올라오는 형태) - 크기 확대 */}
+                            <g filter="url(#handShadow)" transform="scale(1.4) translate(-15, -30)">
                               {/* 손목 */}
                               <path d="M 70 240 L 70 160 Q 70 140, 85 140 L 115 140 Q 130 140, 130 160 L 130 240 Z" fill="url(#blackHandGrad)" />
                               
