@@ -143,8 +143,6 @@ export const ObservationScreen = ({ setScreen }) => {
       <div className="absolute inset-0 flex items-center justify-center z-30">
         {/* 망원경 뷰포트 - 중앙 원형 영역 */}
         <div className="relative w-[70vh] h-[70vh] max-w-[70vw] max-h-[70vw]">
-{/* 망원경 뷰포트 - 중앙 원형 영역 */}
-        <div className="relative w-[70vh] h-[70vh] max-w-[70vw] max-h-[70vw]">
           {/* 망원경 내부 - 우주 공간 (선명하게 보이는 영역) */}
           <div className="absolute inset-0 rounded-full overflow-hidden">
             {/* 깊은 우주 배경 그라디언트 */}
