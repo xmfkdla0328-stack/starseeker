@@ -257,15 +257,17 @@ export const ObservationScreen = ({ setScreen }) => {
                       isHovered ? 'scale-125' : 'scale-100'
                     }`}
                   >
-                    {/* 외부 글로우 효과 */}
-                    <div
-                      className={`absolute -inset-8 rounded-full blur-3xl bg-gradient-to-r ${obs.glowColor} transition-all duration-500 ${
-                        isHovered || isSelected ? 'opacity-80 scale-150' : 'opacity-0 scale-75'
-                      }`}
-                    ></div>
+                    {/* 외부 글로우 효과 (edge 타입 제외) */}
+                    {obs.size !== 'edge' && (
+                      <div
+                        className={`absolute -inset-8 rounded-full blur-3xl bg-gradient-to-r ${obs.glowColor} transition-all duration-500 ${
+                          isHovered || isSelected ? 'opacity-80 scale-150' : 'opacity-0 scale-75'
+                        }`}
+                      ></div>
+                    )}
 
-                    {/* 호버/선택 시 궤도 링 */}
-                    {(isHovered || isSelected) && (
+                    {/* 호버/선택 시 궤도 링 (edge 타입 제외) */}
+                    {(isHovered || isSelected) && obs.size !== 'edge' && (
                       <div 
                         className="absolute -inset-6 rounded-full border border-dashed opacity-40 animate-spin" 
                         style={{ 
