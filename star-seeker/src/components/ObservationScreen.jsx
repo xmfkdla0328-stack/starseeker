@@ -253,7 +253,7 @@ export const ObservationScreen = ({ setScreen }) => {
                     onMouseEnter={() => setHoveredObservation(obs)}
                     onMouseLeave={() => setHoveredObservation(null)}
                     disabled={rotating}
-                    className={`relative ${buttonSize} transition-all duration-500 disabled:cursor-not-allowed ${
+                    className={`relative ${buttonSize} transition-all duration-500 disabled:cursor-not-allowed outline-none border-none ${
                       isHovered ? 'scale-125' : 'scale-100'
                     }`}
                   >
