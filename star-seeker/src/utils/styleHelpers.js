@@ -106,3 +106,74 @@ export const getAnimationDelay = (index, delayPerItem = 0.2) => {
   return { animationDelay: `${index * delayPerItem}s` };
 };
 
+/**
+ * 속도에 따른 색상 클래스 반환
+ * @param {number} speed 속도 값
+ * @returns {string} 색상 클래스
+ */
+export const getSpeedColorClass = (speed) => {
+  if (speed >= 130) return 'text-green-400';
+  if (speed >= 110) return 'text-blue-400';
+  if (speed >= 90) return 'text-yellow-400';
+  return 'text-slate-400';
+};
+
+/**
+ * HP 비율에 따른 색상 클래스 반환
+ * @param {number} hpRatio HP 비율 (0~1)
+ * @returns {string} 색상 클래스
+ */
+export const getHpColorClass = (hpRatio) => {
+  if (hpRatio > 0.6) return 'bg-green-500';
+  if (hpRatio > 0.3) return 'bg-yellow-500';
+  return 'bg-red-500';
+};
+
+/**
+ * 버프/디버프 타입에 따른 색상 반환
+ * @param {string} type 버프 타입
+ * @returns {string} 색상 클래스
+ */
+export const getBuffColorClass = (type) => {
+  if (type.includes('ATK')) return 'text-red-400';
+  if (type.includes('DEF')) return 'text-blue-400';
+  if (type.includes('HEAL')) return 'text-green-400';
+  if (type.includes('SHIELD')) return 'text-cyan-400';
+  return 'text-slate-400';
+};
+
+/**
+ * 아이템 레어도에 따른 스타일 반환
+ * @param {string} rarity 레어도 ('common', 'rare', 'epic', 'legendary')
+ * @returns {Object} 스타일 클래스
+ */
+export const getItemRarityClasses = (rarity) => {
+  const rarityMap = {
+    common: {
+      bg: 'bg-slate-500/20',
+      border: 'border-slate-400/30',
+      text: 'text-slate-300',
+      glow: '',
+    },
+    rare: {
+      bg: 'bg-blue-500/20',
+      border: 'border-blue-400/30',
+      text: 'text-blue-300',
+      glow: 'shadow-[0_0_10px_rgba(59,130,246,0.3)]',
+    },
+    epic: {
+      bg: 'bg-purple-500/20',
+      border: 'border-purple-400/30',
+      text: 'text-purple-300',
+      glow: 'shadow-[0_0_15px_rgba(168,85,247,0.3)]',
+    },
+    legendary: {
+      bg: 'bg-yellow-500/20',
+      border: 'border-yellow-400/30',
+      text: 'text-yellow-300',
+      glow: 'shadow-[0_0_20px_rgba(250,204,21,0.4)]',
+    },
+  };
+  return rarityMap[rarity] || rarityMap.common;
+};
+
