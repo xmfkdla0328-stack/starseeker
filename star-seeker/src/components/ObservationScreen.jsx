@@ -532,7 +532,7 @@ export const ObservationScreen = ({ setScreen }) => {
       </div>
 
       {/* 하단 정보 패널 (망원경 밖의 어두운 영역) */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-50">
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-50">
         {selectedObservation ? (
           <div 
             className="p-4 rounded-xl backdrop-blur-md border transition-all duration-500 transform"
@@ -569,7 +569,7 @@ export const ObservationScreen = ({ setScreen }) => {
             }}
           >
             <p className="text-sm text-slate-400">
-              🔭 망원경을 통해 관측할 천체를 선택하세요
+              🔭 관측할 천체를 선택하세요
             </p>
           </div>
         )}
