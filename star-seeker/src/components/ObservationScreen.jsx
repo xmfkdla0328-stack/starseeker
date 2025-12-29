@@ -18,11 +18,16 @@ export const ObservationScreen = ({ setScreen }) => {
   const observations = observationDefs;
 
   const handleObservationSelect = (obs) => {
-    setSelectedObservation(obs);
-    setRotating(true);
-    setTimeout(() => {
-      setScreen('BATTLE');
-    }, 1200);
+    if (selectedObservation?.id === obs.id) {
+      // 같은 버튼 재클릭 시 회전 시작
+      setRotating(true);
+      setTimeout(() => {
+        setScreen('BATTLE');
+      }, 1200);
+    } else {
+      // 다른 버튼 클릭 시 선택만 변경
+      setSelectedObservation(obs);
+    }
   };
 
   return (
@@ -138,7 +143,7 @@ export const ObservationScreen = ({ setScreen }) => {
                     aria-label={obs.name}
                     aria-disabled={rotating}
                     onClick={() => handleObservationSelect(obs)}
-                    onMouseEnter={() => setHoveredObservation(obs)}
+                    onMouseEnter={() => !rotating && setHoveredObservation(obs)}
                     onMouseLeave={() => setHoveredObservation(null)}
                     disabled={rotating}
                     className={`relative ${buttonSize} transition-all duration-500 disabled:cursor-not-allowed outline-none border-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
@@ -154,8 +159,8 @@ export const ObservationScreen = ({ setScreen }) => {
                       ></div>
                     )}
 
-                    {/* 호버/선택 시 궤도 링 (edge 타입 제외) */}
-                    {(isHovered || isSelected) && obs.size !== 'edge' && (
+                    {/* 호버 시 궤도 링 (edge 타입 제외) */}
+                    {isHovered && obs.size !== 'edge' && (
                       <div 
                         className="absolute -inset-6 rounded-full border border-dashed opacity-40 animate-spin" 
                         style={{ 
@@ -202,8 +207,8 @@ export const ObservationScreen = ({ setScreen }) => {
         </div>
       </div>
 
-      {/* 하단 정보 패널 (망원경 밖의 어두운 영역) */}
-      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-50">
+      {/* 우측 정보 패널 (망원경 밖의 어두운 영역) */}
+      <div className="absolute right-8 top-1/2 -translate-y-1/2 w-full max-w-sm px-4 z-50">
         {selectedObservation ? (
           <div 
             className="p-4 rounded-xl backdrop-blur-md border transition-all duration-500 transform"
