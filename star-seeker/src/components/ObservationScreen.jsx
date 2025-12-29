@@ -15,6 +15,7 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
   const [selectedObservation, setSelectedObservation] = useState(null);
   const [hoveredObservation, setHoveredObservation] = useState(null);
   const [rotating, setRotating] = useState(false);
+  const [partyWarning, setPartyWarning] = useState(false);
   const observations = observationDefs;
 
   const handleObservationSelect = (obs) => {
@@ -23,7 +24,8 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
       if (obs.id === 'CALAMITY') {
         const frontChars = party.front.filter((c) => c !== null);
         if (frontChars.length === 0) {
-          alert('파티 편성이 필요합니다.');
+          setPartyWarning(true);
+          setTimeout(() => setPartyWarning(false), 3000);
           return;
         }
       }
@@ -221,7 +223,33 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
 
       {/* 우측 정보 패널 (망원경 밖의 어두운 영역) */}
       <div className="absolute right-8 top-1/2 -translate-y-1/2 w-full max-w-sm px-4 z-50">
-        {selectedObservation ? (
+        {partyWarning ? (
+          <div 
+            className="p-6 rounded-xl backdrop-blur-md border transition-all duration-500 transform animate-pulse"
+            style={{
+              background: 'rgba(127, 29, 29, 0.6)',
+              borderColor: 'rgba(239, 68, 68, 0.6)',
+              boxShadow: '0 0 30px rgba(239, 68, 68, 0.3)',
+            }}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-700 shadow-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-2xl">⚠️</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-red-200">
+                  경고
+                </h3>
+              </div>
+            </div>
+            <p className="text-base text-red-100 leading-relaxed font-semibold">
+              파티 편성이 필요합니다.
+            </p>
+            <p className="text-sm text-red-200 mt-2 opacity-80">
+              전투에 참여할 캐릭터를 파티에 배치해주세요.
+            </p>
+          </div>
+        ) : selectedObservation ? (
           <div 
             className="p-4 rounded-xl backdrop-blur-md border transition-all duration-500 transform"
             style={{
