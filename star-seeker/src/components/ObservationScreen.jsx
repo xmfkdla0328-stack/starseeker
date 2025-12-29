@@ -19,18 +19,32 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
 
   const handleObservationSelect = (obs) => {
     if (selectedObservation?.id === obs.id) {
+      // 재앙 관측의 경우 파티 편성 확인
+      if (obs.id === 'CALAMITY') {
+        const frontChars = party.front.filter((c) => c !== null);
+        if (frontChars.length === 0) {
+          alert('파티 편성이 필요합니다.');
+          return;
+        }
+      }
+      
       // 같은 버튼 재클릭 시 회전 시작
       setRotating(true);
-      setTimeout(() => {
-        if (obs.id === 'CALAMITY') {
-          // 재앙 관측은 화염룡 전투로 직접 이동
-          startBattle();
+      
+      if (obs.id === 'CALAMITY') {
+        // 재앙 관측은 화염룡 전투로 직접 이동
+        // 먼저 전투를 초기화하고
+        startBattle();
+        // 회전 애니메이션 후 화면 전환
+        setTimeout(() => {
           setScreen('BATTLE');
-        } else {
-          // 다른 관측은 전투 준비 화면 (PARTY)으로 이동
+        }, 1200);
+      } else {
+        // 다른 관측은 전투 준비 화면 (PARTY)으로 이동
+        setTimeout(() => {
           setScreen('PARTY');
-        }
-      }, 1200);
+        }, 1200);
+      }
     } else {
       // 다른 버튼 클릭 시 선택만 변경
       setSelectedObservation(obs);
