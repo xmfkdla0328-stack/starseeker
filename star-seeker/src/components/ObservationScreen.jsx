@@ -22,8 +22,10 @@ export const ObservationScreen = ({ setScreen }) => {
       glowColor: 'from-blue-500/80 to-cyan-500/80',
       textColor: 'text-blue-300',
       darkColor: 'from-blue-900/80 to-cyan-900/80',
-      position: 0,
+      posX: -120,  // 왼쪽 위
+      posY: -80,
       level: '초급~중급',
+      type: 'planet',
     },
     {
       id: 'RUIN',
@@ -35,8 +37,10 @@ export const ObservationScreen = ({ setScreen }) => {
       glowColor: 'from-yellow-500/80 to-amber-500/80',
       textColor: 'text-yellow-300',
       darkColor: 'from-yellow-900/80 to-amber-900/80',
-      position: 120,
+      posX: 120,  // 오른쪽 위
+      posY: -80,
       level: '중급~상급',
+      type: 'saturn',  // 토성 스타일
     },
     {
       id: 'CALAMITY',
@@ -48,8 +52,10 @@ export const ObservationScreen = ({ setScreen }) => {
       glowColor: 'from-red-500/80 to-orange-500/80',
       textColor: 'text-red-300',
       darkColor: 'from-red-900/80 to-orange-900/80',
-      position: 240,
+      posX: 0,  // 아래 중앙
+      posY: 120,
       level: '상급~최상급',
+      type: 'nebula',  // 성운 스타일
     },
   ];
 
@@ -198,10 +204,6 @@ export const ObservationScreen = ({ setScreen }) => {
 
             {/* 관측 대상들 (행성/별) */}
             {observations.map((obs) => {
-              const angle = (obs.position * Math.PI) / 180;
-              const radius = 110;
-              const x = Math.cos(angle) * radius;
-              const y = Math.sin(angle) * radius;
               const isSelected = selectedObservation?.id === obs.id;
               const isHovered = hoveredObservation?.id === obs.id;
 
@@ -212,8 +214,8 @@ export const ObservationScreen = ({ setScreen }) => {
                     rotating && isSelected ? 'scale-[3] opacity-0' : 'scale-100 opacity-100'
                   }`}
                   style={{
-                    left: `calc(50% + ${x}px - 48px)`,
-                    top: `calc(50% + ${y}px - 48px)`,
+                    left: `calc(50% + ${obs.posX}px - 64px)`,
+                    top: `calc(50% + ${obs.posY}px - 64px)`,
                   }}
                 >
                   <button
@@ -221,7 +223,7 @@ export const ObservationScreen = ({ setScreen }) => {
                     onMouseEnter={() => setHoveredObservation(obs)}
                     onMouseLeave={() => setHoveredObservation(null)}
                     disabled={rotating}
-                    className={`relative w-24 h-24 transition-all duration-500 disabled:cursor-not-allowed ${
+                    className={`relative w-32 h-32 transition-all duration-500 disabled:cursor-not-allowed ${
                       isHovered ? 'scale-125' : 'scale-100'
                     }`}
                   >
@@ -244,32 +246,130 @@ export const ObservationScreen = ({ setScreen }) => {
                     )}
 
                     {/* 행성/별 본체 */}
-                    <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl">
-                      {/* 행성 베이스 */}
-                      <div className={`absolute inset-0 bg-gradient-to-br ${obs.color}`}></div>
-
-                      {/* 입체감 - 구형 음영 */}
-                      <div 
-                        className="absolute inset-0 rounded-full"
-                        style={{
-                          background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 30%, rgba(0,0,0,0.4) 80%)',
-                        }}
-                      ></div>
-
-                      {/* 하이라이트 */}
-                      <div 
-                        className="absolute top-2 left-3 w-8 h-8 rounded-full bg-white/50 blur-md"
-                      ></div>
-
-                      {/* 아이콘 */}
-                      <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
-                        isHovered ? 'scale-110' : ''
-                      }`}>
-                        <obs.icon className="w-10 h-10 text-white drop-shadow-2xl" strokeWidth={2.5} />
-                      </div>
-
-                      {/* 대기권 효과 (선택적) */}
-                      <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
+                    <div className="relative w-full h-full">
+                      {obs.type === 'planet' ? (
+                        // 일반 행성
+                        <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl">
+                          <div className={`absolute inset-0 bg-gradient-to-br ${obs.color}`}></div>
+                          <div 
+                            className="absolute inset-0 rounded-full"
+                            style={{
+                              background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 30%, rgba(0,0,0,0.4) 80%)',
+                            }}
+                          ></div>
+                          <div className="absolute top-2 left-3 w-10 h-10 rounded-full bg-white/50 blur-md"></div>
+                          <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
+                            isHovered ? 'scale-110' : ''
+                          }`}>
+                            <obs.icon className="w-12 h-12 text-white drop-shadow-2xl" strokeWidth={2.5} />
+                          </div>
+                          <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
+                        </div>
+                      ) : obs.type === 'saturn' ? (
+                        // 토성 스타일 (고리가 있는 행성)
+                        <div className="relative w-full h-full">
+                          {/* 행성 본체 */}
+                          <div className="absolute inset-0 rounded-full overflow-hidden shadow-2xl">
+                            <div className={`absolute inset-0 bg-gradient-to-br ${obs.color}`}></div>
+                            <div 
+                              className="absolute inset-0 rounded-full"
+                              style={{
+                                background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 30%, rgba(0,0,0,0.4) 80%)',
+                              }}
+                            ></div>
+                            <div className="absolute top-2 left-3 w-10 h-10 rounded-full bg-white/50 blur-md"></div>
+                            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
+                              isHovered ? 'scale-110' : ''
+                            }`}>
+                              <obs.icon className="w-12 h-12 text-white drop-shadow-2xl" strokeWidth={2.5} />
+                            </div>
+                            <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
+                          </div>
+                          {/* 토성 고리 */}
+                          <div 
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[35%] pointer-events-none"
+                            style={{
+                              transform: 'translate(-50%, -50%) perspective(100px) rotateX(75deg)',
+                              transformOrigin: 'center',
+                            }}
+                          >
+                            <div 
+                              className="absolute inset-0 rounded-full border-4 opacity-60"
+                              style={{
+                                borderColor: 'rgba(251, 191, 36, 0.6)',
+                                boxShadow: 'inset 0 0 20px rgba(251, 191, 36, 0.4), 0 0 15px rgba(251, 191, 36, 0.3)',
+                              }}
+                            ></div>
+                            <div 
+                              className="absolute inset-1 rounded-full border-2 opacity-40"
+                              style={{
+                                borderColor: 'rgba(245, 158, 11, 0.5)',
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+                      ) : (
+                        // 성운/가스층 스타일
+                        <div className="relative w-full h-full rounded-full">
+                          {/* 성운 베이스 */}
+                          <div 
+                            className="absolute inset-0 rounded-full"
+                            style={{
+                              background: `radial-gradient(ellipse at center, 
+                                rgba(248, 113, 113, 0.8) 0%, 
+                                rgba(251, 146, 60, 0.6) 20%, 
+                                rgba(252, 165, 165, 0.4) 40%, 
+                                rgba(254, 202, 202, 0.2) 60%, 
+                                transparent 80%)`,
+                              filter: 'blur(2px)',
+                            }}
+                          ></div>
+                          {/* 가스층 효과 */}
+                          <div 
+                            className="absolute inset-0 rounded-full animate-pulse"
+                            style={{
+                              background: `radial-gradient(circle at 60% 40%, 
+                                rgba(239, 68, 68, 0.6) 0%, 
+                                rgba(249, 115, 22, 0.4) 30%, 
+                                transparent 60%)`,
+                              filter: 'blur(4px)',
+                              animationDuration: '3s',
+                            }}
+                          ></div>
+                          {/* 별의 먼지 파티클 */}
+                          <div className="absolute inset-0">
+                            {[...Array(8)].map((_, i) => (
+                              <div
+                                key={i}
+                                className="absolute rounded-full bg-white"
+                                style={{
+                                  width: Math.random() * 3 + 1 + 'px',
+                                  height: Math.random() * 3 + 1 + 'px',
+                                  left: Math.random() * 100 + '%',
+                                  top: Math.random() * 100 + '%',
+                                  opacity: Math.random() * 0.6 + 0.3,
+                                  animation: `twinkle ${Math.random() * 2 + 1}s infinite ease-in-out`,
+                                  animationDelay: `${Math.random() * 2}s`,
+                                }}
+                              />
+                            ))}
+                          </div>
+                          {/* 중앙 밝은 코어 */}
+                          <div 
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full"
+                            style={{
+                              background: 'radial-gradient(circle, rgba(254, 226, 226, 0.9) 0%, rgba(252, 165, 165, 0.6) 40%, transparent 70%)',
+                              boxShadow: '0 0 20px rgba(248, 113, 113, 0.8)',
+                            }}
+                          ></div>
+                          {/* 아이콘 */}
+                          <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
+                            isHovered ? 'scale-110' : ''
+                          }`}>
+                            <obs.icon className="w-12 h-12 text-white drop-shadow-2xl" strokeWidth={2.5} />
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* 펄스 효과 (호버 시) */}
