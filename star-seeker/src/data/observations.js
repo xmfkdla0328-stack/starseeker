@@ -1,0 +1,52 @@
+// 관측 대상 데이터 분리
+export const observations = [
+  {
+    id: 'PLANET',
+    name: '행성 관측',
+    shortName: 'PLANET',
+    description:
+      '게임의 메인 스토리를 진행하는 컨텐츠입니다. 다양한 행성을 관측하며 이야기를 진행합니다.',
+    color: 'from-blue-400 to-cyan-400',
+    glowColor: 'from-blue-500/80 to-cyan-500/80',
+    textColor: 'text-blue-300',
+    darkColor: 'from-blue-900/80 to-cyan-900/80',
+    posX: -64,
+    posY: -129,
+    level: '초급~중급',
+    type: 'planet',
+    size: 'large',
+  },
+  {
+    id: 'RUIN',
+    name: '성흔 관측',
+    shortName: 'RUIN',
+    description:
+      '별의 조각과 별의 먼지를 획득할 수 있는 컨텐츠입니다. 캐릭터 강화에 필수적인 아이템들을 파밍합니다.',
+    color: 'from-yellow-400 to-amber-400',
+    glowColor: 'from-yellow-500/80 to-amber-500/80',
+    textColor: 'text-yellow-300',
+    darkColor: 'from-yellow-900/80 to-amber-900/80',
+    posX: 144,
+    posY: -9,
+    level: '중급~상급',
+    type: 'saturn',
+    size: 'normal',
+  },
+  {
+    id: 'CALAMITY',
+    name: '재앙 관측',
+    shortName: 'CALAMITY',
+    description:
+      '높은 난이도의 컨텐츠로, 강력한 보상을 얻을 수 있습니다. 도전적인 전투를 원하는 플레이어를 위한 컨텐츠입니다.',
+    color: 'from-red-400 to-orange-400',
+    glowColor: 'from-red-500/80 to-orange-500/80',
+    textColor: 'text-red-300',
+    darkColor: 'from-red-900/80 to-orange-900/80',
+    posX: -60,
+    posY: 104,
+    level: '상급~최상급',
+    type: 'nebula',
+    size: 'edge',
+    edgePosition: 'bottom',
+  },
+];

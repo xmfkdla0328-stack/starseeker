@@ -4,7 +4,7 @@
  */
 
 import { LEVEL_EXP_TABLE } from './expTable';
-import { BREAKTHROUGH_STAGES, getMaxLevelByBreakthrough } from './breakthroughItems';
+import { BREAKTHROUGH_STAGES } from './breakthroughItems';
 
 /**
  * 캐릭터 레벨에 따른 스탯 계산

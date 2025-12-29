@@ -1,3 +1,43 @@
+// 관측 화면 버튼/배치 상수
+export const OBS_BUTTON_CONFIG = {
+  edge: { sizeClass: 'w-64 h-64', offset: 128, edgePos: { x: 0, y: 260 } },
+  large: { sizeClass: 'w-40 h-40', offset: 80 },
+  normal: { sizeClass: 'w-32 h-32', offset: 64 },
+};
+
+export const LENS_CONFIG = {
+  viewportVH: 80, // 뷰포트 지름 비율
+  rimVH: 100,     // 렌즈 테두리 지름 비율
+};
+
+export const OBS_ANIM = {
+  orbitSpinSec: 20,
+  hoverScale: 1.25,
+  glowOpacity: 0.8,
+  glowScale: 1.5,
+  pingDurationSec: 0.75,
+};
+
+// 관측 대상 좌표/크기 해석기
+export const resolveObservationLayout = (obs) => {
+  if (obs.size === 'edge') {
+    const cfg = OBS_BUTTON_CONFIG.edge;
+    return {
+      buttonSize: cfg.sizeClass,
+      offset: cfg.offset,
+      posX: cfg.edgePos.x,
+      posY: cfg.edgePos.y,
+    };
+  }
+  const key = obs.size === 'large' ? 'large' : 'normal';
+  const cfg = OBS_BUTTON_CONFIG[key];
+  return {
+    buttonSize: cfg.sizeClass,
+    offset: cfg.offset,
+    posX: obs.posX,
+    posY: obs.posY,
+  };
+};
 /**
  * 게임 화면 전용 상수들
  */

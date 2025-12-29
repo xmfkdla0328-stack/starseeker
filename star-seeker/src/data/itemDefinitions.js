@@ -1,4 +1,4 @@
-import { Sparkles, Star, Flask } from 'lucide-react';
+import { Sparkles, Star, Beaker } from 'lucide-react';
 import { ITEM_TYPES } from './items/itemTypes';
 import { createAllFragmentDefinitions } from './items/fragmentDefinitions';
 export { applyItemEffect } from './items/itemEffects';
@@ -40,7 +40,7 @@ const BASE_ITEMS = {
   boundary_potion: {
     id: 'boundary_potion',
     name: '경계의 물약',
-    icon: Flask,
+    icon: Beaker,
     description: '시간의 경계를 넘나드는 신비한 물약. 사용 시 즉시 레벨 50으로 상승합니다. (테스트용 아이템)',
     type: ITEM_TYPES.CONSUMABLE,
     rarity: 'legendary',

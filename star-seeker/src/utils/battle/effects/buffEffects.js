@@ -1,6 +1,5 @@
 import { BATTLE_CONST } from '../constants';
 import { applyUltLevelBonus } from '../skillLogic';
-import { EFFECT_TYPES } from '../effectTypes';
 
 /**
  * 버프 효과 관련 함수들

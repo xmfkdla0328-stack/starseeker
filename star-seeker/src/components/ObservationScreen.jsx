@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { ChevronLeft, Star, Zap, Skull } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
+import { ObservationBody } from './observation/ObservationBody';
+import { StarField } from './observation/StarField';
+import './observation/ObservationScreen.css';
+import { observations as observationDefs } from '../data/observations';
+import { resolveObservationLayout, LENS_CONFIG, OBS_ANIM } from '../utils/screenConfig';
 
 /**
  * 망원경 관측 화면 (서정적 UI)
@@ -10,58 +15,7 @@ export const ObservationScreen = ({ setScreen }) => {
   const [selectedObservation, setSelectedObservation] = useState(null);
   const [hoveredObservation, setHoveredObservation] = useState(null);
   const [rotating, setRotating] = useState(false);
-
-  const observations = [
-    {
-      id: 'PLANET',
-      name: '행성 관측',
-      shortName: 'PLANET',
-      description: '게임의 메인 스토리를 진행하는 컨텐츠입니다. 다양한 행성을 관측하며 이야기를 진행합니다.',
-      icon: Star,
-      color: 'from-blue-400 to-cyan-400',
-      glowColor: 'from-blue-500/80 to-cyan-500/80',
-      textColor: 'text-blue-300',
-      darkColor: 'from-blue-900/80 to-cyan-900/80',
-      posX: -64,  // 30도 회전 후 좌표
-      posY: -129,
-      level: '초급~중급',
-      type: 'planet',
-      size: 'large',  // 행성 관측은 더 크게
-    },
-    {
-      id: 'RUIN',
-      name: '성흔 관측',
-      shortName: 'RUIN',
-      description: '별의 조각과 별의 먼지를 획득할 수 있는 컨텐츠입니다. 캐릭터 강화에 필수적인 아이템들을 파밍합니다.',
-      icon: Zap,
-      color: 'from-yellow-400 to-amber-400',
-      glowColor: 'from-yellow-500/80 to-amber-500/80',
-      textColor: 'text-yellow-300',
-      darkColor: 'from-yellow-900/80 to-amber-900/80',
-      posX: 144,  // 30도 회전 후 좌표
-      posY: -9,
-      level: '중급~상급',
-      type: 'saturn',  // 토성 스타일
-      size: 'normal',
-    },
-    {
-      id: 'CALAMITY',
-      name: '재앙 관측',
-      shortName: 'CALAMITY',
-      description: '높은 난이도의 컨텐츠로, 강력한 보상을 얻을 수 있습니다. 도전적인 전투를 원하는 플레이어를 위한 컨텐츠입니다.',
-      icon: Skull,
-      color: 'from-red-400 to-orange-400',
-      glowColor: 'from-red-500/80 to-orange-500/80',
-      textColor: 'text-red-300',
-      darkColor: 'from-red-900/80 to-orange-900/80',
-      posX: -60,  // 30도 회전 후 좌표
-      posY: 104,
-      level: '상급~최상급',
-      type: 'nebula',  // 성운 스타일
-      size: 'edge',  // 테두리에 위치
-      edgePosition: 'bottom',  // 하단 테두리
-    },
-  ];
+  const observations = observationDefs;
 
   const handleObservationSelect = (obs) => {
     setSelectedObservation(obs);
@@ -78,36 +32,7 @@ export const ObservationScreen = ({ setScreen }) => {
 
       {/* 희미한 별 배경 (망원경 밖의 어두운 우주) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-        {[...Array(100)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white"
-            style={{
-              width: Math.random() * 2 + 0.3 + 'px',
-              height: Math.random() * 2 + 0.3 + 'px',
-              left: Math.random() * 100 + '%',
-              top: Math.random() * 100 + '%',
-              opacity: Math.random() * 0.3 + 0.1,
-              animation: `twinkle ${Math.random() * 5 + 3}s infinite ease-in-out`,
-            }}
-          />
-        ))}
-        <style>{`
-          @keyframes twinkle {
-            0%, 100% { opacity: 0.05; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(1.2); }
-          }
-          @keyframes telescopeBreath {
-            0%, 100% { transform: scale(1); opacity: 0.4; }
-            50% { transform: scale(1.02); opacity: 0.6; }
-          }
-          @keyframes tendrilPulse {
-            0%, 100% { opacity: 0.3; transform: translateY(-50%) scale(1); }
-            50% { opacity: 0.7; transform: translateY(-55%) scale(1.1); }
-          }
-          /* 재앙 손 효과: 위로 뻗어오르는 + 좌우 미세 흔들림 */
-
-        `}</style>
+        <StarField count={100} variant="outside" />
       </div>
 
       {/* 망원경 비네팅 효과 - 가장자리가 점점 어두워짐 */}
@@ -121,7 +46,7 @@ export const ObservationScreen = ({ setScreen }) => {
       {/* 망원경 렌즈 테두리 */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
         <div 
-          className="relative w-[100vh] h-[100vh] max-w-[100vw] max-h-[100vw]"
+          className={`relative w-[${LENS_CONFIG.rimVH}vh] h-[${LENS_CONFIG.rimVH}vh] max-w-[100vw] max-h-[100vw]`}
           style={{
             background: 'radial-gradient(circle, transparent 48%, rgba(30,41,59,0.8) 50%, rgba(15,23,42,0.95) 52%, transparent 54%)',
           }}
@@ -158,36 +83,14 @@ export const ObservationScreen = ({ setScreen }) => {
       {/* 망원경 뷰포트 중앙 컨텐츠 */}
       <div className="absolute inset-0 flex items-center justify-center z-30">
         {/* 망원경 뷰포트 - 중앙 원형 영역 */}
-        <div className="relative w-[80vh] h-[80vh] max-w-[80vw] max-h-[80vw]">
+        <div className={`relative w-[${LENS_CONFIG.viewportVH}vh] h-[${LENS_CONFIG.viewportVH}vh] max-w-[80vw] max-h-[80vw]`}>
           {/* 망원경 내부 - 우주 공간 (선명하게 보이는 영역) */}
           <div className="absolute inset-0 rounded-full overflow-hidden">
             {/* 깊은 우주 배경 그라디언트 */}
             <div className="absolute inset-0 bg-gradient-radial from-indigo-950/80 via-slate-950 to-black"></div>
 
             {/* 망원경 안의 선명한 별들 */}
-            <div className="absolute inset-0">
-              {[...Array(50)].map((_, i) => {
-                const size = Math.random() * 3 + 1;
-                const left = Math.random() * 100;
-                const top = Math.random() * 100;
-                return (
-                  <div
-                    key={i}
-                    className="absolute rounded-full bg-white"
-                    style={{
-                      width: size + 'px',
-                      height: size + 'px',
-                      left: left + '%',
-                      top: top + '%',
-                      opacity: Math.random() * 0.8 + 0.2,
-                      animation: `twinkle ${Math.random() * 4 + 2}s infinite ease-in-out`,
-                      animationDelay: `${Math.random() * 2}s`,
-                      boxShadow: `0 0 ${size * 2}px rgba(255,255,255,${Math.random() * 0.5 + 0.3})`,
-                    }}
-                  />
-                );
-              })}
-            </div>
+            <StarField count={50} variant="inside" />
 
             {/* 망원경 포커스 그리드 (희미하게) */}
             <div className="absolute inset-0 opacity-10">
@@ -218,26 +121,7 @@ export const ObservationScreen = ({ setScreen }) => {
               const isHovered = hoveredObservation?.id === obs.id;
               
               // 크기 설정
-              let buttonSize, offset, posX, posY;
-              
-              if (obs.size === 'edge') {
-                // 테두리에 위치하는 경우 - 더 크게
-                buttonSize = 'w-64 h-64';
-                offset = 128;
-                // 망원경 하단 테두리 위치 (반지름 약 40vh ≈ 280-300px)
-                posX = 0;
-                posY = 260;  // 테두리 근처
-              } else if (obs.size === 'large') {
-                buttonSize = 'w-40 h-40';
-                offset = 80;
-                posX = obs.posX;
-                posY = obs.posY;
-              } else {
-                buttonSize = 'w-32 h-32';
-                offset = 64;
-                posX = obs.posX;
-                posY = obs.posY;
-              }
+              const { buttonSize, offset, posX, posY } = resolveObservationLayout(obs);
 
               return (
                 <div
@@ -251,19 +135,21 @@ export const ObservationScreen = ({ setScreen }) => {
                   }}
                 >
                   <button
+                    aria-label={obs.name}
+                    aria-disabled={rotating}
                     onClick={() => handleObservationSelect(obs)}
                     onMouseEnter={() => setHoveredObservation(obs)}
                     onMouseLeave={() => setHoveredObservation(null)}
                     disabled={rotating}
-                    className={`relative ${buttonSize} transition-all duration-500 disabled:cursor-not-allowed outline-none border-none ${
-                      isHovered ? 'scale-125' : 'scale-100'
+                    className={`relative ${buttonSize} transition-all duration-500 disabled:cursor-not-allowed outline-none border-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
+                      isHovered ? `scale-[${OBS_ANIM.hoverScale}]` : 'scale-100'
                     }`}
                   >
                     {/* 외부 글로우 효과 (edge 타입 제외) */}
                     {obs.size !== 'edge' && (
                       <div
                         className={`absolute -inset-8 rounded-full blur-3xl bg-gradient-to-r ${obs.glowColor} transition-all duration-500 ${
-                          isHovered || isSelected ? 'opacity-80 scale-150' : 'opacity-0 scale-75'
+                          isHovered || isSelected ? `opacity-${(OBS_ANIM.glowOpacity * 100).toFixed(0)} scale-${(OBS_ANIM.glowScale * 100).toFixed(0)}` : 'opacity-0 scale-75'
                         }`}
                       ></div>
                     )}
@@ -274,96 +160,21 @@ export const ObservationScreen = ({ setScreen }) => {
                         className="absolute -inset-6 rounded-full border border-dashed opacity-40 animate-spin" 
                         style={{ 
                           borderColor: obs.color.split(' ')[1].replace('to-', ''),
-                          animationDuration: '20s',
+                          animationDuration: `${OBS_ANIM.orbitSpinSec}s`,
                         }}
                       ></div>
                     )}
 
-                    {/* 행성/별 본체 */}
-                    <div className="relative w-full h-full">
-                      {obs.type === 'planet' ? (
-                        // 일반 행성
-                        <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl">
-                          <div className={`absolute inset-0 bg-gradient-to-br ${obs.color}`}></div>
-                          <div 
-                            className="absolute inset-0 rounded-full"
-                            style={{
-                              background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 30%, rgba(0,0,0,0.4) 80%)',
-                            }}
-                          ></div>
-                          <div className="absolute top-2 left-3 w-10 h-10 rounded-full bg-white/50 blur-md"></div>
-
-                          <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
-                        </div>
-                      ) : obs.type === 'saturn' ? (
-                        // 토성 스타일 (고리가 있는 행성)
-                        <div className="relative w-full h-full">
-                          {/* 행성 본체 */}
-                          <div className="absolute inset-0 rounded-full overflow-hidden shadow-2xl">
-                            <div className={`absolute inset-0 bg-gradient-to-br ${obs.color}`}></div>
-                            <div 
-                              className="absolute inset-0 rounded-full"
-                              style={{
-                                background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 30%, rgba(0,0,0,0.4) 80%)',
-                              }}
-                            ></div>
-                            <div className="absolute top-2 left-3 w-10 h-10 rounded-full bg-white/50 blur-md"></div>
-
-                            <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
-                          </div>
-                          {/* 토성 고리 */}
-                          <div 
-                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[35%] pointer-events-none"
-                            style={{
-                              transform: 'translate(-50%, -50%) perspective(100px) rotateX(75deg)',
-                              transformOrigin: 'center',
-                            }}
-                          >
-                            <div 
-                              className="absolute inset-0 rounded-full border-4 opacity-60"
-                              style={{
-                                borderColor: 'rgba(251, 191, 36, 0.6)',
-                                boxShadow: 'inset 0 0 20px rgba(251, 191, 36, 0.4), 0 0 15px rgba(251, 191, 36, 0.3)',
-                              }}
-                            ></div>
-                            <div 
-                              className="absolute inset-1 rounded-full border-2 opacity-40"
-                              style={{
-                                borderColor: 'rgba(245, 158, 11, 0.5)',
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-                      ) : (
-                        // 성운/가스층 스타일 - 검은 손 이미지
-                        <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center">
-                          {/* 검은 손 이미지 */}
-                          <img 
-                            src="/images/calamity-hand.png" 
-                            alt="Calamity Hand" 
-                            className="absolute inset-0 w-full h-full object-contain"
-                            style={{
-                              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.8))',
-                              transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-                              transition: 'transform 0.3s ease',
-                            }}
-                          />
-                          {/* 호버 시 텍스트 */}
-                          {isHovered && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-full transition-all duration-300">
-                              <span className="text-red-200 text-xl font-bold drop-shadow-lg">
-                                재앙 관측
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                    {/* 행성/별 본체 렌더링 */}
+                    <ObservationBody obs={obs} isHovered={isHovered} />
 
                     {/* 펄스 효과 (호버 시) */}
                     {isHovered && (
                       <div 
-                        className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.color} opacity-30 animate-ping`}
+                        className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.color} opacity-30`}
+                        style={{
+                          animation: `ping ${OBS_ANIM.pingDurationSec}s cubic-bezier(0, 0, 0.2, 1) infinite`,
+                        }}
                       ></div>
                     )}
                   </button>
@@ -402,9 +213,7 @@ export const ObservationScreen = ({ setScreen }) => {
             }}
           >
             <div className="flex items-center gap-3 mb-2">
-              <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${selectedObservation.color} flex items-center justify-center shadow-lg flex-shrink-0`}>
-                <selectedObservation.icon className="w-5 h-5 text-white" strokeWidth={2.5} />
-              </div>
+              <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${selectedObservation.color} shadow-lg flex-shrink-0`}></div>
               <div className="flex-1">
                 <h3 className={`text-lg font-bold ${selectedObservation.textColor}`}>
                   {selectedObservation.name}

@@ -56,13 +56,13 @@ export const useGameLogic = () => {
       const starter = { ...CHAR_DB[0], ultLevel: 0, bondLevel: 0, breakthrough: 0, uid: Date.now(), level: 1 };
       setInventory([starter]);
     }
-  }, []);
+  }, [inventory.length]);
 
   useEffect(() => {
     if (inventory.length > 0 && !mainChar) {
       setMainChar(inventory[0]);
     }
-  }, [inventory, mainChar]);
+  }, [inventory, inventory.length, mainChar]);
 
   // 플레이어 레벨 동기화
   useLevelSync(playerInfo, setPlayerInfo, inventory, setInventory, party, setParty, mainChar, setMainChar, showToast);
