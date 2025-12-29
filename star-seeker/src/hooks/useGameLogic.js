@@ -24,7 +24,13 @@ export const useGameLogic = () => {
   // 아이템 인벤토리
   const [items, setItems] = useState({
     stardust: 0, // 별의 먼지
-    gems: 3000,  // 별의 조각
+    gems: 3000,  // 가챠용 재화
+    star_fragment_fire: 10,   // 별의 조각 (불)
+    star_fragment_water: 10,  // 별의 조각 (물)
+    star_fragment_earth: 10,  // 별의 조각 (대지)
+    star_fragment_light: 20,  // 별의 조각 (빛) - 테스트용 추가
+    star_fragment_dark: 10,   // 별의 조각 (어둠)
+    boundary_potion: 5,       // 경계의 물약 (테스트용)
   });
 
   const showToast = useCallback((msg) => {
@@ -47,7 +53,7 @@ export const useGameLogic = () => {
   // 초기화 및 자동 처리
   useEffect(() => {
     if (inventory.length === 0) {
-      const starter = { ...CHAR_DB[0], ultLevel: 0, bondLevel: 0, uid: Date.now(), level: 1 };
+      const starter = { ...CHAR_DB[0], ultLevel: 0, bondLevel: 0, breakthrough: 0, uid: Date.now(), level: 1 };
       setInventory([starter]);
     }
   }, []);

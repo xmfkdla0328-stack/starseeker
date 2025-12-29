@@ -6,7 +6,7 @@ import { calculateStatsByLevel } from '../../data/playerStats';
  * 캐릭터 스탯 그리드 컴포넌트
  */
 export const CharacterStatsGrid = ({ charData }) => {
-  const actualStats = calculateStatsByLevel(charData.baseAtk, charData.baseHp, charData.level || 1);
+  const actualStats = calculateStatsByLevel(charData.baseAtk, charData.baseHp, charData.level || 1, charData.breakthrough || 0);
 
   return (
     <div className="grid grid-cols-4 gap-3">
@@ -26,7 +26,7 @@ export const CharacterStatsGrid = ({ charData }) => {
         <span className="text-xs text-slate-400 flex items-center gap-1 mb-1">
           <Shield size={12} /> 방어력
         </span>
-        <span className="text-xl font-bold text-slate-200">{charData.baseDef || '-'}</span>
+        <span className="text-xl font-bold text-slate-200">{actualStats.def}</span>
       </div>
       <div className="bg-white/5 p-3 rounded-lg border border-white/10">
         <span className="text-xs text-slate-400 flex items-center gap-1 mb-1">

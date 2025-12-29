@@ -39,6 +39,7 @@ export const useGacha = (items, setItems, inventory, setInventory, showToast, pl
           ...picked, 
           ultLevel: 0, 
           bondLevel: 0, 
+          breakthrough: 0, // 돌파 단계 초기화
           uid: Date.now() + i, 
           level: playerLevel,
           // 초기 스킬 레벨 설정 (기존 skillLevels 유지)

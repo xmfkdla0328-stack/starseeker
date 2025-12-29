@@ -1,11 +1,12 @@
 import React from 'react';
+import { Package } from 'lucide-react';
 
 /**
  * 인벤토리 아이템 카드 컴포넌트
  * 아이템 아이콘, 이름, 수량을 표시하고 클릭 시 상세 정보 표시
  */
 export const ItemCard = ({ item, onClick }) => {
-  const Icon = item.icon;
+  const Icon = item.icon || Package; // fallback icon
 
   return (
     <button

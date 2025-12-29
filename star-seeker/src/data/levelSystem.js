@@ -4,6 +4,7 @@
  */
 
 import { LEVEL_EXP_TABLE } from './expTable';
+import { BREAKTHROUGH_STAGES, getMaxLevelByBreakthrough } from './breakthroughItems';
 
 /**
  * 캐릭터 레벨에 따른 스탯 계산
@@ -11,15 +12,27 @@ import { LEVEL_EXP_TABLE } from './expTable';
  * @param {number} baseAtk 기본 공격력
  * @param {number} baseHp 기본 체력
  * @param {number} level 캐릭터 레벨
- * @returns {Object} { hp, atk } 레벨에 따른 스탯
+ * @param {number} breakthrough 돌파 단계 (0~3)
+ * @returns {Object} { hp, atk, def } 레벨에 따른 스탯
  */
-export const calculateStatsByLevel = (baseAtk, baseHp, level) => {
-  // 레벨당 2%씩 증가 (레벨 1 = 1.0배, 레벨 50 = 1.98배)
+export const calculateStatsByLevel = (baseAtk, baseHp, level, breakthrough = 0) => {
+  // 레벨당 2%씩 증가 (레벨 1 = 1.0배, 레벨 60 = 2.18배)
   const levelMultiplier = 1 + (level - 1) * 0.02;
+  
+  // 돌파 보너스 계산
+  let breakthroughBonus = { atk: 0, hp: 0, def: 0 };
+  for (let stage = 1; stage <= breakthrough; stage++) {
+    if (BREAKTHROUGH_STAGES[stage]) {
+      breakthroughBonus.atk += BREAKTHROUGH_STAGES[stage].statBonus.atk;
+      breakthroughBonus.hp += BREAKTHROUGH_STAGES[stage].statBonus.hp;
+      breakthroughBonus.def += BREAKTHROUGH_STAGES[stage].statBonus.def;
+    }
+  }
+  
   return {
-    atk: Math.floor(baseAtk * levelMultiplier),
-    hp: Math.floor(baseHp * levelMultiplier),
-    def: Math.floor(30 * levelMultiplier), // 기본 방어력 (레벨에 따라 증가)
+    atk: Math.floor(baseAtk * levelMultiplier) + breakthroughBonus.atk,
+    hp: Math.floor(baseHp * levelMultiplier) + breakthroughBonus.hp,
+    def: Math.floor(30 * levelMultiplier) + breakthroughBonus.def, // 기본 방어력 (레벨에 따라 증가)
   };
 };
 
@@ -30,7 +43,8 @@ export const calculateStatsByLevel = (baseAtk, baseHp, level) => {
  */
 export const applyCharacterLevel = (character) => {
   const level = character.level || 1;
-  const stats = calculateStatsByLevel(character.baseAtk, character.baseHp, level);
+  const breakthrough = character.breakthrough || 0;
+  const stats = calculateStatsByLevel(character.baseAtk, character.baseHp, level, breakthrough);
   return {
     ...character,
     currentAtk: stats.atk,
@@ -49,8 +63,8 @@ export const applyCharacterLevel = (character) => {
  */
 export const getExpProgress = (level, exp) => {
   const currentLevelExp = LEVEL_EXP_TABLE[level] || 0;
-  const nextLevel = Math.min(level + 1, 50);
-  const nextLevelExp = LEVEL_EXP_TABLE[nextLevel] || LEVEL_EXP_TABLE[50];
+  const nextLevel = Math.min(level + 1, 60);
+  const nextLevelExp = LEVEL_EXP_TABLE[nextLevel] || LEVEL_EXP_TABLE[60];
   
   const progressExp = exp - currentLevelExp;
   const requiredExp = nextLevelExp - currentLevelExp;
@@ -72,7 +86,7 @@ export const getExpProgress = (level, exp) => {
  */
 export const getLevelFromExp = (exp) => {
   let level = 1;
-  for (let i = 50; i >= 1; i--) {
+  for (let i = 60; i >= 1; i--) {
     if (exp >= (LEVEL_EXP_TABLE[i] || 0)) {
       level = i;
       break;

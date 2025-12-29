@@ -7,8 +7,14 @@ import { IconCircle } from '../common/IconCircle';
  * 아이템 상세 정보 모달 컴포넌트
  * 선택된 아이템의 상세 정보를 표시하고 사용 기능 제공
  */
-export const ItemDetailModal = ({ item, onClose }) => {
+export const ItemDetailModal = ({ item, onClose, onUse }) => {
   if (!item) return null;
+
+  const handleUse = () => {
+    if (onUse && item.usable && item.count > 0) {
+      onUse(item.id);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -58,12 +64,26 @@ export const ItemDetailModal = ({ item, onClose }) => {
         </div>
 
         {/* 사용 버튼 */}
-        <button
-          className="w-full py-3 rounded-lg bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/30 hover:to-blue-500/30 border border-cyan-400/30 hover:border-cyan-400/50 transition-all text-sm font-bold text-cyan-200 hover:text-cyan-100"
-          disabled
-        >
-          사용 (준비 중)
-        </button>
+        {item.usable ? (
+          <button
+            onClick={handleUse}
+            disabled={item.count <= 0}
+            className={`w-full py-3 rounded-lg border transition-all text-sm font-bold ${
+              item.count > 0
+                ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 border-purple-400/30 hover:border-purple-400/50 text-purple-200 hover:text-purple-100'
+                : 'bg-slate-800/50 border-slate-700 text-slate-500 cursor-not-allowed'
+            }`}
+          >
+            {item.count > 0 ? '사용하기' : '보유한 아이템 없음'}
+          </button>
+        ) : (
+          <button
+            className="w-full py-3 rounded-lg bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/30 transition-all text-sm font-bold text-slate-500 cursor-not-allowed"
+            disabled
+          >
+            사용할 수 없는 아이템
+          </button>
+        )}
       </div>
     </div>
   );

@@ -13,19 +13,19 @@ import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, BattleScreen, Codex
 export default function StarSeekerApp() {
   const {
     screen, setScreen,
-    inventory,
+    inventory, setInventory,
     party, setParty,
     mainChar, setMainChar,
     toast, showToast,
     activeSynergies,
     handleGacha,
     battleSystem,
-    playerInfo,
+    playerInfo, setPlayerInfo,
     playerStats,
     unlockedAchievements,
     handleSelectTitle,
     addExp,
-    items,
+    items, setItems,
     increaseBondFromBattle,
   } = useGameLogic();
 
@@ -61,10 +61,16 @@ export default function StarSeekerApp() {
               <BattleScreen battleSystem={battleSystem} addExp={addExp} setScreen={setScreen} increaseBondFromBattle={increaseBondFromBattle} />
             )}
             {screen === 'CODEX' && (
-              <CodexScreen inventory={inventory} />
+              <CodexScreen 
+                inventory={inventory} 
+                items={items} 
+                setItems={setItems} 
+                setInventory={setInventory} 
+                showToast={showToast} 
+              />
             )}
             {screen === 'INVENTORY' && (
-              <InventoryScreen items={items} />
+              <InventoryScreen items={items} setItems={setItems} setPlayerInfo={setPlayerInfo} showToast={showToast} />
             )}
         </div>
       </main>

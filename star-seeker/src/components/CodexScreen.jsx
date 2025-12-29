@@ -6,8 +6,9 @@ import { CharacterHeader } from './codex/CharacterHeader';
 import { CharacterInfoTab } from './codex/CharacterInfoTab';
 import { CharacterProfileTab } from './codex/CharacterProfileTab';
 import { BondDisplay } from './common/BondDisplay';
+import { performBreakthrough } from '../data/breakthroughItems';
 
-export const CodexScreen = ({ inventory }) => {
+export const CodexScreen = ({ inventory, items, setItems, setInventory, showToast }) => {
   const [selectedCharId, setSelectedCharId] = useState(CHAR_DB[0].id);
   const [tab, setTab] = useState('INFO'); 
 
@@ -15,14 +16,73 @@ export const CodexScreen = ({ inventory }) => {
   const isOwned = inventory.some(c => c.id === selectedCharId);
   
   // 보유 중이면 인벤토리 정보(성장 수치 등) 사용, 아니면 DB 기본 정보 사용
+  // 같은 id를 가진 캐릭터 중 가장 높은 breakthrough와 level을 가진 것을 선택
   const charData = isOwned 
-    ? { ...selectedChar, ...inventory.find(c => c.id === selectedCharId) } 
+    ? (() => {
+        const sameIdChars = inventory.filter(c => c.id === selectedCharId);
+        const maxBreakthroughChar = sameIdChars.reduce((max, curr) => {
+          const maxBt = max.breakthrough || 0;
+          const currBt = curr.breakthrough || 0;
+          if (currBt > maxBt) return curr;
+          if (currBt === maxBt && curr.level > max.level) return curr;
+          return max;
+        }, sameIdChars[0]);
+        const result = { ...selectedChar, ...maxBreakthroughChar };
+        
+        // 디버그: 서주목 캐릭터 정보 출력
+        if (selectedCharId === 1) {
+          console.log('서주목 charData:', {
+            id: result.id,
+            name: result.name,
+            level: result.level,
+            breakthrough: result.breakthrough,
+            element: result.element,
+          });
+        }
+        
+        return result;
+      })()
     : { ...selectedChar, bondLevel: 0 };
 
   const getSkillInfo = (key, fallbackDesc) => ({
     desc: charData.skillDetails?.[key]?.desc || fallbackDesc,
     cooldown: charData.skillDetails?.[key]?.cooldown
   });
+
+  // 돌파 핸들러
+  const handleBreakthrough = (character) => {
+    console.log('돌파 시도:', character);
+    const result = performBreakthrough(character, items);
+    console.log('돌파 결과:', result);
+    
+    if (result.success) {
+      // 아이템 업데이트
+      setItems(result.updatedItems);
+      
+      // 인벤토리 업데이트 (같은 id를 가진 모든 캐릭터의 breakthrough 업데이트)
+      setInventory(prev => {
+        const updated = prev.map(c => {
+          // 같은 id를 가진 모든 캐릭터의 breakthrough를 업데이트
+          if (c.id === character.id) {
+            console.log(`캐릭터 ${c.name} (uid: ${c.uid}) breakthrough 업데이트: ${c.breakthrough} -> ${result.updatedCharacter.breakthrough}`);
+            return {
+              ...c,
+              breakthrough: result.updatedCharacter.breakthrough,
+              // 돌파 후 현재 레벨을 다음 돌파 요구 레벨로 자동 상향
+              level: Math.max(c.level, result.updatedCharacter.breakthrough * 20)
+            };
+          }
+          return c;
+        });
+        console.log('업데이트된 인벤토리:', updated);
+        return updated;
+      });
+      
+      showToast(result.message);
+    } else {
+      showToast(result.message);
+    }
+  };
 
   return (
     <div className="flex h-full gap-4 p-4 overflow-hidden relative">
@@ -68,7 +128,7 @@ export const CodexScreen = ({ inventory }) => {
             </div>
           )}
 
-          {tab === 'INFO' && <CharacterInfoTab charData={charData} getSkillInfo={getSkillInfo} />}
+          {tab === 'INFO' && <CharacterInfoTab charData={charData} getSkillInfo={getSkillInfo} items={items} onBreakthrough={isOwned ? handleBreakthrough : null} />}
           {tab === 'PROFILE' && <CharacterProfileTab charData={charData} />}
         </div>
       </div>

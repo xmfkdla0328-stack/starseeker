@@ -1,36 +1,40 @@
 import React, { useState } from 'react';
 import { Package } from 'lucide-react';
-import { Sparkles, Star } from 'lucide-react';
 import { ItemCard } from './inventory/ItemCard';
 import { ItemDetailModal } from './inventory/ItemDetailModal';
 import { InventoryEmptyState } from './inventory/InventoryEmptyState';
+import { ITEM_DEFINITIONS, applyItemEffect } from '../data/itemDefinitions';
 
-// 아이템 정의 (컴포넌트 외부로 분리)
-const ITEM_DEFINITIONS = {
-  stardust: {
-    id: 'stardust',
-    name: '별의 먼지',
-    icon: Sparkles,
-    description: '캐릭터의 스킬 레벨을 올리는 데 사용되는 신비로운 가루. 스킬 1레벨 상승 당 10개가 필요합니다.',
-    rarity: 'rare',
-    color: 'text-yellow-300',
-    bgGradient: 'from-yellow-500/20 to-amber-600/20',
-    borderColor: 'border-yellow-400/30',
-  },
-  gems: {
-    id: 'gems',
-    name: '별의 조각',
-    icon: Star,
-    description: '성운을 관측하기 위해 필요한 신비로운 조각. 가챠를 돌릴 때 사용됩니다. 1회 모집에 100개, 10회 모집에 1000개가 필요합니다.',
-    rarity: 'epic',
-    color: 'text-blue-300',
-    bgGradient: 'from-blue-500/20 to-indigo-600/20',
-    borderColor: 'border-blue-400/30',
-  }
-};
-
-export const InventoryScreen = ({ items = {} }) => {
+export const InventoryScreen = ({ items = {}, setItems, setPlayerInfo, showToast }) => {
   const [selectedItem, setSelectedItem] = useState(null);
+
+  // 아이템 사용 핸들러
+  const handleUseItem = (itemId) => {
+    const item = ITEM_DEFINITIONS[itemId];
+    
+    if (!item || !item.usable) {
+      showToast?.('사용할 수 없는 아이템입니다.');
+      return;
+    }
+    
+    const currentCount = items[itemId] || 0;
+    if (currentCount <= 0) {
+      showToast?.('보유한 아이템이 없습니다.');
+      return;
+    }
+    
+    // 아이템 효과 적용
+    const success = applyItemEffect(itemId, { setPlayerInfo, showToast });
+    
+    if (success) {
+      // 아이템 개수 감소
+      setItems?.(prev => ({
+        ...prev,
+        [itemId]: currentCount - 1,
+      }));
+      setSelectedItem(null);
+    }
+  };
 
   // 보유한 아이템만 필터링
   const ownedItems = Object.keys(ITEM_DEFINITIONS)
@@ -69,7 +73,11 @@ export const InventoryScreen = ({ items = {} }) => {
       </div>
 
       {/* 아이템 상세 모달 */}
-      <ItemDetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
+      <ItemDetailModal 
+        item={selectedItem} 
+        onClose={() => setSelectedItem(null)}
+        onUse={handleUseItem}
+      />
     </div>
   );
 };
