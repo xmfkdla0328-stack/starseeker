@@ -368,6 +368,38 @@ export const ObservationScreen = ({ setScreen }) => {
                             );
                           })}
 
+                          {/* 검은 기운 레이어 1 - 강함 */}
+                          <div 
+                            className="absolute inset-0 rounded-full animate-pulse"
+                            style={{
+                              background: 'radial-gradient(circle at 50% 50%, transparent 0%, rgba(0, 0, 0, 0.2) 25%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 75%, transparent 100%)',
+                              filter: 'blur(10px)',
+                              animationDuration: '4s',
+                            }}
+                          ></div>
+                          
+                          {/* 검은 기운 레이어 2 - 중간 */}
+                          <div 
+                            className="absolute inset-0 rounded-full animate-pulse"
+                            style={{
+                              background: 'radial-gradient(circle at 50% 50%, transparent 0%, rgba(0, 0, 0, 0.15) 35%, rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0.1) 80%, transparent 100%)',
+                              filter: 'blur(14px)',
+                              animationDuration: '5s',
+                              animationDelay: '0.5s',
+                            }}
+                          ></div>
+                          
+                          {/* 검은 기운 레이어 3 - 약함 */}
+                          <div 
+                            className="absolute inset-0 rounded-full animate-pulse"
+                            style={{
+                              background: 'radial-gradient(circle at 50% 50%, transparent 0%, rgba(0, 0, 0, 0.1) 40%, rgba(0, 0, 0, 0.2) 65%, transparent 85%)',
+                              filter: 'blur(18px)',
+                              animationDuration: '6s',
+                              animationDelay: '1s',
+                            }}
+                          ></div>
+
                           {/* 별의 먼지 파티클들 (많이) */}
                           <div className="absolute inset-0">
                             {[...Array(20)].map((_, i) => {
