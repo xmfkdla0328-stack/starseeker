@@ -16,6 +16,11 @@ export const ObservationBody = ({ obs, isHovered }) => {
         ></div>
         <div className="absolute top-2 left-3 w-10 h-10 rounded-full bg-white/50 blur-md"></div>
         <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
+        {isHovered && (
+          <div className="absolute inset-0 flex items-center justify-center transition-all duration-300">
+            <span className="text-blue-100 text-xl font-bold drop-shadow-lg">행성 관측</span>
+          </div>
+        )}
       </div>
     );
   }
@@ -35,6 +40,11 @@ export const ObservationBody = ({ obs, isHovered }) => {
           ></div>
           <div className="absolute top-2 left-3 w-10 h-10 rounded-full bg-white/50 blur-md"></div>
           <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
+          {isHovered && (
+            <div className="absolute inset-0 flex items-center justify-center transition-all duration-300">
+              <span className="text-yellow-100 text-xl font-bold drop-shadow-lg">성흔 관측</span>
+            </div>
+          )}
         </div>
         {/* 토성 고리 */}
         <div
