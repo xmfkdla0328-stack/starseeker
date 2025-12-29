@@ -58,6 +58,8 @@ export const ObservationScreen = ({ setScreen }) => {
       posY: 104,
       level: '상급~최상급',
       type: 'nebula',  // 성운 스타일
+      size: 'edge',  // 테두리에 위치
+      edgePosition: 'bottom',  // 하단 테두리
     },
   ];
 
@@ -98,6 +100,10 @@ export const ObservationScreen = ({ setScreen }) => {
           @keyframes telescopeBreath {
             0%, 100% { transform: scale(1); opacity: 0.4; }
             50% { transform: scale(1.02); opacity: 0.6; }
+          }
+          @keyframes tendrilPulse {
+            0%, 100% { opacity: 0.3; transform: translateY(-50%) scale(1); }
+            50% { opacity: 0.7; transform: translateY(-55%) scale(1.1); }
           }
         `}</style>
       </div>
@@ -208,8 +214,28 @@ export const ObservationScreen = ({ setScreen }) => {
             {observations.map((obs) => {
               const isSelected = selectedObservation?.id === obs.id;
               const isHovered = hoveredObservation?.id === obs.id;
-              const buttonSize = obs.size === 'large' ? 'w-40 h-40' : 'w-32 h-32';
-              const offset = obs.size === 'large' ? 80 : 64;
+              
+              // 크기 설정
+              let buttonSize, offset, posX, posY;
+              
+              if (obs.size === 'edge') {
+                // 테두리에 위치하는 경우 - 더 크게
+                buttonSize = 'w-48 h-48';
+                offset = 96;
+                // 망원경 하단 테두리 위치 (반지름 약 40vh ≈ 280-300px)
+                posX = 0;
+                posY = 260;  // 테두리 근처
+              } else if (obs.size === 'large') {
+                buttonSize = 'w-40 h-40';
+                offset = 80;
+                posX = obs.posX;
+                posY = obs.posY;
+              } else {
+                buttonSize = 'w-32 h-32';
+                offset = 64;
+                posX = obs.posX;
+                posY = obs.posY;
+              }
 
               return (
                 <div
@@ -218,8 +244,8 @@ export const ObservationScreen = ({ setScreen }) => {
                     rotating && isSelected ? 'scale-[3] opacity-0' : 'scale-100 opacity-100'
                   }`}
                   style={{
-                    left: `calc(50% + ${obs.posX}px - ${offset}px)`,
-                    top: `calc(50% + ${obs.posY}px - ${offset}px)`,
+                    left: `calc(50% + ${posX}px - ${offset}px)`,
+                    top: `calc(50% + ${posY}px - ${offset}px)`,
                   }}
                 >
                   <button
@@ -313,65 +339,137 @@ export const ObservationScreen = ({ setScreen }) => {
                           </div>
                         </div>
                       ) : (
-                        // 성운/가스층 스타일
-                        <div className="relative w-full h-full rounded-full">
-                          {/* 성운 베이스 */}
+                        // 성운/가스층 스타일 - 테두리에서 침범
+                        <div className="relative w-full h-full">
+                          {/* 테두리 밖에서 안으로 퍼지는 먼지 구름 */}
                           <div 
-                            className="absolute inset-0 rounded-full"
+                            className="absolute inset-0"
                             style={{
-                              background: `radial-gradient(ellipse at center, 
-                                rgba(248, 113, 113, 0.8) 0%, 
-                                rgba(251, 146, 60, 0.6) 20%, 
-                                rgba(252, 165, 165, 0.4) 40%, 
-                                rgba(254, 202, 202, 0.2) 60%, 
-                                transparent 80%)`,
-                              filter: 'blur(2px)',
+                              background: `radial-gradient(ellipse at 50% 0%, 
+                                transparent 0%,
+                                rgba(239, 68, 68, 0.1) 15%,
+                                rgba(239, 68, 68, 0.3) 25%,
+                                rgba(220, 38, 38, 0.5) 35%,
+                                rgba(185, 28, 28, 0.7) 45%,
+                                rgba(153, 27, 27, 0.85) 55%,
+                                rgba(127, 29, 29, 0.9) 65%,
+                                rgba(127, 29, 29, 0.95) 75%,
+                                rgba(153, 27, 27, 0.9) 85%,
+                                transparent 100%)`,
+                              transform: 'translateY(-50%) scale(1.8, 2.5)',
+                              filter: 'blur(3px)',
                             }}
                           ></div>
-                          {/* 가스층 효과 */}
+                          
+                          {/* 퍼지는 구름 레이어 1 */}
                           <div 
-                            className="absolute inset-0 rounded-full animate-pulse"
+                            className="absolute inset-0 animate-pulse"
                             style={{
-                              background: `radial-gradient(circle at 60% 40%, 
-                                rgba(239, 68, 68, 0.6) 0%, 
-                                rgba(249, 115, 22, 0.4) 30%, 
+                              background: `radial-gradient(circle at 50% 0%, 
+                                rgba(248, 113, 113, 0.6) 0%,
+                                rgba(239, 68, 68, 0.4) 20%,
+                                rgba(220, 38, 38, 0.3) 35%,
+                                transparent 50%)`,
+                              transform: 'translateY(-40%) scale(2, 3)',
+                              filter: 'blur(8px)',
+                              animationDuration: '4s',
+                            }}
+                          ></div>
+                          
+                          {/* 퍼지는 구름 레이어 2 */}
+                          <div 
+                            className="absolute inset-0 animate-pulse"
+                            style={{
+                              background: `radial-gradient(ellipse at 50% 10%, 
+                                rgba(239, 68, 68, 0.5) 0%,
+                                rgba(220, 38, 38, 0.4) 25%,
+                                rgba(185, 28, 28, 0.3) 40%,
                                 transparent 60%)`,
-                              filter: 'blur(4px)',
-                              animationDuration: '3s',
+                              transform: 'translateY(-35%) scale(1.6, 2.2)',
+                              filter: 'blur(5px)',
+                              animationDuration: '5s',
+                              animationDelay: '1s',
                             }}
                           ></div>
-                          {/* 별의 먼지 파티클 */}
-                          <div className="absolute inset-0">
-                            {[...Array(8)].map((_, i) => (
+
+                          {/* 침범하는 가스 촉수들 */}
+                          {[...Array(12)].map((_, i) => {
+                            const angle = (i * 30) - 165;  // -165도부터 165도까지 (하단 반원)
+                            const distance = 80 + Math.random() * 40;
+                            return (
                               <div
-                                key={i}
-                                className="absolute rounded-full bg-white"
+                                key={`tendril-${i}`}
+                                className="absolute top-0 left-1/2 -translate-x-1/2 opacity-60"
                                 style={{
-                                  width: Math.random() * 3 + 1 + 'px',
-                                  height: Math.random() * 3 + 1 + 'px',
-                                  left: Math.random() * 100 + '%',
-                                  top: Math.random() * 100 + '%',
-                                  opacity: Math.random() * 0.6 + 0.3,
-                                  animation: `twinkle ${Math.random() * 2 + 1}s infinite ease-in-out`,
+                                  width: '4px',
+                                  height: `${distance}px`,
+                                  background: `linear-gradient(to bottom, 
+                                    transparent 0%, 
+                                    rgba(239, 68, 68, ${0.3 + Math.random() * 0.3}) 50%, 
+                                    rgba(185, 28, 28, ${0.5 + Math.random() * 0.3}) 100%)`,
+                                  transform: `rotate(${angle}deg) translateY(-50%)`,
+                                  transformOrigin: 'top center',
+                                  filter: 'blur(2px)',
+                                  animation: `tendrilPulse ${3 + Math.random() * 2}s infinite ease-in-out`,
                                   animationDelay: `${Math.random() * 2}s`,
                                 }}
                               />
-                            ))}
+                            );
+                          })}
+
+                          {/* 별의 먼지 파티클들 (많이) */}
+                          <div className="absolute inset-0">
+                            {[...Array(20)].map((_, i) => {
+                              const angle = Math.random() * 180 - 90;  // -90도 ~ 90도
+                              const distance = 30 + Math.random() * 60;
+                              const size = Math.random() * 2 + 0.5;
+                              return (
+                                <div
+                                  key={i}
+                                  className="absolute rounded-full bg-white"
+                                  style={{
+                                    width: size + 'px',
+                                    height: size + 'px',
+                                    left: '50%',
+                                    top: '20%',
+                                    transform: `translate(-50%, -50%) rotate(${angle}deg) translateX(${distance}px)`,
+                                    opacity: Math.random() * 0.6 + 0.3,
+                                    animation: `twinkle ${Math.random() * 3 + 2}s infinite ease-in-out`,
+                                    animationDelay: `${Math.random() * 3}s`,
+                                    boxShadow: `0 0 ${size * 3}px rgba(248, 113, 113, 0.8)`,
+                                  }}
+                                />
+                              );
+                            })}
                           </div>
+                          
                           {/* 중앙 밝은 코어 */}
                           <div 
-                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full"
+                            className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full"
                             style={{
-                              background: 'radial-gradient(circle, rgba(254, 226, 226, 0.9) 0%, rgba(252, 165, 165, 0.6) 40%, transparent 70%)',
-                              boxShadow: '0 0 20px rgba(248, 113, 113, 0.8)',
+                              background: 'radial-gradient(circle, rgba(254, 226, 226, 0.95) 0%, rgba(252, 165, 165, 0.8) 30%, rgba(239, 68, 68, 0.5) 60%, transparent 100%)',
+                              boxShadow: '0 0 30px rgba(239, 68, 68, 0.9), 0 0 60px rgba(220, 38, 38, 0.6)',
+                              filter: 'blur(1px)',
                             }}
                           ></div>
+                          
                           {/* 아이콘 */}
                           <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
                             isHovered ? 'scale-110' : ''
-                          }`}>
-                            <obs.icon className="w-12 h-12 text-white drop-shadow-2xl" strokeWidth={2.5} />
+                          }`} style={{ marginTop: '-20%' }}>
+                            <obs.icon className="w-16 h-16 text-white drop-shadow-2xl" strokeWidth={2.5} />
                           </div>
+                          
+                          {/* 테두리 글로우 */}
+                          <div 
+                            className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-2 rounded-full animate-pulse"
+                            style={{
+                              background: 'linear-gradient(to right, transparent, rgba(239, 68, 68, 0.8), transparent)',
+                              boxShadow: '0 0 20px rgba(239, 68, 68, 0.8)',
+                              filter: 'blur(2px)',
+                              animationDuration: '2s',
+                            }}
+                          ></div>
                         </div>
                       )}
                     </div>
