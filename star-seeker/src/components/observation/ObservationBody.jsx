@@ -18,7 +18,7 @@ export const ObservationBody = ({ obs, isHovered }) => {
         <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
         {isHovered && (
           <div className="absolute inset-0 flex items-center justify-center transition-all duration-300">
-            <span className="text-blue-100 text-2xl font-black uppercase tracking-widest drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]">행성 관측</span>
+            <span className="text-blue-100 text-lg font-serif font-light tracking-wide drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]">행성 관측</span>
           </div>
         )}
       </div>
@@ -42,7 +42,7 @@ export const ObservationBody = ({ obs, isHovered }) => {
           <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
           {isHovered && (
             <div className="absolute inset-0 flex items-center justify-center transition-all duration-300">
-              <span className="text-yellow-100 text-2xl font-black uppercase tracking-widest drop-shadow-[0_0_12px_rgba(251,191,36,0.8)]">성흔 관측</span>
+              <span className="text-yellow-100 text-lg font-serif font-light tracking-wide drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">성흔 관측</span>
             </div>
           )}
         </div>
@@ -86,7 +86,7 @@ export const ObservationBody = ({ obs, isHovered }) => {
       />
       {isHovered && (
         <div className="absolute inset-0 flex items-center justify-center transition-all duration-300">
-          <span className="text-red-200 text-2xl font-black uppercase tracking-widest drop-shadow-[0_0_12px_rgba(239,68,68,0.8)]">재앙 관측</span>
+          <span className="text-red-200 text-lg font-serif font-light tracking-wide drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]">재앙 관측</span>
         </div>
       )}
     </div>
