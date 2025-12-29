@@ -75,7 +75,7 @@ export const ObservationBody = ({ obs, isHovered }) => {
         }}
       />
       {isHovered && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-full transition-all duration-300">
+        <div className="absolute inset-0 flex items-center justify-center transition-all duration-300">
           <span className="text-red-200 text-xl font-bold drop-shadow-lg">재앙 관측</span>
         </div>
       )}
