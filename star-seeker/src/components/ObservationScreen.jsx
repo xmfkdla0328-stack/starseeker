@@ -22,10 +22,11 @@ export const ObservationScreen = ({ setScreen }) => {
       glowColor: 'from-blue-500/80 to-cyan-500/80',
       textColor: 'text-blue-300',
       darkColor: 'from-blue-900/80 to-cyan-900/80',
-      posX: -120,  // 왼쪽 위
-      posY: -80,
+      posX: -64,  // 30도 회전 후 좌표
+      posY: -129,
       level: '초급~중급',
       type: 'planet',
+      size: 'large',  // 행성 관측은 더 크게
     },
     {
       id: 'RUIN',
@@ -37,10 +38,11 @@ export const ObservationScreen = ({ setScreen }) => {
       glowColor: 'from-yellow-500/80 to-amber-500/80',
       textColor: 'text-yellow-300',
       darkColor: 'from-yellow-900/80 to-amber-900/80',
-      posX: 120,  // 오른쪽 위
-      posY: -80,
+      posX: 144,  // 30도 회전 후 좌표
+      posY: -9,
       level: '중급~상급',
       type: 'saturn',  // 토성 스타일
+      size: 'normal',
     },
     {
       id: 'CALAMITY',
@@ -52,8 +54,8 @@ export const ObservationScreen = ({ setScreen }) => {
       glowColor: 'from-red-500/80 to-orange-500/80',
       textColor: 'text-red-300',
       darkColor: 'from-red-900/80 to-orange-900/80',
-      posX: 0,  // 아래 중앙
-      posY: 120,
+      posX: -60,  // 30도 회전 후 좌표
+      posY: 104,
       level: '상급~최상급',
       type: 'nebula',  // 성운 스타일
     },
@@ -104,14 +106,14 @@ export const ObservationScreen = ({ setScreen }) => {
       <div 
         className="absolute inset-0 pointer-events-none z-40"
         style={{
-          background: 'radial-gradient(circle at center, transparent 0%, transparent 25%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0.95) 70%, black 85%)',
+          background: 'radial-gradient(circle at center, transparent 0%, transparent 28%, rgba(0,0,0,0.3) 42%, rgba(0,0,0,0.7) 57%, rgba(0,0,0,0.95) 72%, black 87%)',
         }}
       />
 
       {/* 망원경 렌즈 테두리 */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
         <div 
-          className="relative w-[90vh] h-[90vh] max-w-[90vw] max-h-[90vw]"
+          className="relative w-[100vh] h-[100vh] max-w-[100vw] max-h-[100vw]"
           style={{
             background: 'radial-gradient(circle, transparent 48%, rgba(30,41,59,0.8) 50%, rgba(15,23,42,0.95) 52%, transparent 54%)',
           }}
@@ -148,7 +150,7 @@ export const ObservationScreen = ({ setScreen }) => {
       {/* 망원경 뷰포트 중앙 컨텐츠 */}
       <div className="absolute inset-0 flex items-center justify-center z-30">
         {/* 망원경 뷰포트 - 중앙 원형 영역 */}
-        <div className="relative w-[70vh] h-[70vh] max-w-[70vw] max-h-[70vw]">
+        <div className="relative w-[80vh] h-[80vh] max-w-[80vw] max-h-[80vw]">
           {/* 망원경 내부 - 우주 공간 (선명하게 보이는 영역) */}
           <div className="absolute inset-0 rounded-full overflow-hidden">
             {/* 깊은 우주 배경 그라디언트 */}
@@ -206,6 +208,8 @@ export const ObservationScreen = ({ setScreen }) => {
             {observations.map((obs) => {
               const isSelected = selectedObservation?.id === obs.id;
               const isHovered = hoveredObservation?.id === obs.id;
+              const buttonSize = obs.size === 'large' ? 'w-40 h-40' : 'w-32 h-32';
+              const offset = obs.size === 'large' ? 80 : 64;
 
               return (
                 <div
@@ -214,8 +218,8 @@ export const ObservationScreen = ({ setScreen }) => {
                     rotating && isSelected ? 'scale-[3] opacity-0' : 'scale-100 opacity-100'
                   }`}
                   style={{
-                    left: `calc(50% + ${obs.posX}px - 64px)`,
-                    top: `calc(50% + ${obs.posY}px - 64px)`,
+                    left: `calc(50% + ${obs.posX}px - ${offset}px)`,
+                    top: `calc(50% + ${obs.posY}px - ${offset}px)`,
                   }}
                 >
                   <button
@@ -223,7 +227,7 @@ export const ObservationScreen = ({ setScreen }) => {
                     onMouseEnter={() => setHoveredObservation(obs)}
                     onMouseLeave={() => setHoveredObservation(null)}
                     disabled={rotating}
-                    className={`relative w-32 h-32 transition-all duration-500 disabled:cursor-not-allowed ${
+                    className={`relative ${buttonSize} transition-all duration-500 disabled:cursor-not-allowed ${
                       isHovered ? 'scale-125' : 'scale-100'
                     }`}
                   >
