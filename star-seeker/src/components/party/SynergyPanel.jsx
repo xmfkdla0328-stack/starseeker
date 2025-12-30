@@ -6,62 +6,63 @@ export const SynergyPanel = ({ activeSynergies, highlightedSynergy, toggleSynerg
     <div className="w-full md:w-56 md:min-w-56 bg-slate-950/60 backdrop-blur-xl border border-white/10 p-3 md:p-4 rounded-xl overflow-hidden min-h-0 shadow-xl flex flex-col shrink-0">
       
       {/* 헤더 */}
-      <h2 className="text-yellow-100 font-bold mb-2 md:mb-3 flex items-center justify-between text-xs md:text-sm border-b border-white/10 pb-1.5 md:pb-2 shrink-0">
+      <h2 className="text-yellow-100 font-bold mb-2 flex items-center justify-between text-xs md:text-sm border-b border-white/10 pb-1.5 shrink-0">
           <div className="flex items-center gap-2">
             <Compass size={16} className="text-yellow-400"/> 활성 시너지
           </div>
       </h2>
 
-      {/* 시너지 목록 (flex-1로 남은 공간 차지) */}
-      <div className="space-y-1.5 md:space-y-2 flex-1 overflow-y-auto no-scrollbar mb-2 md:mb-3">
-        {activeSynergies.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-slate-500 text-xs italic text-center">태그를 조합하여<br/>효과를 발동시키세요.</div>
-        ) : activeSynergies.map((syn, idx) => (
-          <div 
-            key={idx} 
-            onClick={() => toggleSynergyHighlight(syn.name)}
-            className={`p-1.5 md:p-2 rounded-lg border relative overflow-hidden cursor-pointer transition-all duration-200
-              ${highlightedSynergy === syn.name 
-                ? 'bg-yellow-500/10 border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.2)] scale-105' 
-                : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'}
-            `}
-          >
-            <div className="flex justify-between items-center mb-1">
-              <span className={`font-bold text-xs flex items-center gap-1 ${highlightedSynergy === syn.name ? 'text-yellow-400' : 'text-yellow-200'}`}>
-                <Sparkles size={10} className={highlightedSynergy === syn.name ? 'animate-spin' : ''}/> 
-                {syn.name} 
-                <span className="text-slate-400 text-[10px] font-normal">({syn.count})</span>
-              </span>
-            </div>
-            <p className="text-slate-300 text-[10px] pl-2 border-l-2 border-yellow-500/30">{syn.effect}</p>
-            
-            {highlightedSynergy !== syn.name && (
-              <div className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Tag size={12} className="text-slate-500"/>
+      {/* 시너지 목록 - 스크롤 적용 */}
+      <div className="flex-1 min-h-0 mb-2 overflow-hidden flex flex-col">
+        <div className="space-y-1 md:space-y-1.5 overflow-y-auto no-scrollbar flex-1">
+          {activeSynergies.length === 0 ? (
+            <div className="h-full flex items-center justify-center text-slate-500 text-xs italic text-center">태그를 조합하여<br/>효과를 발동시키세요.</div>
+          ) : activeSynergies.map((syn, idx) => (
+            <div 
+              key={idx} 
+              onClick={() => toggleSynergyHighlight(syn.name)}
+              className={`p-1 md:p-1.5 rounded-lg border relative overflow-hidden cursor-pointer transition-all duration-200
+                ${highlightedSynergy === syn.name 
+                  ? 'bg-yellow-500/10 border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.2)] scale-105' 
+                  : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'}
+              `}
+            >
+              <div className="flex justify-between items-center mb-0.5">
+                <span className={`font-bold text-[10px] flex items-center gap-1 ${highlightedSynergy === syn.name ? 'text-yellow-400' : 'text-yellow-200'}`}>
+                  <Sparkles size={10} className={highlightedSynergy === syn.name ? 'animate-spin' : ''}/> 
+                  {syn.name} 
+                  <span className="text-slate-400 text-[9px] font-normal">({syn.count})</span>
+                </span>
               </div>
-            )}
-          </div>
-        ))}
+              <p className="text-slate-300 text-[9px] pl-2 border-l-2 border-yellow-500/30">{syn.effect}</p>
+              
+              {highlightedSynergy !== syn.name && (
+                <div className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Tag size={12} className="text-slate-500"/>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* 하단 버튼 그룹 */}
-      <div className="flex flex-col md:flex-row xl:flex-col gap-1.5 md:gap-2 shrink-0">
-        {/* ★ 자동 편성 버튼 (전투 버튼 위로 이동) */}
+      <div className="flex flex-col gap-2 shrink-0">
+        {/* ★ 자동 편성 버튼 */}
         <button 
           onClick={handleAutoParty}
-          className="flex-1 md:flex-none py-1.5 md:py-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 text-[10px] font-bold rounded border border-slate-600 transition-all flex items-center justify-center gap-1.5 shadow-sm"
+          className="w-full py-2.5 bg-gradient-to-r from-indigo-600/40 to-purple-600/40 hover:from-indigo-600/60 hover:to-purple-600/60 active:scale-95 text-indigo-200 text-xs md:text-sm font-bold rounded-lg border border-indigo-400/40 hover:border-indigo-400/60 transition-all flex items-center justify-center gap-2 shadow-[0_0_12px_rgba(99,102,241,0.2)] hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] backdrop-blur-sm"
         >
-          <Wand2 size={12} className="text-indigo-400" /> 자동 파티 편성
+          <Wand2 size={16} className="text-indigo-300" /> 자동 파티 편성
         </button>
 
         {/* ★ 전투 개시 버튼 */}
         <button 
           onClick={onStartBattle}
-          className="flex-1 md:flex-none py-2 md:py-3 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 active:scale-95 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 border border-red-400 shadow-[0_4px_12px_rgba(220,38,38,0.3)] hover:shadow-[0_6px_16px_rgba(220,38,38,0.5)] uppercase tracking-wider group"
+          className="w-full py-3 md:py-4 bg-gradient-to-r from-red-700/60 to-red-600/60 hover:from-red-600/80 hover:to-red-500/80 active:scale-95 text-white text-sm md:text-base font-bold rounded-lg transition-all flex items-center justify-center gap-2 border border-red-400/50 hover:border-red-400/80 shadow-[0_4px_16px_rgba(220,38,38,0.4)] hover:shadow-[0_6px_20px_rgba(220,38,38,0.6)] uppercase tracking-wider group backdrop-blur-sm"
         >
-          <span className="relative z-10 flex items-center gap-2">
-              전투 개시 <Sword size={14} className="group-hover:rotate-45 transition-transform"/>
-          </span>
+          <Sword size={18} className="group-hover:rotate-45 transition-transform" />
+          <span className="relative z-10">전투 개시</span>
         </button>
       </div>
 
