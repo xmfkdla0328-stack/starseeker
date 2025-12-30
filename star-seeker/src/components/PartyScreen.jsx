@@ -26,12 +26,12 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, activeSyner
   }, [selectedSlot, handleAssign]);
 
   return (
-    <div className="flex flex-col min-h-full gap-2 md:gap-3 p-2 md:p-3 relative">
+    <div className="flex flex-col min-h-full gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 p-1.5 sm:p-2 md:p-2.5 lg:p-3 relative">
       {/* 뒤로가기 버튼 */}
       <BackButton onClick={() => setScreen('HOME')} />
 
       {/* 파티 편성 영역 */}
-      <div className="flex flex-col md:flex-row flex-1 gap-2 md:gap-3 overflow-y-auto">
+      <div className="flex flex-col md:flex-row flex-1 gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 overflow-y-auto">
       <PartyFormation
         party={party}
         setSelectedSlot={setSelectedSlot}
