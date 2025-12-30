@@ -62,7 +62,7 @@ export const SynergyPanel = ({ activeSynergies, highlightedSynergy, toggleSynerg
           className="w-full py-3 md:py-4 bg-gradient-to-r from-red-700/60 to-red-600/60 hover:from-red-600/80 hover:to-red-500/80 active:scale-95 text-white text-sm md:text-base font-bold rounded-lg transition-all flex items-center justify-center gap-2 border border-red-400/50 hover:border-red-400/80 shadow-[0_4px_16px_rgba(220,38,38,0.4)] hover:shadow-[0_6px_20px_rgba(220,38,38,0.6)] uppercase tracking-wider group backdrop-blur-sm"
         >
           <Sword size={18} className="group-hover:rotate-45 transition-transform" />
-          <span className="relative z-10">전투 개시</span>
+          <span className="relative z-10">관측 개시</span>
         </button>
       </div>
 
