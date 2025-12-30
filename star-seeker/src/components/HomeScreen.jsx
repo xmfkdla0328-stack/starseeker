@@ -26,12 +26,12 @@ export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScr
       </div>
 
       {/* 오른쪽: 게임 타이틀 + 버튼 */}
-      <div className="flex flex-col items-center md:items-start gap-4 md:gap-6 lg:gap-8 z-20 order-1 md:order-2">
+      <div className="flex flex-col items-center md:items-end gap-4 md:gap-6 lg:gap-8 z-20 order-1 md:order-2">
         {/* 게임 타이틀 */}
         <GameTitle />
 
         {/* 전투 진입 버튼 */}
-        <div className="w-full flex justify-center md:justify-start">
+        <div className="w-full flex justify-center md:justify-end">
           <MissionButton onClick={() => setScreen('OBSERVATION')} />
         </div>
       </div>
