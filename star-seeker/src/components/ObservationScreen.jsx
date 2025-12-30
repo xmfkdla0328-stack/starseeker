@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { ObservationBody } from './observation/ObservationBody';
 import { StarField } from './observation/StarField';
@@ -13,6 +13,20 @@ import { resolveObservationLayout, OBS_ANIM } from '../utils/screenConfig';
  * 망원경 내부에서만 선명하게 보이는 비네팅 효과
  */
 export const ObservationScreen = ({ setScreen, startBattle, party }) => {
+  // 망원경 줌 상태 관리 (최소: 100, 최대: 400)
+  const [zoom, setZoom] = useState(250);
+  const minZoom = 100;
+  const maxZoom = 400;
+  const zoomStep = 50;
+
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(prev + zoomStep, maxZoom));
+  };
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(prev - zoomStep, minZoom));
+  };
+
   const {
     selectedObservation,
     setSelectedObservation,
@@ -119,12 +133,12 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
 
       {/* 망원경 뷰포트 중앙 컨텐츠 */}
       <div className="absolute inset-0 flex items-center justify-center z-30">
-        {/* 망원경 뷰포트 - 중앙 원형 영역 */}
+        {/* 망원경 뷰포트 - 중앙 원형 영역 (줌에 따라 크기 변경) */}
         <div 
-          className="relative"
+          className="relative transition-all duration-300"
           style={{
-            width: 'min(75vw, 65vh)',
-            height: 'min(75vw, 65vh)',
+            width: `calc(min(75vw, 65vh) * ${zoom / 250})`,
+            height: `calc(min(75vw, 65vh) * ${zoom / 250})`,
           }}
         >
           {/* 망원경 내부 - 우주 공간 (선명하게 보이는 영역) */}
@@ -306,24 +320,28 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
 
       {/* 망원경 조절 UI (좌하단) */}
       <div className="absolute bottom-8 left-8 z-50 hidden md:flex flex-col gap-3 opacity-40 hover:opacity-80 transition-opacity duration-300">
-        <div 
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-slate-400 cursor-pointer transition-all hover:text-slate-200 hover:scale-110"
+        <button
+          onClick={handleZoomIn}
+          disabled={zoom >= maxZoom}
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-slate-400 cursor-pointer transition-all hover:text-slate-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
             background: 'rgba(30, 41, 59, 0.6)',
             border: '1px solid rgba(71, 85, 105, 0.4)',
           }}
         >
           +
-        </div>
-        <div 
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-slate-400 cursor-pointer transition-all hover:text-slate-200 hover:scale-110"
+        </button>
+        <button
+          onClick={handleZoomOut}
+          disabled={zoom <= minZoom}
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-slate-400 cursor-pointer transition-all hover:text-slate-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
             background: 'rgba(30, 41, 59, 0.6)',
             border: '1px solid rgba(71, 85, 105, 0.4)',
           }}
         >
           −
-        </div>
+        </button>
       </div>
 
       {/* 망원경 정보 (우하단) */}
@@ -335,7 +353,7 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
             border: '1px solid rgba(71, 85, 105, 0.4)',
           }}
         >
-          <p>배율: x250</p>
+          <p>배율: x{zoom}</p>
           <p className="mt-1">초점: AUTO</p>
         </div>
       </div>
