@@ -1,8 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * 떠다니는 우주 먼지 입자 효과
- * @param {number} count - 입자 개수 (기본값: 3)
  */
 export const FloatingParticles = ({ count = 3 }) => {
   const colors = ['cyan', 'purple', 'blue'];
@@ -25,4 +25,8 @@ export const FloatingParticles = ({ count = 3 }) => {
       ))}
     </div>
   );
+};
+
+FloatingParticles.propTypes = {
+  count: PropTypes.number,
 };

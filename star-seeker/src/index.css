@@ -1,6 +1,8 @@
+/* stylelint-disable */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* stylelint-enable */
 
 /* 커스텀 스크롤바 숨기기 */
 .no-scrollbar::-webkit-scrollbar { 

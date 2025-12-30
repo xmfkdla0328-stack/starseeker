@@ -1,9 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Terminal } from 'lucide-react';
 
 /**
  * 전투 진입 버튼 - 액세스 코드 입력 컨셉
- * @param {function} onClick - 클릭 핸들러
  */
 export const MissionButton = ({ onClick }) => {
   return (
@@ -37,4 +37,8 @@ export const MissionButton = ({ onClick }) => {
       </div>
     </button>
   );
+};
+
+MissionButton.propTypes = {
+  onClick: PropTypes.func,
 };

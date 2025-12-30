@@ -18,7 +18,7 @@ export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScr
   return (
     <div className="min-h-full relative flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 lg:gap-12 p-4 md:p-8 animate-fade-in overflow-hidden">
       {/* 우주 먼지 떠다니는 효과 */}
-      <FloatingParticles count={3} />
+      <FloatingParticles />
 
       {/* 왼쪽: 메인 캐릭터 일러스트 */}
       <div className="flex-shrink-0 z-10 order-2 md:order-1">

@@ -1,11 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Flame, Droplets, Leaf, Sun, Moon } from 'lucide-react';
 
 /**
  * 속성별 아이콘 컴포넌트
- * @param {string} element - 속성 키 (FIRE, WATER, EARTH, LIGHT, DARK)
- * @param {number} size - 아이콘 크기 (기본값: 16)
- * @param {string} className - 추가 클래스
  */
 export const ElementIcon = ({ element, size = 16, className = '' }) => {
   const iconProps = {
@@ -23,4 +21,15 @@ export const ElementIcon = ({ element, size = 16, className = '' }) => {
   };
 
   return icons[element] || icons.FIRE;
+};
+
+ElementIcon.propTypes = {
+  element: PropTypes.string.isRequired,
+  size: PropTypes.number,
+  className: PropTypes.string,
+};
+
+ElementIcon.defaultProps = {
+  size: 16,
+  className: '',
 };
