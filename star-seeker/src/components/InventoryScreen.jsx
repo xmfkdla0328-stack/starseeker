@@ -3,9 +3,10 @@ import { Package } from 'lucide-react';
 import { ItemCard } from './inventory/ItemCard';
 import { ItemDetailModal } from './inventory/ItemDetailModal';
 import { InventoryEmptyState } from './inventory/InventoryEmptyState';
+import { BackButton } from './common/BackButton';
 import { ITEM_DEFINITIONS, applyItemEffect } from '../data/itemDefinitions';
 
-export const InventoryScreen = ({ items = {}, setItems, setPlayerInfo, showToast }) => {
+export const InventoryScreen = ({ items = {}, setItems, setPlayerInfo, showToast, setScreen }) => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   // 아이템 사용 핸들러
@@ -45,20 +46,23 @@ export const InventoryScreen = ({ items = {}, setItems, setPlayerInfo, showToast
     .filter(item => item.count > 0);
 
   return (
-    <div className="flex flex-col h-full p-6 overflow-hidden">
+    <div className="flex flex-col min-h-full p-4 md:p-6 gap-4">
+      {/* 뒤로가기 버튼 */}
+      <BackButton onClick={() => setScreen('HOME')} />
+
       {/* 헤더 */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-cyan-100 mb-2 font-serif flex items-center gap-3">
-          <Package size={32} className="text-cyan-400" />
+      <div className="flex-shrink-0">
+        <h1 className="text-2xl md:text-3xl font-bold text-cyan-100 mb-2 font-serif flex items-center gap-3">
+          <Package size={28} className="text-cyan-400" />
           창고
         </h1>
-        <p className="text-sm text-slate-400">보유한 아이템을 확인하고 관리하세요</p>
+        <p className="text-xs md:text-sm text-slate-400">보유한 아이템을 확인하고 관리하세요</p>
       </div>
 
       {/* 아이템 그리드 */}
-      <div className="flex-1 overflow-y-auto no-scrollbar">
+      <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
         {ownedItems.length > 0 ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3">
             {ownedItems.map(item => (
               <ItemCard
                 key={item.id}

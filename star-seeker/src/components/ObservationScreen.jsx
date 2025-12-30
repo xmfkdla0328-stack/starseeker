@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { ObservationBody } from './observation/ObservationBody';
 import { StarField } from './observation/StarField';
+import { useObservationSelection } from '../hooks/useObservationSelection';
 import './observation/ObservationScreen.css';
 import { observations as observationDefs } from '../data/observations';
-import { resolveObservationLayout, LENS_CONFIG, OBS_ANIM } from '../utils/screenConfig';
+import { resolveObservationLayout, OBS_ANIM } from '../utils/screenConfig';
 
 /**
  * 망원경 관측 화면 (서정적 UI)
@@ -12,10 +13,18 @@ import { resolveObservationLayout, LENS_CONFIG, OBS_ANIM } from '../utils/screen
  * 망원경 내부에서만 선명하게 보이는 비네팅 효과
  */
 export const ObservationScreen = ({ setScreen, startBattle, party }) => {
-  const [selectedObservation, setSelectedObservation] = useState(null);
-  const [hoveredObservation, setHoveredObservation] = useState(null);
-  const [rotating, setRotating] = useState(false);
-  const [partyWarning, setPartyWarning] = useState(false);
+  const {
+    selectedObservation,
+    setSelectedObservation,
+    hoveredObservation,
+    setHoveredObservation,
+    rotating,
+    setRotating,
+    partyWarning,
+    setPartyWarning,
+    clearPartyWarning,
+  } = useObservationSelection();
+
   const observations = observationDefs;
 
   const handleObservationSelect = (obs) => {
@@ -25,7 +34,7 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
         const frontChars = party.front.filter((c) => c !== null);
         if (frontChars.length === 0) {
           setPartyWarning(true);
-          setTimeout(() => setPartyWarning(false), 3000);
+          clearPartyWarning();
           return;
         }
       }
@@ -35,9 +44,7 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
       
       if (obs.id === 'CALAMITY') {
         // 재앙 관측은 화염룡 전투로 직접 이동
-        // 먼저 전투를 초기화하고
         startBattle();
-        // 회전 애니메이션 후 화면 전환
         setTimeout(() => {
           setScreen('BATTLE');
         }, 1200);
@@ -54,7 +61,7 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
   };
 
   return (
-    <div className="min-h-screen bg-black overflow-hidden relative">
+    <div className="min-h-full bg-black relative">
       {/* 암흑 우주 배경 - 거의 검은색 */}
       <div className="absolute inset-0 bg-gradient-radial from-slate-950/50 via-black to-black"></div>
 
@@ -74,8 +81,10 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
       {/* 망원경 렌즈 테두리 */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
         <div 
-          className={`relative w-[${LENS_CONFIG.rimVH}vh] h-[${LENS_CONFIG.rimVH}vh] max-w-[100vw] max-h-[100vw]`}
+          className="relative"
           style={{
+            width: 'min(92vw, 80vh)',
+            height: 'min(92vw, 80vh)',
             background: 'radial-gradient(circle, transparent 48%, rgba(30,41,59,0.8) 50%, rgba(15,23,42,0.95) 52%, transparent 54%)',
           }}
         >
@@ -93,25 +102,31 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
       </div>
 
       {/* 헤더 (망원경 밖의 어두운 영역) */}
-      <div className="absolute top-4 left-4 md:top-8 md:left-8 flex items-center gap-4 z-50 opacity-60 hover:opacity-100 transition-opacity duration-300">
+      <div className="absolute top-3 left-3 md:top-8 md:left-8 flex items-center gap-3 md:gap-4 z-50 opacity-70 hover:opacity-100 transition-opacity duration-300">
         <button
           onClick={() => setScreen('HOME')}
           className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 backdrop-blur-sm border border-white/10"
         >
-          <ChevronLeft className="w-5 h-5 text-slate-300" />
+          <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-slate-300" />
         </button>
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-400">
+          <h1 className="text-lg md:text-2xl font-bold text-slate-400">
             우주 망원경
           </h1>
-          <p className="text-xs md:text-sm text-slate-500 mt-0.5">관측 대기 중...</p>
+          <p className="text-[10px] md:text-xs text-slate-500 mt-0.5">관측 대기 중...</p>
         </div>
       </div>
 
       {/* 망원경 뷰포트 중앙 컨텐츠 */}
       <div className="absolute inset-0 flex items-center justify-center z-30">
         {/* 망원경 뷰포트 - 중앙 원형 영역 */}
-        <div className={`relative w-[${LENS_CONFIG.viewportVH}vh] h-[${LENS_CONFIG.viewportVH}vh] max-w-[80vw] max-h-[80vw]`}>
+        <div 
+          className="relative"
+          style={{
+            width: 'min(75vw, 65vh)',
+            height: 'min(75vw, 65vh)',
+          }}
+        >
           {/* 망원경 내부 - 우주 공간 (선명하게 보이는 영역) */}
           <div className="absolute inset-0 rounded-full overflow-hidden">
             {/* 깊은 우주 배경 그라디언트 */}

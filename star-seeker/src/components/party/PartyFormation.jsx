@@ -8,12 +8,12 @@ import { PartySlot } from './PartySlot';
  */
 export const PartyFormation = ({ party, setSelectedSlot, removeChar, highlightedSynergy }) => {
   const PartyLine = ({ title, icon: Icon, line, slots, borderColor, bgColor, shadowColor }) => (
-    <div className={`flex-1 bg-slate-900/40 backdrop-blur-md p-3 rounded-xl border ${borderColor} flex flex-col ${shadowColor} min-h-0 justify-center`}>
-      <h3 className={`text-[10px] md:text-xs mb-2 uppercase tracking-wider flex items-center gap-2 font-bold shrink-0 justify-center ${bgColor}`}>
+    <div className={`flex-1 bg-slate-900/40 backdrop-blur-md p-2 md:p-3 rounded-xl border ${borderColor} flex flex-col ${shadowColor} min-h-0 justify-center`}>
+      <h3 className={`text-[9px] md:text-[10px] mb-1.5 md:mb-2 uppercase tracking-wider flex items-center gap-1.5 font-bold shrink-0 justify-center ${bgColor}`}>
         <Icon size={12} /> {title}
       </h3>
       <div className="w-full max-w-md mx-auto">
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-4 gap-2 md:gap-3">
           {slots.map((char, idx) => (
             <PartySlot 
               key={`${line}-${idx}`}
@@ -31,7 +31,7 @@ export const PartyFormation = ({ party, setSelectedSlot, removeChar, highlighted
   );
 
   return (
-    <div className="flex-1 flex flex-col gap-3 h-full overflow-hidden">
+    <div className="flex-1 flex flex-col md:flex-row gap-2 md:gap-3 min-h-0">
       {/* 전열 영역 */}
       <PartyLine
         title="전열 (Attack)"

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@/components/*": ["components/*"],
+      "@/constants/*": ["constants/*"],
+      "@/data/*": ["data/*"],
+      "@/hooks/*": ["hooks/*"],
+      "@/utils/*": ["utils/*"]
+    },
+    "target": "ES6",
+    "module": "commonjs",
+    "jsx": "react",
+    "checkJs": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "build"]
+}

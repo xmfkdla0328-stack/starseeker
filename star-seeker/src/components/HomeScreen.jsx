@@ -16,7 +16,7 @@ export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScr
   if (!mainChar) return null;
 
   return (
-    <div className="h-full relative flex flex-col items-center justify-between p-4 md:p-6 py-8 md:py-6 animate-fade-in overflow-hidden">
+    <div className="min-h-full relative flex flex-col items-center justify-center gap-6 p-4 md:p-8 animate-fade-in">
       {/* 우주 먼지 떠다니는 효과 */}
       <FloatingParticles count={3} />
 
@@ -27,7 +27,7 @@ export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScr
       <CharacterCircle character={mainChar} onCycle={cycleMainChar} />
 
       {/* 전투 진입 버튼 */}
-      <div className="w-full flex justify-center z-20 shrink-0">
+      <div className="w-full flex justify-center z-20 shrink-0 max-w-md">
         <MissionButton onClick={() => setScreen('OBSERVATION')} />
       </div>
     </div>

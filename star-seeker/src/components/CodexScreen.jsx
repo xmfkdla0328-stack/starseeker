@@ -6,9 +6,10 @@ import { CharacterHeader } from './codex/CharacterHeader';
 import { CharacterInfoTab } from './codex/CharacterInfoTab';
 import { CharacterProfileTab } from './codex/CharacterProfileTab';
 import { BondDisplay } from './common/BondDisplay';
+import { BackButton } from './common/BackButton';
 import { performBreakthrough, getNextBreakthroughRequiredLevel } from '../data/breakthroughItems';
 
-export const CodexScreen = ({ inventory, items, setItems, setInventory, showToast }) => {
+export const CodexScreen = ({ inventory, items, setItems, setInventory, showToast, setScreen }) => {
   const [selectedCharId, setSelectedCharId] = useState(CHAR_DB[0].id);
   const [tab, setTab] = useState('INFO'); 
 
@@ -71,17 +72,24 @@ export const CodexScreen = ({ inventory, items, setItems, setInventory, showToas
   };
 
   return (
-    <div className="flex h-full gap-4 p-4 overflow-hidden relative">
-      {/* 왼쪽: 캐릭터 목록 */}
+    <div className="flex flex-col h-full gap-4 p-4 overflow-hidden relative">
+      {/* 뒤로가기 버튼 */}
+      <BackButton onClick={() => setScreen('HOME')} />
+
+      {/* 컨텐츠 영역 */}
+      <div className="flex flex-1 gap-4 overflow-hidden">
+        {/* 왼쪽: 캐릭터 목록 */}
       <CharacterList charList={CHAR_DB} selectedCharId={selectedCharId} onSelectChar={setSelectedCharId} inventory={inventory} />
 
       {/* 오른쪽: 상세 정보 패널 */}
-      <div className="flex-1 bg-slate-950/60 backdrop-blur-xl rounded-xl border border-white/10 flex flex-col overflow-hidden relative shadow-2xl">
+      <div className="flex-1 bg-slate-950/60 backdrop-blur-xl rounded-xl border border-white/10 flex flex-col overflow-y-auto relative shadow-2xl">
         {/* 상단 헤더 */}
-        <CharacterHeader charData={charData} />
+        <div className="flex-shrink-0">
+          <CharacterHeader charData={charData} />
+        </div>
 
         {/* 탭 버튼 */}
-        <div className="flex px-6 mt-6 border-b border-white/10 gap-6 relative z-10 shrink-0">
+        <div className="flex px-6 mt-6 border-b border-white/10 gap-6 relative z-10 flex-shrink-0">
           <button
             onClick={() => setTab('INFO')}
             className={`pb-2 text-sm font-bold transition-colors relative ${
@@ -103,7 +111,7 @@ export const CodexScreen = ({ inventory, items, setItems, setInventory, showToas
         </div>
 
         {/* 내용 영역 */}
-        <div className="flex-1 overflow-y-auto p-6 relative">
+        <div className="flex-1 p-6 relative flex-shrink-0">
           <div className={`absolute inset-0 bg-gradient-to-br ${ELEMENTS[charData.element].bg.replace('/20', '/5')} to-transparent pointer-events-none`}></div>
 
           {/* 인연도 섹션 (보유 중일 때만) */}
@@ -117,6 +125,7 @@ export const CodexScreen = ({ inventory, items, setItems, setInventory, showToas
           {tab === 'INFO' && <CharacterInfoTab charData={charData} getSkillInfo={getSkillInfo} items={items} onBreakthrough={isOwned ? handleBreakthrough : null} />}
           {tab === 'PROFILE' && <CharacterProfileTab charData={charData} />}
         </div>
+      </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles } from 'lucide-react';
 import { ELEMENTS } from '../constants/index';
+import { BackButton } from './common/BackButton';
 
 // 정원 설정 상수
 const GARDEN_CONFIG = {
@@ -19,7 +20,7 @@ const BENCH_CONFIG = {
   bottom: 'bottom-8',
 };
 
-export const GardenScreen = ({ inventory, showToast }) => {
+export const GardenScreen = ({ inventory, showToast, setScreen }) => {
   const [gardenChars, setGardenChars] = useState([]);
   
   useEffect(() => {
@@ -49,7 +50,11 @@ export const GardenScreen = ({ inventory, showToast }) => {
   }, [inventory]);
 
   return (
-    <div className="h-full relative overflow-hidden rounded-2xl m-3 border border-white/10 shadow-2xl">
+    <div className="flex flex-col h-full gap-4 relative">
+      {/* 뒤로가기 버튼 */}
+      <BackButton onClick={() => setScreen('HOME')} />
+
+      <div className="flex-1 relative overflow-hidden rounded-2xl mx-3 mb-3 border border-white/10 shadow-2xl">
       <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/30 to-teal-950/50"></div>
       <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
       
@@ -74,6 +79,7 @@ export const GardenScreen = ({ inventory, showToast }) => {
           </div>
         </div>
       ))}
+      </div>
     </div>
   );
 };

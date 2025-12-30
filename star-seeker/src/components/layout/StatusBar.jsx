@@ -9,7 +9,7 @@ export const StatusBar = ({ gems, playerInfo, onProfileClick }) => {
   const selectedTitle = useMemo(() => getTitleById(playerInfo.selectedTitle), [playerInfo.selectedTitle]);
 
   return (
-    <header className="h-14 px-4 md:px-6 flex items-center justify-between border-b border-cyan-500/20 bg-black/30 backdrop-blur-md relative z-50 shrink-0 overflow-hidden">
+    <header className="glass-panel sticky top-0 z-40 h-14 md:h-16 px-3 md:px-6 flex items-center justify-between shrink-0 shadow-[0_8px_20px_rgba(0,0,0,0.3)]">
       {/* 배경 효과 */}
       <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-blue-500/5"></div>
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent"></div>

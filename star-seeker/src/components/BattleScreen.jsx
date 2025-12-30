@@ -35,29 +35,33 @@ export const BattleScreen = ({ battleSystem, addExp, setScreen, increaseBondFrom
   if (!enemy || allies.length === 0) return <div className="text-center p-10 text-slate-400">전투 준비 중...</div>;
 
   return (
-    <div className="h-full flex flex-col p-3 gap-3 relative animate-fade-in">
+    <div className="min-h-full flex flex-col p-2 md:p-3 gap-2 md:gap-3 relative animate-fade-in">
       <div className="absolute inset-0 bg-gradient-to-r from-red-900/10 via-transparent to-blue-900/10 pointer-events-none"></div>
       
-      {/* 1. 보스 디스플레이 */}
-      <BossDisplay enemy={enemy} battleState={battleState} />
+      {/* 1. 보스 디스플레이 - 모바일에서 축소 */}
+      <div className="flex-shrink-0">
+        <BossDisplay enemy={enemy} battleState={battleState} />
+      </div>
 
-      {/* 2. 전투 로그 */}
-      <BattleLog logs={logs} />
+      {/* 2. 전투 로그 - 모바일에서 스크롤 가능 */}
+      <div className="flex-1 min-h-0">
+        <BattleLog logs={logs} />
+      </div>
 
       {/* 3. 아군 영역 & 컨트롤 패널 */}
-      <div className="flex-[3] bg-blue-950/40 backdrop-blur-md rounded-xl border border-blue-500/20 p-2 flex flex-col justify-end shadow-inner shadow-blue-900/20 relative overflow-hidden min-h-0">
+      <div className="flex-shrink-0 glass-panel rounded-xl p-2 flex flex-col justify-end shadow-inner relative">
          
          {/* 전열 */}
-         <div className="flex justify-center gap-2 mb-4 relative z-10 h-1/2 items-end">
+         <div className="flex justify-center gap-2 mb-2 md:mb-4 relative z-10 items-end">
             {allies.filter(c => c.position === 'FRONT').map((char, i) => (
-               <AllyCard key={`front-${i}`} char={char} />
+               <AllyCard key={`front-${i}`} char={char} isBack={false} onSelect={undefined} selected={false} />
             ))}
          </div>
 
          {/* 후열 */}
-         <div className="flex justify-center gap-2 relative z-10 h-1/2 items-start scale-90 opacity-90">
+         <div className="flex justify-center gap-2 relative z-10 items-start scale-90 opacity-90">
             {allies.filter(c => c.position === 'BACK').map((char, i) => (
-               <AllyCard key={`back-${i}`} char={char} isBack={true} />
+               <AllyCard key={`back-${i}`} char={char} isBack={true} onSelect={undefined} selected={false} />
             ))}
          </div>
 

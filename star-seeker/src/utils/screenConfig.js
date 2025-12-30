@@ -5,11 +5,6 @@ export const OBS_BUTTON_CONFIG = {
   normal: { sizeClass: 'w-32 h-32', offset: 64 },
 };
 
-export const LENS_CONFIG = {
-  viewportVH: 80, // 뷰포트 지름 비율
-  rimVH: 100,     // 렌즈 테두리 지름 비율
-};
-
 export const OBS_ANIM = {
   orbitSpinSec: 20,
   hoverScale: 1.25,

@@ -32,13 +32,13 @@ export default function StarSeekerApp() {
   const [showProfile, setShowProfile] = useState(false);
 
   return (
-    <div className="flex h-screen w-screen bg-slate-900 text-slate-200 overflow-hidden font-sans select-none relative">
+    <div className="app-shell flex h-screen w-screen text-slate-200 overflow-hidden font-sans select-none relative">
       <Background />
-      <Sidebar screen={screen} setScreen={setScreen} />
+      {screen === 'HOME' && <Sidebar screen={screen} setScreen={setScreen} />}
       
       <main className="flex-1 flex flex-col h-full relative z-10 overflow-hidden">
-        <StatusBar gems={items.gems} playerInfo={playerInfo} onProfileClick={() => setShowProfile(true)} />
-        <div className="flex-1 overflow-y-auto relative no-scrollbar">
+        {screen === 'HOME' && <StatusBar gems={items.gems} playerInfo={playerInfo} onProfileClick={() => setShowProfile(true)} />}
+        <div className="flex-1 overflow-y-auto relative no-scrollbar screen-scroll">
             {screen === 'HOME' && (
               <HomeScreen 
                 showToast={showToast} mainChar={mainChar} setMainChar={setMainChar} 
@@ -52,10 +52,10 @@ export default function StarSeekerApp() {
               />
             )}
             {screen === 'GACHA' && (
-              <GachaScreen handleGacha={handleGacha} />
+              <GachaScreen handleGacha={handleGacha} setScreen={setScreen} />
             )}
             {screen === 'GARDEN' && (
-              <GardenScreen inventory={inventory} showToast={showToast} />
+              <GardenScreen inventory={inventory} showToast={showToast} setScreen={setScreen} />
             )}
             {screen === 'OBSERVATION' && (
               <ObservationScreen setScreen={setScreen} startBattle={battleSystem.startBattle} party={party} />
@@ -70,10 +70,11 @@ export default function StarSeekerApp() {
                 setItems={setItems} 
                 setInventory={setInventory} 
                 showToast={showToast} 
+                setScreen={setScreen}
               />
             )}
             {screen === 'INVENTORY' && (
-              <InventoryScreen items={items} setItems={setItems} setPlayerInfo={setPlayerInfo} showToast={showToast} />
+              <InventoryScreen items={items} setItems={setItems} setPlayerInfo={setPlayerInfo} showToast={showToast} setScreen={setScreen} />
             )}
         </div>
       </main>

@@ -39,7 +39,7 @@ export const executeSkillEffect = (actor, effect, allies) => {
   const executor = effectExecutors[effect.type];
   
   if (!executor) {
-    console.warn(`Unknown effect type: ${effect.type}`);
+    // 알 수 없는 효과 타입은 무시 (프로덕션 환경)
     return { newAllies: allies, logMsg: '(효과 없음)' };
   }
   

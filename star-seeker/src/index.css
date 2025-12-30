@@ -98,3 +98,146 @@
 .bg-gradient-radial {
   background-image: radial-gradient(circle, var(--tw-gradient-stops));
 }
+
+:root {
+  color-scheme: dark;
+}
+
+.app-shell {
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) 0;
+  background: radial-gradient(120% 120% at 20% 10%, rgba(56, 189, 248, 0.08), transparent 45%),
+              radial-gradient(120% 120% at 80% 10%, rgba(217, 70, 239, 0.08), transparent 45%),
+              #020617;
+}
+
+.glass-panel {
+  background: linear-gradient(145deg, rgba(12, 18, 40, 0.75), rgba(10, 17, 35, 0.6));
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  backdrop-filter: blur(14px);
+}
+
+.screen-scroll {
+  min-height: calc(100dvh - 180px);
+  overscroll-behavior: contain;
+}
+
+.bottom-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 커스텀 스크롤바 숨기기 */
+.no-scrollbar::-webkit-scrollbar { 
+  display: none; 
+}
+.no-scrollbar { 
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+
+/* 애니메이션 정의 */
+@keyframes float-slow { 
+  0%, 100% { transform: translateY(0); } 
+  50% { transform: translateY(-10px); } 
+}
+.animate-float-slow { 
+  animation: float-slow 6s ease-in-out infinite; 
+}
+
+@keyframes pulse-slow { 
+  0%, 100% { opacity: 1; } 
+  50% { opacity: 0.5; } 
+}
+.animate-pulse-slow { 
+  animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
+}
+
+@keyframes pan-slow { 
+  0% { background-position: 0% 0%; } 
+  100% { background-position: 100% 100%; } 
+}
+.animate-pan-slow { 
+  animation: pan-slow 60s linear infinite; 
+}
+
+@keyframes twinkle { 
+  0%, 100% { opacity: 0.2; transform: scale(1); } 
+  50% { opacity: 0.8; transform: scale(1.5); } 
+}
+.animate-twinkle { 
+  animation: twinkle 3s ease-in-out infinite; 
+}
+
+@keyframes bounce-slight { 
+  0%, 100% { transform: translate(-50%, 0); } 
+  50% { transform: translate(-50%, -10px); } 
+}
+.animate-bounce-slight { 
+  animation: bounce-slight 2s ease-in-out infinite; 
+}
+
+@keyframes fade-in { 
+  from { opacity: 0; } 
+  to { opacity: 1; } 
+}
+.animate-fade-in { 
+  animation: fade-in 0.3s ease-out forwards; 
+}
+
+/* 렌즈 회전 애니메이션 (App.jsx 버튼용) */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 우주 테마 추가 애니메이션 */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 30s linear infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  25% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
+  50% { transform: translateY(-40px) translateX(-10px); opacity: 0.8; }
+  75% { transform: translateY(-20px) translateX(5px); opacity: 0.6; }
+}
+.animate-float {
+  animation: float 10s ease-in-out infinite;
+}
+
+@keyframes scan {
+  0% { top: 0%; opacity: 0; }
+  50% { opacity: 0.6; }
+  100% { top: 100%; opacity: 0; }
+}
+.animate-scan {
+  animation: scan 3s ease-in-out infinite;
+}
+
+/* 전투 장면용 그리드 및 배경 애니메이션 */
+.battle-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 60px 60px, 60px 60px;
+  background-position: 0 0, 0 0;
+}
+
+@keyframes grid-pan {
+  0% { background-position: 0 0, 0 0; }
+  100% { background-position: 120px 120px, 120px 120px; }
+}
+
+.animate-grid-pan {
+  animation: grid-pan 30s linear infinite;
+}
+
+/* 그라데이션 radial */
+.bg-gradient-radial {
+  background-image: radial-gradient(circle, var(--tw-gradient-stops));
+}
