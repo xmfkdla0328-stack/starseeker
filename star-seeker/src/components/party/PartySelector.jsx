@@ -22,14 +22,7 @@ export const PartySelector = ({ inventory, party, selectedSlot, setSelectedSlot,
             {selectedSlot.line === 'front' ? <Sword size={18} className="text-red-400"/> : <Shield size={18} className="text-blue-400"/>}
             {selectedSlot.line === 'front' ? '전열' : '후열'} 배치 선택
         </h3>
-        <button 
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedSlot(null); }} 
-          className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full pointer-events-auto" 
-          type="button"
-          aria-label="닫기"
-        >
-          <X size={20} className="text-slate-300"/>
-        </button>
+        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedSlot(null); }} className="p-1 bg-white/10 hover:bg-white/20 rounded-full pointer-events-auto touch-none" type="button"><X size={18} className="text-slate-300"/></button>
       </div>
       
       <div className="overflow-y-auto p-1 no-scrollbar flex-1" onClick={(e) => e.stopPropagation()}>
