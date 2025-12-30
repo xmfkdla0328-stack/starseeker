@@ -59,9 +59,6 @@ export const CharacterCircle = ({ character, onCycle }) => {
             {element.name}
           </span>
         </h1>
-        <p className="text-cyan-300/60 text-xs md:text-sm mt-1 md:mt-2 max-w-xs md:max-w-md mx-auto italic line-clamp-2">
-          "{character.desc}"
-        </p>
       </div>
     </div>
   );
