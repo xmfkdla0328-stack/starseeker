@@ -1,29 +1,40 @@
 import React from 'react';
-import { ChevronRight } from 'lucide-react';
+import { Terminal } from 'lucide-react';
 
 /**
- * 전투 진입 버튼
+ * 전투 진입 버튼 - 액세스 코드 입력 컨셉
  * @param {function} onClick - 클릭 핸들러
  */
 export const MissionButton = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="group relative px-8 py-3.5 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-400/30 text-cyan-100 font-semibold rounded-lg overflow-hidden hover:border-cyan-400/60 hover:from-cyan-500/20 hover:to-blue-500/20 transition-all duration-300 shadow-lg hover:shadow-cyan-500/20 backdrop-blur-md"
+      className="group relative px-6 py-3 bg-black/60 border border-green-500/40 text-green-400 font-mono rounded overflow-hidden hover:border-green-400/80 hover:bg-black/80 transition-all duration-300 shadow-[0_0_20px_rgba(34,197,94,0.2)] hover:shadow-[0_0_30px_rgba(34,197,94,0.4)] backdrop-blur-sm"
     >
+      {/* 터미널 스캔 라인 */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/5 to-transparent animate-scan"></div>
+
       {/* 버튼 내용 */}
-      <div className="relative flex items-center gap-2 text-base">
-        <span className="tracking-wide">
-          관측 개시
-        </span>
-        <ChevronRight
-          size={18}
-          className="text-cyan-400 group-hover:translate-x-1 transition-transform duration-300"
-        />
+      <div className="relative flex items-center gap-3 text-sm">
+        {/* 프롬프트 심볼 */}
+        <Terminal size={16} className="text-green-500 flex-shrink-0" />
+        
+        {/* 코드 입력 디스플레이 */}
+        <div className="flex items-center gap-2">
+          <span className="text-green-500/60">&gt;</span>
+          <span className="tracking-widest">ACCESS</span>
+          <span className="text-green-300 font-bold tracking-[0.3em]">N03L</span>
+          <span className="w-2 h-4 bg-green-400 animate-pulse ml-1"></span>
+        </div>
       </div>
 
-      {/* 호버 시 빛나는 효과 */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/0 to-transparent group-hover:via-cyan-400/10 transition-all duration-500"></div>
+      {/* 호버 시 글로우 효과 */}
+      <div className="absolute inset-0 bg-green-500/0 group-hover:bg-green-500/5 transition-all duration-300"></div>
+      
+      {/* 하단 라벨 */}
+      <div className="absolute -bottom-5 left-0 right-0 text-center">
+        <span className="text-[8px] text-green-500/40 font-mono tracking-wider">관측 개시</span>
+      </div>
     </button>
   );
 };
