@@ -14,6 +14,7 @@ export const PartySlot = ({ char, line, idx, removeChar, setSelectedSlot, highli
         ${char ? `border-cyan-400/40 bg-slate-900/60 backdrop-blur-sm` : 'border-dashed border-slate-700/50 hover:bg-white/5 hover:border-slate-500/50'}
         ${isMatch ? 'ring-2 ring-yellow-400 scale-105 z-10 shadow-[0_0_15px_rgba(250,204,21,0.5)]' : ''}
         ${isDimmed ? 'opacity-20 grayscale scale-95' : ''}
+        max-h-[100px] sm:max-h-[120px]
       `}>
       {char ? (
         <>
