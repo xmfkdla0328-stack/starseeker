@@ -1,6 +1,6 @@
 import React from 'react';
 import { ELEMENTS } from '../../constants/index';
-import { getRarityClasses, getRoleLabel } from '../../utils/styleHelpers';
+import { getRarityClasses, getRoleLabel } from '../../utils/styleHelpers/index';
 
 export const GachaCharacterCard = ({ char, idx, isSingle }) => {
   const rarityClasses = getRarityClasses(char.rarity);

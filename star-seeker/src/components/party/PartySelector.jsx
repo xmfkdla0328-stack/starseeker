@@ -16,16 +16,16 @@ export const PartySelector = ({ inventory, party, selectedSlot, setSelectedSlot,
   }, [inventory, party, selectedSlot]);
 
   return (
-    <div className="absolute inset-0 z-[60] bg-slate-950/90 backdrop-blur-md flex flex-col p-4 animate-fade-in">
-      <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2 shrink-0">
+    <div className="absolute inset-0 z-[60] bg-slate-950 flex flex-col p-4 animate-fade-in" onClick={() => setSelectedSlot(null)}>
+      <div onClick={(e) => e.stopPropagation()} className="flex justify-between items-center mb-4 border-b border-white/10 pb-2 shrink-0">
         <h3 className="text-lg text-white font-bold font-serif flex items-center gap-2">
             {selectedSlot.line === 'front' ? <Sword size={18} className="text-red-400"/> : <Shield size={18} className="text-blue-400"/>}
             {selectedSlot.line === 'front' ? '전열' : '후열'} 배치 선택
         </h3>
-        <button onClick={() => setSelectedSlot(null)} className="p-1 bg-white/10 hover:bg-white/20 rounded-full"><X size={18} className="text-slate-300"/></button>
+        <button onClick={(e) => { e.stopPropagation(); setSelectedSlot(null); }} className="p-1 bg-white/10 hover:bg-white/20 rounded-full"><X size={18} className="text-slate-300"/></button>
       </div>
       
-      <div className="overflow-y-auto p-1 no-scrollbar flex-1">
+      <div className="overflow-y-auto p-1 no-scrollbar flex-1" onClick={(e) => e.stopPropagation()}>
         <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
           {sortedInventory.map((char) => {
             const isPlaced = [...party.front, ...party.back].some(p => p && p.id === char.id);

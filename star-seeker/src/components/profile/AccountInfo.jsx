@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDate, formatPlaytime } from '../../utils/dateHelpers';
 
 export const AccountInfo = ({ playerInfo }) => {
   return (
@@ -6,21 +7,21 @@ export const AccountInfo = ({ playerInfo }) => {
       <div className="flex justify-between items-center text-slate-300">
         <span className="text-xs uppercase tracking-widest">Journey Started</span>
         <span className="text-cyan-300/60 font-mono text-xs">
-          {new Date(playerInfo.joinDate).toLocaleDateString()}
+          {formatDate(playerInfo.joinDate)}
         </span>
       </div>
       <div className="h-px bg-gradient-to-r from-transparent via-slate-500/20 to-transparent"></div>
       <div className="flex justify-between items-center text-slate-300">
         <span className="text-xs uppercase tracking-widest">Last Seen</span>
         <span className="text-cyan-300/60 font-mono text-xs">
-          {new Date(playerInfo.lastLoginDate).toLocaleDateString()}
+          {formatDate(playerInfo.lastLoginDate)}
         </span>
       </div>
       <div className="h-px bg-gradient-to-r from-transparent via-slate-500/20 to-transparent"></div>
       <div className="flex justify-between items-center text-slate-300">
         <span className="text-xs uppercase tracking-widest">Hours Traveled</span>
         <span className="text-cyan-300/60 font-mono text-xs">
-          {Math.floor(playerInfo.playtime / 60)}h {playerInfo.playtime % 60}m
+          {formatPlaytime(playerInfo.playtime)}
         </span>
       </div>
     </div>

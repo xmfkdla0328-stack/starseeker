@@ -21,7 +21,7 @@ export const PartySlot = ({ char, line, idx, removeChar, setSelectedSlot, highli
 
           {/* 속성 아이콘 배지 */}
           <div className="absolute top-0.5 sm:top-1 left-0.5 sm:left-1 p-1 sm:p-1.5 rounded-full bg-black/50 border border-white/10 backdrop-blur-sm shadow-sm">
-            <ElementIcon element={char.element} size={10} className="sm:w-[12px] sm:h-[12px] md:w-[14px] md:h-[14px]" />
+            <ElementIcon element={char.element} size={10} />
           </div>
 
           <div className="text-[10px] sm:text-xs md:text-xs lg:text-xs text-cyan-200 font-bold z-10 flex flex-col items-center text-center leading-tight">
