@@ -16,19 +16,24 @@ export const HomeScreen = ({ showToast, mainChar, setMainChar, inventory, setScr
   if (!mainChar) return null;
 
   return (
-    <div className="min-h-full relative flex flex-col items-center justify-center gap-6 p-4 md:p-8 animate-fade-in">
+    <div className="min-h-full relative flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 lg:gap-12 p-4 md:p-8 animate-fade-in">
       {/* 우주 먼지 떠다니는 효과 */}
       <FloatingParticles count={3} />
 
-      {/* 게임 타이틀 */}
-      <GameTitle />
+      {/* 왼쪽: 메인 캐릭터 일러스트 */}
+      <div className="flex-shrink-0 z-10 order-2 md:order-1">
+        <CharacterCircle character={mainChar} onCycle={cycleMainChar} />
+      </div>
 
-      {/* 메인 캐릭터 일러스트 */}
-      <CharacterCircle character={mainChar} onCycle={cycleMainChar} />
+      {/* 오른쪽: 게임 타이틀 + 버튼 */}
+      <div className="flex flex-col items-center md:items-start gap-4 md:gap-6 lg:gap-8 z-20 order-1 md:order-2">
+        {/* 게임 타이틀 */}
+        <GameTitle />
 
-      {/* 전투 진입 버튼 */}
-      <div className="w-full flex justify-center z-20 shrink-0 max-w-md">
-        <MissionButton onClick={() => setScreen('OBSERVATION')} />
+        {/* 전투 진입 버튼 */}
+        <div className="w-full flex justify-center md:justify-start">
+          <MissionButton onClick={() => setScreen('OBSERVATION')} />
+        </div>
       </div>
     </div>
   );

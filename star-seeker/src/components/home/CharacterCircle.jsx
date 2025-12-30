@@ -27,13 +27,13 @@ export const CharacterCircle = ({ character, onCycle }) => {
 
       {/* 캐릭터 원형 컨테이너 */}
       <div
-        className={`w-48 h-48 sm:w-56 sm:h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full border-2 ${element.border} ${element.bg} flex items-center justify-center shadow-[0_0_40px_rgba(34,211,238,0.3)] transition-all duration-500 group-hover:scale-105 group-hover:shadow-[0_0_60px_rgba(34,211,238,0.5)] relative overflow-hidden backdrop-blur-sm`}
+        className={`w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 xl:w-72 xl:h-72 rounded-full border-2 ${element.border} ${element.bg} flex items-center justify-center shadow-[0_0_40px_rgba(34,211,238,0.3)] transition-all duration-500 group-hover:scale-105 group-hover:shadow-[0_0_60px_rgba(34,211,238,0.5)] relative overflow-hidden backdrop-blur-sm`}
       >
         {/* 홀로그램 스캔 라인 */}
         <div className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent animate-scan"></div>
 
         {/* 캐릭터 이니셜 */}
-        <span className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-bold text-white opacity-90 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] select-none relative z-10">
+        <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-bold text-white opacity-90 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] select-none relative z-10">
           {character.name[0]}
         </span>
 
