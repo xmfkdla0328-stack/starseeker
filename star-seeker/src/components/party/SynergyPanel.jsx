@@ -51,15 +51,15 @@ export const SynergyPanel = ({ activeSynergies, highlightedSynergy, toggleSynerg
         {/* ★ 자동 편성 버튼 */}
         <button 
           onClick={handleAutoParty}
-          className="w-full py-2.5 bg-gradient-to-r from-indigo-600/40 to-purple-600/40 hover:from-indigo-600/60 hover:to-purple-600/60 active:scale-95 text-indigo-200 text-xs md:text-sm font-bold rounded-lg border border-indigo-400/40 hover:border-indigo-400/60 transition-all flex items-center justify-center gap-2 shadow-[0_0_12px_rgba(99,102,241,0.2)] hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] backdrop-blur-sm"
+          className="w-full py-2.5 bg-gradient-to-r from-yellow-600/30 to-amber-600/30 hover:from-yellow-600/50 hover:to-amber-600/50 active:scale-95 text-yellow-200 text-xs md:text-sm font-bold rounded-lg border border-yellow-400/40 hover:border-yellow-400/60 transition-all flex items-center justify-center gap-2 shadow-[0_0_12px_rgba(250,204,21,0.15)] hover:shadow-[0_0_20px_rgba(250,204,21,0.25)] backdrop-blur-sm"
         >
-          <Wand2 size={16} className="text-indigo-300" /> 자동 파티 편성
+          <Wand2 size={16} className="text-yellow-300" /> 자동 파티 편성
         </button>
 
         {/* ★ 전투 개시 버튼 */}
         <button 
           onClick={onStartBattle}
-          className="w-full py-3 md:py-4 bg-gradient-to-r from-red-700/60 to-red-600/60 hover:from-red-600/80 hover:to-red-500/80 active:scale-95 text-white text-sm md:text-base font-bold rounded-lg transition-all flex items-center justify-center gap-2 border border-red-400/50 hover:border-red-400/80 shadow-[0_4px_16px_rgba(220,38,38,0.4)] hover:shadow-[0_6px_20px_rgba(220,38,38,0.6)] uppercase tracking-wider group backdrop-blur-sm"
+          className="w-full py-3 md:py-4 bg-gradient-to-r from-cyan-600/40 to-blue-600/40 hover:from-cyan-600/60 hover:to-blue-600/60 active:scale-95 text-cyan-100 text-sm md:text-base font-bold rounded-lg transition-all flex items-center justify-center gap-2 border border-cyan-400/50 hover:border-cyan-400/80 shadow-[0_4px_16px_rgba(34,211,238,0.3)] hover:shadow-[0_6px_20px_rgba(34,211,238,0.5)] uppercase tracking-wider group backdrop-blur-sm"
         >
           <Sword size={18} className="group-hover:rotate-45 transition-transform" />
           <span className="relative z-10">관측 개시</span>
