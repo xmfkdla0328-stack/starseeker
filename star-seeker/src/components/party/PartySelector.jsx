@@ -1,15 +1,16 @@
 import React, { useMemo } from 'react';
-import { Sword, Shield, X, Lock } from 'lucide-react';
+import { X, Lock } from 'lucide-react';
 import { ELEMENTS } from '../../constants/index';
 import { ElementIcon } from '../common/ElementIcon';
+import { getRoleColor, getRoleLabel } from '../../utils/roleHelpers';
 
 export const PartySelector = ({ inventory, party, selectedSlot, setSelectedSlot, handleAssign }) => {
   // 인벤토리 정렬 (배치된 캐릭터를 뒤로 보냄)
   const sortedInventory = useMemo(() => {
     if (!selectedSlot) return [];
     return [...inventory].sort((a, b) => {
-      const isPlacedA = [...party.front, ...party.back].some(p => p && p.id === a.id);
-      const isPlacedB = [...party.front, ...party.back].some(p => p && p.id === b.id);
+      const isPlacedA = party.members.some(p => p && p.id === a.id);
+      const isPlacedB = party.members.some(p => p && p.id === b.id);
       if (isPlacedA === isPlacedB) return 0;
       return isPlacedA ? 1 : -1; 
     });
@@ -28,8 +29,7 @@ export const PartySelector = ({ inventory, party, selectedSlot, setSelectedSlot,
         {/* 헤더 */}
         <div onClick={(e) => e.stopPropagation()} className="flex justify-between items-center px-4 py-3 border-b border-white/10 shrink-0">
           <h3 className="text-base md:text-lg text-white font-bold font-serif flex items-center gap-2">
-              {selectedSlot.line === 'front' ? <Sword size={18} className="text-red-400"/> : <Shield size={18} className="text-blue-400"/>}
-              {selectedSlot.line === 'front' ? '전열' : '후열'} 배치 선택
+              파티 캐릭터 선택
           </h3>
           <button 
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedSlot(null); }} 
@@ -45,8 +45,8 @@ export const PartySelector = ({ inventory, party, selectedSlot, setSelectedSlot,
         <div className="overflow-y-auto flex-1 p-3" onClick={(e) => e.stopPropagation()}>
           <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
             {sortedInventory.map((char) => {
-              const isPlaced = [...party.front, ...party.back].some(p => p && p.id === char.id);
-              const isRoleMatch = char.role === 'BOTH' || char.role.toLowerCase() === selectedSlot.line;
+              const isPlaced = party.members.some(p => p && p.id === char.id);
+              const isRoleMatch = true;
               
               return (
                 <div key={char.uid} 
@@ -67,18 +67,15 @@ export const PartySelector = ({ inventory, party, selectedSlot, setSelectedSlot,
                      <div className="flex flex-col min-w-0">
                        <span className="text-slate-200 text-[10px] font-bold truncate leading-tight">{char.name}</span>
                        <div className="flex items-center gap-1">
-                        <span className={`text-[8px] font-bold ${
-                          char.role === 'BOTH' ? 'text-purple-300' :
-                          char.role === 'FRONT' ? 'text-red-300' : 'text-blue-300'
-                        }`}>
-                          {char.role === 'BOTH' ? '만능' : char.role === 'FRONT' ? '전열' : '후열'}
+                         <span className={`text-[8px] font-bold ${getRoleColor(char.role)}`}>
+                            {getRoleLabel(char.role)}
                         </span>
                        </div>
                      </div>
                    </div>
 
-                <div className="flex flex-wrap gap-1 content-start flex-1">
-                   {char.tags.map((tag, i) => (
+                 <div className="flex flex-wrap gap-1 content-start flex-1">
+                   {(char.tags || []).map((tag, i) => (
                      <span key={i} className="text-[8px] px-1.5 py-0.5 rounded-sm bg-white/5 text-slate-400 border border-white/5 whitespace-nowrap">
                         {tag}
                      </span>

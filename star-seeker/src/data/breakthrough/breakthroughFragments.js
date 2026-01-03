@@ -4,54 +4,63 @@
 
 // 돌파 아이템 ID
 export const BREAKTHROUGH_ITEMS = {
-  FIRE: 'star_fragment_fire',
-  WATER: 'star_fragment_water',
-  EARTH: 'star_fragment_earth',
-  LIGHT: 'star_fragment_light',
-  DARK: 'star_fragment_dark',
+  ENTROPY: 'star_fragment_entropy',
+  STASIS: 'star_fragment_stasis',
+  GRAVITY: 'star_fragment_gravity',
+  RESONANCE: 'star_fragment_resonance',
+  PARADOX: 'star_fragment_paradox',
+  AXIOM: 'star_fragment_axiom',
 };
 
 // 아이템 상세 정보
 export const BREAKTHROUGH_ITEM_DATA = {
-  [BREAKTHROUGH_ITEMS.FIRE]: {
-    id: BREAKTHROUGH_ITEMS.FIRE,
-    name: '별의 조각 (불)',
-    element: 'FIRE',
-    description: '불 속성 캐릭터의 레벨 한계를 돌파하는데 필요한 신비한 결정',
+  [BREAKTHROUGH_ITEMS.ENTROPY]: {
+    id: BREAKTHROUGH_ITEMS.ENTROPY,
+    name: '별의 조각 (엔트로피)',
+    element: 'ENTROPY',
+    description: '엔트로피 속성 캐릭터의 한계를 열어 주는 붉은 파편',
     rarity: 'rare',
     icon: '🔥',
   },
-  [BREAKTHROUGH_ITEMS.WATER]: {
-    id: BREAKTHROUGH_ITEMS.WATER,
-    name: '별의 조각 (물)',
-    element: 'WATER',
-    description: '물 속성 캐릭터의 레벨 한계를 돌파하는데 필요한 신비한 결정',
+  [BREAKTHROUGH_ITEMS.STASIS]: {
+    id: BREAKTHROUGH_ITEMS.STASIS,
+    name: '별의 조각 (스테이시스)',
+    element: 'STASIS',
+    description: '시간을 멈춘 듯 푸른 빛을 내는 정적의 결정',
     rarity: 'rare',
-    icon: '💧',
+    icon: '🧊',
   },
-  [BREAKTHROUGH_ITEMS.EARTH]: {
-    id: BREAKTHROUGH_ITEMS.EARTH,
-    name: '별의 조각 (대지)',
-    element: 'EARTH',
-    description: '대지 속성 캐릭터의 레벨 한계를 돌파하는데 필요한 신비한 결정',
+  [BREAKTHROUGH_ITEMS.GRAVITY]: {
+    id: BREAKTHROUGH_ITEMS.GRAVITY,
+    name: '별의 조각 (중력)',
+    element: 'GRAVITY',
+    description: '무거운 자장에 잠긴 보랏빛 중력 핵',
     rarity: 'rare',
-    icon: '🌿',
+    icon: '🪐',
   },
-  [BREAKTHROUGH_ITEMS.LIGHT]: {
-    id: BREAKTHROUGH_ITEMS.LIGHT,
-    name: '별의 조각 (빛)',
-    element: 'LIGHT',
-    description: '빛 속성 캐릭터의 레벨 한계를 돌파하는데 필요한 신비한 결정',
+  [BREAKTHROUGH_ITEMS.RESONANCE]: {
+    id: BREAKTHROUGH_ITEMS.RESONANCE,
+    name: '별의 조각 (공명)',
+    element: 'RESONANCE',
+    description: '황금색 진동이 감도는 공명의 매개체',
     rarity: 'rare',
-    icon: '✨',
+    icon: '🎶',
   },
-  [BREAKTHROUGH_ITEMS.DARK]: {
-    id: BREAKTHROUGH_ITEMS.DARK,
-    name: '별의 조각 (어둠)',
-    element: 'DARK',
-    description: '어둠 속성 캐릭터의 레벨 한계를 돌파하는데 필요한 신비한 결정',
+  [BREAKTHROUGH_ITEMS.PARADOX]: {
+    id: BREAKTHROUGH_ITEMS.PARADOX,
+    name: '별의 조각 (패러독스)',
+    element: 'PARADOX',
+    description: '모순된 힘이 얽힌 검은 슬레이트 파편',
     rarity: 'rare',
-    icon: '🌙',
+    icon: '♾️',
+  },
+  [BREAKTHROUGH_ITEMS.AXIOM]: {
+    id: BREAKTHROUGH_ITEMS.AXIOM,
+    name: '별의 조각 (공리)',
+    element: 'AXIOM',
+    description: '질서와 균형을 상징하는 창백한 결정',
+    rarity: 'rare',
+    icon: '⚖️',
   },
 };
 

@@ -19,12 +19,61 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
   const maxZoom = 400;
   const zoomStep = 50;
 
+  // 망원경 렌즈 위치 추적 (마우스/터치 따라가기)
+  const [lensOffset, setLensOffset] = useState({ x: 0, y: 0 });
+  const maxLensOffset = 60; // 최대 오프셋 (픽셀) - 더 자연스러운 범위로 조정
+
   const handleZoomIn = () => {
     setZoom(prev => Math.min(prev + zoomStep, maxZoom));
   };
 
   const handleZoomOut = () => {
     setZoom(prev => Math.max(prev - zoomStep, minZoom));
+  };
+
+  // 마우스/터치 위치를 추적하여 망원경 렌즈 위치 업데이트
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // 중심으로부터의 거리 계산 (거리 비율로 오프셋 계산)
+    const deltaX = (mouseX - centerX) / centerX;
+    const deltaY = (mouseY - centerY) / centerY;
+    
+    // 부드러운 이동을 위해 제한된 범위로 오프셋 적용
+    setLensOffset({
+      x: deltaX * maxLensOffset,
+      y: deltaY * maxLensOffset,
+    });
+  };
+
+  // 터치 이벤트 처리
+  const handleTouchMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const touch = e.touches[0];
+    const touchX = touch.clientX - rect.left;
+    const touchY = touch.clientY - rect.top;
+    
+    // 중심으로부터의 거리 비율 계산
+    const deltaX = (touchX - centerX) / centerX;
+    const deltaY = (touchY - centerY) / centerY;
+    
+    setLensOffset({
+      x: deltaX * maxLensOffset,
+      y: deltaY * maxLensOffset,
+    });
+  };
+
+  // 마우스/터치 이탈 시 원래 위치로 복구
+  const handleMouseLeave = () => {
+    setLensOffset({ x: 0, y: 0 });
   };
 
   const {
@@ -45,8 +94,8 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
     if (selectedObservation?.id === obs.id) {
       // 재앙 관측의 경우 파티 편성 확인
       if (obs.id === 'CALAMITY') {
-        const frontChars = party.front.filter((c) => c !== null);
-        if (frontChars.length === 0) {
+        const partyChars = party.members.filter((c) => c !== null);
+        if (partyChars.length === 0) {
           setPartyWarning(true);
           clearPartyWarning();
           return;
@@ -97,8 +146,8 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
         <div 
           className="relative"
           style={{
-            width: 'min(92vw, 80vh)',
-            height: 'min(92vw, 80vh)',
+            width: 'min(95vw, 90vh)',
+            height: 'min(95vw, 90vh)',
             background: 'radial-gradient(circle, transparent 48%, rgba(30,41,59,0.8) 50%, rgba(15,23,42,0.95) 52%, transparent 54%)',
           }}
         >
@@ -132,20 +181,27 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
       </div>
 
       {/* 망원경 뷰포트 중앙 컨텐츠 */}
-      <div className="absolute inset-0 flex items-center justify-center z-30">
-        {/* 망원경 뷰포트 - 중앙 원형 영역 (줌에 따라 크기 변경) */}
+      <div 
+        className="absolute inset-0 flex items-center justify-center z-30"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleMouseLeave}
+      >
+        {/* 망원경 뷰포트 - 중앙 원형 영역 (줌에 따라 크기 변경, 마우스/터치 위치에 따라 이동) */}
         <div 
           className="relative transition-all duration-300"
           style={{
-            width: `calc(min(75vw, 65vh) * ${zoom / 250})`,
-            height: `calc(min(75vw, 65vh) * ${zoom / 250})`,
+            width: `calc(min(82vw, 75vh) * ${zoom / 250})`,
+            height: `calc(min(82vw, 75vh) * ${zoom / 250})`,
+            transform: `translate(${lensOffset.x}px, ${lensOffset.y}px)`,
           }}
         >
           {/* 망원경 내부 - 우주 공간 (선명하게 보이는 영역) */}
           <div className="absolute inset-0 rounded-full overflow-hidden">
             {/* 깊은 우주 배경 그라디언트 */}
             <div className="absolute inset-0 bg-gradient-radial from-indigo-950/80 via-slate-950 to-black"></div>
-
+200 ease-out
             {/* 망원경 안의 선명한 별들 */}
             <StarField count={50} variant="inside" />
 
@@ -250,8 +306,8 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
         </div>
       </div>
 
-      {/* 우측 정보 패널 (망원경 밖의 어두운 영역) */}
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 w-full max-w-sm px-4 z-50">
+      {/* 좌측 정보 패널 (망원경 밖의 어두운 영역) */}
+      <div className="absolute left-8 top-1/2 -translate-y-1/2 w-full max-w-sm px-4 z-50">
         {partyWarning ? (
           <div 
             className="p-6 rounded-xl backdrop-blur-md border transition-all duration-500 transform animate-pulse"

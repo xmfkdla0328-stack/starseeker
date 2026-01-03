@@ -26,20 +26,25 @@ const enhanceUltimateDesc = (desc, ultLevel) => {
 
 /**
  * 캐릭터 스킬 목록 컴포넌트
+ * 모든 캐릭터는 다음 스킬 구성을 가집니다:
+ * - 일반 공격 (normal)
+ * - 스킬 (skill)
+ * - 필살기 (ultimate)
+ * - 패시브 스킬 2개 (passive1, passive2)
  */
 export const CharacterSkillsList = ({ charData, getSkillInfo, ultLevel = 0 }) => {
+  // skillDetails 가져오기
+  const skillDetails = charData.skillDetails || {};
+  
   return (
     <div>
       <h3 className="text-yellow-100 font-bold mb-3 text-sm flex items-center gap-2">
         <Sparkles size={14} /> 보유 스킬
       </h3>
       <div className="space-y-4">
-        {/* 전열 스킬 세트 */}
-        {(charData.role === 'FRONT' || charData.role === 'BOTH') && (
-          <div className="space-y-2">
-            {charData.role === 'BOTH' && (
-              <h4 className="text-xs text-red-300 font-bold border-l-2 border-red-500 pl-2 mb-1">전열 배치 시</h4>
-            )}
+        {/* 액티브 스킬 */}
+        <div className="space-y-2">
+          {charData.skills?.normal && (
             <SkillBlock
               type="일반"
               name={charData.skills.normal}
@@ -48,7 +53,10 @@ export const CharacterSkillsList = ({ charData, getSkillInfo, ultLevel = 0 }) =>
               colorClass="bg-slate-500 text-slate-300 border-slate-500"
               accentClass="text-slate-200"
               level={charData.skillLevels?.normal || 1}
+              isAttributeAttack={skillDetails.normal?.isAttributeAttack || false}
             />
+          )}
+          {charData.skills?.skill && (
             <SkillBlock
               type="스킬"
               name={charData.skills.skill}
@@ -56,8 +64,9 @@ export const CharacterSkillsList = ({ charData, getSkillInfo, ultLevel = 0 }) =>
               cooldown={getSkillInfo('skill').cooldown}
               colorClass="bg-blue-500 text-blue-300 border-blue-500"
               accentClass="text-blue-200"
-              level={charData.skillLevels?.skill || 1}
-            />
+              level={charData.skillLevels?.skill || 1}              isAttributeAttack={skillDetails.skill?.isAttributeAttack || false}            />
+          )}
+          {charData.skills?.ultimate && (
             <SkillBlock
               type="필살"
               name={charData.skills.ultimate}
@@ -69,37 +78,37 @@ export const CharacterSkillsList = ({ charData, getSkillInfo, ultLevel = 0 }) =>
               level={charData.skillLevels?.ultimate || 1}
               isUltimate={true}
               ultLevel={ultLevel}
+              isAttributeAttack={skillDetails.ultimate?.isAttributeAttack || false}
             />
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* 후열 스킬 세트 */}
-        {(charData.role === 'BACK' || charData.role === 'BOTH') && (
+        {/* 패시브 스킬 */}
+        {(charData.skills?.passive1 || charData.skills?.passive2) && (
           <div className="space-y-2">
-            {charData.role === 'BOTH' && (
-              <h4 className="text-xs text-blue-300 font-bold border-l-2 border-blue-500 pl-2 mb-1 mt-2">후열 배치 시</h4>
+            <h4 className="text-xs text-purple-200 font-bold border-l-2 border-purple-500 pl-2 mb-1">패시브 스킬</h4>
+            {charData.skills?.passive1 && (
+              <SkillBlock
+                type="패시브"
+                name={charData.skills.passive1}
+                desc={getSkillInfo('passive1', '상시 효과 발동').desc}
+                cooldown={0}
+                colorClass="bg-purple-500 text-purple-300 border-purple-500"
+                accentClass="text-purple-200"
+                level={1}
+              />
             )}
-            <SkillBlock
-              type="지원"
-              name={charData.skills.supportSkill}
-              desc={getSkillInfo('supportSkill', '아군에게 이로운 효과 부여').desc}
-              cooldown={getSkillInfo('supportSkill').cooldown}
-              colorClass="bg-emerald-500 text-emerald-300 border-emerald-500"
-              accentClass="text-emerald-200"
-              level={charData.skillLevels?.supportSkill || 1}
-            />
-            <SkillBlock
-              type="필살"
-              name={charData.skills.supportUlt}
-              desc={getSkillInfo('supportUlt', 'SP 100 소모. 아군 전체 강력 지원').desc}
-              descWithBonus={enhanceUltimateDesc(getSkillInfo('supportUlt', 'SP 100 소모. 아군 전체 강력 지원').desc, ultLevel)}
-              cooldown={getSkillInfo('supportUlt').cooldown}
-              colorClass="bg-purple-500 text-purple-300 border-purple-500"
-              accentClass="text-purple-200"
-              level={charData.skillLevels?.supportUlt || 1}
-              isUltimate={true}
-              ultLevel={ultLevel}
-            />
+            {charData.skills?.passive2 && (
+              <SkillBlock
+                type="패시브"
+                name={charData.skills.passive2}
+                desc={getSkillInfo('passive2', '상시 효과 발동').desc}
+                cooldown={0}
+                colorClass="bg-indigo-500 text-indigo-300 border-indigo-500"
+                accentClass="text-indigo-200"
+                level={1}
+              />
+            )}
           </div>
         )}
       </div>

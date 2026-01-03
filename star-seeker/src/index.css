@@ -1,4 +1,6 @@
 /* stylelint-disable */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Rajdhani:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -96,6 +98,11 @@
   animation: scan 3s ease-in-out infinite;
 }
 
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(107, 220, 255, 0.4), inset 0 0 8px rgba(107, 220, 255, 0.15); }
+  50% { box-shadow: 0 0 16px rgba(107, 220, 255, 0.7), inset 0 0 12px rgba(107, 220, 255, 0.25); }
+}
+
 /* 그라데이션 radial */
 .bg-gradient-radial {
   background-image: radial-gradient(circle, var(--tw-gradient-stops));
@@ -103,21 +110,67 @@
 
 :root {
   color-scheme: dark;
+  --space-deep: #050a14;
+  --space-mid: #0b1528;
+  --starlight: #f0f4ff;
+  --aqua: #6bdcff;
+  --gold: #d3b26f;
+  --glass: rgba(255, 255, 255, 0.04);
+  --glass-strong: rgba(255, 255, 255, 0.08);
+  --border-gold: rgba(211, 178, 111, 0.45);
+  --border-aqua: rgba(107, 220, 255, 0.6);
+  --text-primary: #e5ecff;
+  --text-muted: #9fb2d4;
+}
+
+body {
+  font-family: 'Rajdhani', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--space-deep);
+  color: var(--text-primary);
+}
+
+h1, h2, h3, h4, .font-cinzel {
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  letter-spacing: 0.04em;
 }
 
 .app-shell {
   min-height: 100dvh;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) 0;
-  background: radial-gradient(120% 120% at 20% 10%, rgba(56, 189, 248, 0.08), transparent 45%),
-              radial-gradient(120% 120% at 80% 10%, rgba(217, 70, 239, 0.08), transparent 45%),
-              #020617;
+  background:
+    radial-gradient(120% 120% at 20% 10%, rgba(107, 220, 255, 0.14), transparent 45%),
+    radial-gradient(100% 100% at 78% 14%, rgba(211, 178, 111, 0.12), transparent 40%),
+    radial-gradient(90% 90% at 50% 80%, rgba(111, 126, 211, 0.12), transparent 55%),
+    var(--space-deep);
+  position: relative;
 }
 
-.glass-panel {
-  background: linear-gradient(145deg, rgba(12, 18, 40, 0.75), rgba(10, 17, 35, 0.6));
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(59, 130, 246, 0.18);
-  backdrop-filter: blur(14px);
+.app-shell::before,
+.app-shell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.app-shell::before {
+  background: radial-gradient(circle at 30% 25%, rgba(240, 244, 255, 0.05), transparent 35%),
+              radial-gradient(circle at 70% 70%, rgba(240, 244, 255, 0.03), transparent 45%);
+  mix-blend-mode: screen;
+}
+
+.app-shell::after {
+  background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.08%22%3E%3Ccircle cx=%222%22 cy=%222%22 r=%221%22/%3E%3Ccircle cx=%2220%22 cy=%2210%22 r=%220.6%22/%3E%3Ccircle cx=%2230%22 cy=%2230%22 r=%220.8%22/%3E%3Ccircle cx=%2212%22 cy=%2235%22 r=%220.5%22/%3E%3C/g%3E%3C/svg%3E');
+  opacity: 0.8;
+}
+
+.glass-panel,
+.glass-effect,
+.glass-effect-strong {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .screen-scroll {
@@ -221,6 +274,547 @@
   animation: scan 3s ease-in-out infinite;
 }
 
+/* ===== Ghost Buttons (Telescope rim) ===== */
+.ghost-button {
+  position: relative;
+  border: 1px solid var(--border-aqua);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  padding: 10px 16px;
+  border-radius: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  overflow: hidden;
+  transition: all 0.35s ease;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), inset 0 0 20px rgba(255, 255, 255, 0.03);
+}
+
+.ghost-button::before {
+  content: '';
+  position: absolute;
+  inset: -120% -40%;
+  background: radial-gradient(circle at 20% 20%, rgba(240, 244, 255, 0.25), transparent 45%);
+  transform: rotate(12deg);
+  transition: transform 0.6s ease, opacity 0.6s ease;
+  opacity: 0;
+}
+
+.ghost-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(211, 178, 111, 0.2);
+  border-radius: 14px;
+  mix-blend-mode: screen;
+}
+
+.ghost-button:hover {
+  border-color: var(--gold);
+  color: #fff;
+  box-shadow: 0 0 18px rgba(107, 220, 255, 0.35), inset 0 0 20px rgba(255, 255, 255, 0.07);
+  transform: translateY(-1px);
+}
+
+.ghost-button:hover::before {
+  transform: translate(40%, 40%) rotate(0deg);
+  opacity: 1;
+}
+
+.ghost-button:active {
+  transform: translateY(0);
+  box-shadow: 0 0 8px rgba(107, 220, 255, 0.3);
+}
+
+/* ===== Telescope gauge ===== */
+.telescope-gauge {
+  position: relative;
+  padding: 14px 16px 10px;
+  border: 1px solid var(--border-gold);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 0 20px rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+}
+
+.telescope-gauge .gauge-track {
+  position: relative;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  overflow: hidden;
+}
+
+.telescope-gauge .gauge-glow {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(107, 220, 255, 0.15), rgba(211, 178, 111, 0.3));
+  box-shadow: 0 0 18px rgba(107, 220, 255, 0.35);
+  transition: width 0.35s ease;
+}
+
+.telescope-gauge .gauge-stars {
+  position: absolute;
+  inset: 0;
+}
+
+.telescope-gauge .gauge-stars span {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.35);
+  transition: all 0.3s ease;
+}
+
+.telescope-gauge .gauge-stars span.active {
+  background: radial-gradient(circle, #fdfbff 0%, #8ee5ff 50%, rgba(107, 220, 255, 0.05) 75%);
+  box-shadow: 0 0 12px rgba(107, 220, 255, 0.6), inset 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
+.telescope-gauge .gauge-label {
+  margin-top: 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--starlight);
+  text-shadow: 0 0 12px rgba(240, 244, 255, 0.45);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.telescope-gauge .gauge-label .badge {
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border-aqua);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 0 10px rgba(107, 220, 255, 0.12);
+}
+
+/* ===== Pause Overlay ===== */
+.pause-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  background: rgba(2, 10, 22, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.pause-modal {
+  width: min(360px, 90vw);
+  border-radius: 24px;
+  padding: 32px 28px;
+  background: linear-gradient(145deg, rgba(8, 20, 34, 0.95), rgba(4, 10, 22, 0.85));
+  border: 1px solid rgba(107, 220, 255, 0.35);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55), inset 0 0 25px rgba(107, 220, 255, 0.08);
+  text-align: center;
+  font-family: 'Rajdhani', 'Inter', system-ui, sans-serif;
+}
+
+.pause-chip {
+  display: inline-flex;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(107, 220, 255, 0.5);
+  color: var(--aqua);
+  letter-spacing: 0.3em;
+  font-size: 10px;
+  margin-bottom: 16px;
+}
+
+.pause-title {
+  font-size: 26px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--starlight);
+  margin-bottom: 6px;
+}
+
+.pause-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.pause-menu,
+.pause-confirm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pause-action {
+  width: 100%;
+  border-radius: 14px;
+  padding: 12px;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  transition: all 0.25s ease;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.pause-action.primary {
+  border-color: var(--border-aqua);
+  background: linear-gradient(135deg, rgba(107, 220, 255, 0.2), rgba(34, 114, 255, 0.2));
+  box-shadow: 0 0 20px rgba(107, 220, 255, 0.25);
+}
+
+.pause-action.warning {
+  border-color: rgba(255, 142, 97, 0.5);
+  background: linear-gradient(135deg, rgba(255, 122, 122, 0.15), rgba(211, 178, 111, 0.18));
+  color: #ffd2b1;
+}
+
+.pause-action.secondary {
+  color: var(--text-muted);
+  border-style: dashed;
+}
+
+.pause-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pause-action:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
+}
+
+.pause-toggle {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--border-aqua);
+  background: rgba(5, 15, 32, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--aqua);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+}
+
+.pause-toggle-icon {
+  letter-spacing: 0.2em;
+}
+
+.pause-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.pause-toggle:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* ===========================
+   Control Deck (통합 제어 패널)
+   ===========================*/
+.control-deck {
+  background: linear-gradient(135deg, rgba(10, 27, 46, 0.85), rgba(5, 10, 20, 0.9));
+  border: 1px solid rgba(107, 220, 255, 0.35);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ===========================
+   Timeline UI (행동 순서 바)
+   ===========================*/
+.timeline-panel {
+  background: linear-gradient(180deg, rgba(10, 27, 46, 0.75), rgba(5, 10, 20, 0.85));
+  border: 1px solid rgba(107, 220, 255, 0.25);
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.timeline-panel::-webkit-scrollbar {
+  display: none;
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timeline-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(107, 220, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.timeline-active .timeline-avatar {
+  border-color: rgba(107, 220, 255, 0.8);
+  background: rgba(107, 220, 255, 0.12);
+  box-shadow: 0 0 16px rgba(107, 220, 255, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.timeline-enemy .timeline-avatar {
+  border-color: rgba(255, 95, 95, 0.5);
+}
+
+.timeline-active.timeline-enemy .timeline-avatar {
+  border-color: rgba(255, 95, 95, 0.9);
+  background: rgba(255, 95, 95, 0.15);
+  box-shadow: 0 0 16px rgba(255, 95, 95, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.timeline-indicator {
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(107, 220, 255, 0.9);
+  font-size: 14px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+  50% { opacity: 0.6; transform: translateY(-50%) scale(1.1); }
+}
+
+/* ===========================
+   Action Buttons (스킬 선택)
+   ===========================*/
+.action-button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 140px;
+  height: 72px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(107, 220, 255, 0.45);
+  border-radius: 0.75rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: rgba(240, 244, 255, 0.95);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.05em;
+}
+
+.action-button:hover {
+  background: rgba(107, 220, 255, 0.12);
+  border-color: rgba(107, 220, 255, 0.75);
+  box-shadow: 0 0 16px rgba(107, 220, 255, 0.4), inset 0 0 12px rgba(107, 220, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.action-button:active {
+  transform: translateY(0);
+  box-shadow: 0 0 8px rgba(107, 220, 255, 0.3), inset 0 0 8px rgba(107, 220, 255, 0.1);
+}
+
+.action-button-skill {
+  border-color: rgba(107, 180, 255, 0.5);
+}
+
+.action-button-skill:hover {
+  background: rgba(107, 180, 255, 0.15);
+  border-color: rgba(107, 180, 255, 0.8);
+  box-shadow: 0 0 16px rgba(107, 180, 255, 0.5), inset 0 0 12px rgba(107, 180, 255, 0.2);
+}
+
+.action-button-ultimate {
+  border-color: rgba(255, 95, 95, 0.5);
+}
+
+.action-button-ultimate:hover {
+  background: rgba(255, 95, 95, 0.15);
+  border-color: rgba(255, 95, 95, 0.8);
+  box-shadow: 0 0 16px rgba(255, 95, 95, 0.5), inset 0 0 12px rgba(255, 95, 95, 0.2);
+}
+
+.action-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.action-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Skill Cooldown Animations */
+@keyframes glow-pulse {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(109, 213, 255, 0.8),
+      0 0 20px rgba(109, 213, 255, 0.6),
+      0 0 30px rgba(109, 213, 255, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 
+      0 0 15px rgba(109, 213, 255, 1),
+      0 0 30px rgba(109, 213, 255, 0.8),
+      0 0 45px rgba(109, 213, 255, 0.6);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes cooldown-unlock {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+    filter: brightness(2);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+    filter: brightness(1.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.action-button.cooldown-ready {
+  animation: cooldown-unlock 0.4s ease-out;
+  border-color: rgba(107, 220, 255, 0.9) !important;
+  box-shadow: 
+    0 0 20px rgba(107, 220, 255, 0.6),
+    0 0 40px rgba(107, 220, 255, 0.4),
+    inset 0 0 15px rgba(107, 220, 255, 0.3) !important;
+}
+
+/* ===== Panels & Modal Frames ===== */
+.astro-panel {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(211, 178, 111, 0.35);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45), inset 0 0 20px rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  position: relative;
+}
+
+.astro-panel::before, .astro-panel::after {
+  content: '+';
+  position: absolute;
+  color: rgba(211, 178, 111, 0.4);
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+}
+
+.astro-panel::before {
+  top: 10px;
+  left: 12px;
+}
+
+.astro-panel::after {
+  bottom: 10px;
+  right: 12px;
+}
+
+.astro-modal {
+  background: radial-gradient(circle at 50% 0%, rgba(240, 244, 255, 0.08), rgba(5, 10, 20, 0.95));
+  border: 1px solid rgba(211, 178, 111, 0.45);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65), inset 0 0 20px rgba(107, 220, 255, 0.12);
+  border-radius: 18px;
+  backdrop-filter: blur(14px);
+  position: relative;
+  overflow: hidden;
+}
+
+.astro-modal::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 1px dashed rgba(211, 178, 111, 0.35);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.glow-text {
+  text-shadow: 0 0 12px rgba(240, 244, 255, 0.55), 0 0 32px rgba(107, 220, 255, 0.35);
+}
+
+/* ===== Mission Banner ===== */
+.mission-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  font-family: 'Rajdhani', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f0f4ff;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+  text-shadow: 0 0 12px rgba(240, 244, 255, 0.6), 0 0 22px rgba(107, 220, 255, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.mission-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(240, 244, 255, 0.08), transparent 45%);
+  pointer-events: none;
+}
+
+.mission-banner-chaos {
+  border-color: rgba(255, 99, 99, 0.6);
+  box-shadow: 0 0 12px rgba(255, 99, 99, 0.4), inset 0 0 12px rgba(255, 99, 99, 0.25);
+}
+
+.mission-banner-silence {
+  border-color: rgba(107, 220, 255, 0.65);
+  box-shadow: 0 0 12px rgba(107, 220, 255, 0.45), inset 0 0 12px rgba(107, 220, 255, 0.25);
+}
+
+.mission-bracket {
+  color: rgba(240, 244, 255, 0.85);
+  text-shadow: 0 0 10px currentColor;
+}
+
+.mission-text {
+  position: relative;
+  z-index: 1;
+}
+
 /* 전투 장면용 그리드 및 배경 애니메이션 */
 .battle-grid {
   background-image:
@@ -257,4 +851,204 @@
 }
 .animate-slide-up {
   animation: slide-up 0.3s ease-out;
+}
+
+/* 전투 화면 전용 애니메이션 */
+@keyframes slide-in-bottom {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide-in-bottom {
+  animation: slide-in-bottom 0.2s ease-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(34, 211, 238, 0.8);
+  }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* 파형이 위에서 아래로 흐르는 애니메이션 - 더 부드럽고 길게 */
+@keyframes wave-flow {
+  0% {
+    stroke-dashoffset: 1200;
+    opacity: 0.2;
+  }
+  3% {
+    opacity: 0.8;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 0.8;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.2;
+  }
+}
+.animate-wave-flow {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: wave-flow 3s ease-in-out infinite;
+}
+
+/* ============================================
+   전투 화면 추가 애니메이션
+   ============================================ */
+
+/* 반짝이는 별 애니메이션 */
+@keyframes twinkle-star {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+.animate-twinkle-star {
+  animation: twinkle-star 3s ease-in-out infinite;
+}
+
+/* 네온 글로우 맥박 */
+@keyframes neon-pulse {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(34, 211, 238, 0.4), 0 0 20px rgba(34, 211, 238, 0.2);
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(34, 211, 238, 0.8), 0 0 40px rgba(34, 211, 238, 0.5);
+    box-shadow: 0 0 30px rgba(34, 211, 238, 0.6);
+  }
+}
+.animate-neon-pulse {
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+/* 홀로그래픽 바(gauge) 이동 */
+@keyframes gauge-flow {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+.animate-gauge-flow {
+  background-size: 200% auto;
+  animation: gauge-flow 2s ease-in-out infinite;
+}
+
+/* 원형 스캔 애니메이션 */
+@keyframes scan-circle {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.animate-scan-circle {
+  animation: scan-circle 8s linear infinite;
+}
+
+/* 우주 입자 부유 */
+@keyframes float-cosmos {
+  0%, 100% {
+    transform: translateY(0) translateX(0) rotateZ(0deg);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translateY(-30px) translateX(15px) rotateZ(90deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-60px) translateX(-10px) rotateZ(180deg);
+    opacity: 1;
+  }
+  75% {
+    transform: translateY(-30px) translateX(-20px) rotateZ(270deg);
+    opacity: 0.7;
+  }
+}
+.animate-float-cosmos {
+  animation: float-cosmos 15s ease-in-out infinite;
+}
+
+/* 레이저 빔 효과 */
+@keyframes laser-beam {
+  0% {
+    width: 0;
+    opacity: 1;
+  }
+  50% {
+    width: 100%;
+    opacity: 0.8;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
+}
+.animate-laser-beam {
+  animation: laser-beam 1.5s ease-in-out infinite;
+}
+
+/* 쉴드 충돌 파동 */
+@keyframes shield-pulse-wave {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+.animate-shield-wave {
+  animation: shield-pulse-wave 0.8s ease-out;
+}
+
+/* 급속 깜빡임 (위험 상태) */
+@keyframes danger-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+.animate-danger-blink {
+  animation: danger-blink 0.4s ease-in-out infinite;
+}
+
+/* 부드러운 호버 상향 */
+@keyframes hover-lift {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+.animate-hover-lift {
+  animation: hover-lift 2s ease-in-out infinite;
 }

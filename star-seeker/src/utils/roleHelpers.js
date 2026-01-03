@@ -4,14 +4,15 @@
 
 /**
  * 역할을 한글 레이블로 변환
- * @param {string} role - 역할 ('FRONT', 'BACK', 'BOTH')
+ * @param {string} role - 역할 ('INTERCEPTOR', 'EXECUTOR', 'STABILIZER', 'PATHFINDER')
  * @returns {string} 한글 레이블
  */
 export const getRoleLabel = (role) => {
   const roleMap = {
-    FRONT: '전열',
-    BACK: '후열',
-    BOTH: '만능',
+    INTERCEPTOR: '인터셉터',
+    EXECUTOR: '엑시큐터',
+    STABILIZER: '스테빌라이저',
+    PATHFINDER: '패스파인더',
   };
   return roleMap[role] || role;
 };
@@ -23,9 +24,10 @@ export const getRoleLabel = (role) => {
  */
 export const getRoleColor = (role) => {
   const colorMap = {
-    FRONT: 'text-red-300',
-    BACK: 'text-blue-300',
-    BOTH: 'text-purple-300',
+    INTERCEPTOR: 'text-emerald-300',
+    EXECUTOR: 'text-red-300',
+    STABILIZER: 'text-sky-300',
+    PATHFINDER: 'text-amber-300',
   };
   return colorMap[role] || 'text-slate-300';
 };
@@ -37,9 +39,10 @@ export const getRoleColor = (role) => {
  */
 export const getRoleBg = (role) => {
   const bgMap = {
-    FRONT: 'bg-red-500/20',
-    BACK: 'bg-blue-500/20',
-    BOTH: 'bg-purple-500/20',
+    INTERCEPTOR: 'bg-emerald-600/15',
+    EXECUTOR: 'bg-red-600/15',
+    STABILIZER: 'bg-sky-600/15',
+    PATHFINDER: 'bg-amber-500/15',
   };
   return bgMap[role] || 'bg-slate-500/20';
 };
@@ -51,9 +54,10 @@ export const getRoleBg = (role) => {
  */
 export const getRoleBorder = (role) => {
   const borderMap = {
-    FRONT: 'border-red-500/50',
-    BACK: 'border-blue-500/50',
-    BOTH: 'border-purple-500/50',
+    INTERCEPTOR: 'border-emerald-400/40',
+    EXECUTOR: 'border-red-400/40',
+    STABILIZER: 'border-sky-400/40',
+    PATHFINDER: 'border-amber-300/40',
   };
   return borderMap[role] || 'border-slate-500/50';
 };

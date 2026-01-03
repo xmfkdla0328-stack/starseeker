@@ -34,14 +34,7 @@ export const useLevelSync = (playerInfo, setPlayerInfo, inventory, setInventory,
 
       // 파티 캐릭터도 동기화
       setParty(prevParty => ({
-        front: prevParty.front.map(c => {
-          if (!c) return null;
-          const breakthrough = c.breakthrough || 0;
-          const maxLevel = getMaxLevelByBreakthrough(breakthrough);
-          const cappedLevel = Math.min(newLevel, maxLevel);
-          return { ...c, level: cappedLevel };
-        }),
-        back: prevParty.back.map(c => {
+        members: prevParty.members.map(c => {
           if (!c) return null;
           const breakthrough = c.breakthrough || 0;
           const maxLevel = getMaxLevelByBreakthrough(breakthrough);

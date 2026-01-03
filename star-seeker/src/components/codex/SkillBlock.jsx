@@ -15,7 +15,8 @@ export const SkillBlock = ({
   accentClass,
   isUltimate = false,
   ultLevel = 0,
-  descWithBonus = null // 한계 돌파 보너스가 포함된 설명
+  descWithBonus = null, // 한계 돌파 보너스가 포함된 설명
+  isAttributeAttack = false // 속성 공격 여부
 }) => {
   // 한계 돌파 보너스 계산: 1: 20%, 2: 30%, 3: 40%, 4: 50%, 5: 70%
   const bonusLevels = [20, 30, 40, 50, 70];
@@ -36,6 +37,11 @@ export const SkillBlock = ({
         <div className={`text-sm font-bold flex items-center gap-2 flex-wrap ${accentClass || 'text-slate-200'}`}>
           {name}
           <span className="text-[11px] px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-slate-300">Lv.{level}</span>
+          {isAttributeAttack && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-amber-300 font-semibold uppercase">
+              속성
+            </span>
+          )}
           {breakthroughBadge && (
             <span className="text-[11px] px-1.5 py-0.5 rounded bg-purple-500/20 border border-purple-500/40 text-purple-300 font-semibold">
               {breakthroughBadge}

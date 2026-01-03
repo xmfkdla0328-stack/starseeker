@@ -14,7 +14,7 @@ export const GachaScreen = ({ handleGacha, setScreen }) => {
   return (
     <>
       {/* 뒤로가기 버튼 */}
-      <BackButton onClick={() => setScreen('HOME')} />
+      <BackButton onClick={() => setScreen('HOME')} disabled={false} />
 
       <div className="flex flex-col w-full min-h-full relative">
          <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
@@ -45,9 +45,9 @@ export const GachaScreen = ({ handleGacha, setScreen }) => {
                     </div>
                   </button>
                   <button onClick={() => handleGachaClick(10)}
-                    className="flex-1 bg-gradient-to-br from-indigo-600/80 to-purple-600/80 hover:from-indigo-500/80 hover:to-purple-500/80 border border-indigo-400/50 text-white py-3 rounded-xl flex flex-col items-center transition-all active:scale-95 shadow-[0_0_15px_rgba(99,102,241,0.3)] group">
-                    <span className="text-sm font-bold mb-1 flex items-center gap-1"><Sparkles size={12} className="text-yellow-200"/> 10회</span>
-                    <div className="flex items-center gap-1 text-yellow-200 text-[10px] bg-indigo-950/50 px-2 py-0.5 rounded-full border border-yellow-500/30">
+                    className="flex-1 bg-gradient-to-br from-cyan-600/80 to-blue-600/80 hover:from-cyan-500/80 hover:to-blue-500/80 border border-cyan-400/50 text-white py-3 rounded-xl flex flex-col items-center transition-all active:scale-95 shadow-[0_0_15px_rgba(34,211,238,0.3)] group">
+                    <span className="text-sm font-bold mb-1 flex items-center gap-1"><Sparkles size={12} className="text-cyan-200"/> 10회</span>
+                    <div className="flex items-center gap-1 text-cyan-200 text-[10px] bg-cyan-950/50 px-2 py-0.5 rounded-full border border-cyan-500/30">
                       <Star size={10} fill="currentColor"/> 1000
                     </div>
                   </button>

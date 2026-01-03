@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Flame, Droplets, Leaf, Sun, Moon } from 'lucide-react';
+import { Flame, PauseCircle, Weight, Waves, Infinity, Sparkles } from 'lucide-react';
 
 /**
  * 속성별 아이콘 컴포넌트
@@ -13,14 +13,15 @@ export const ElementIcon = ({ element, size = 16, className = '' }) => {
   };
 
   const icons = {
-    FIRE: <Flame {...iconProps} className={`text-red-400 ${className}`} />,
-    WATER: <Droplets {...iconProps} className={`text-blue-400 ${className}`} />,
-    EARTH: <Leaf {...iconProps} className={`text-emerald-400 ${className}`} />,
-    LIGHT: <Sun {...iconProps} className={`text-yellow-300 ${className}`} />,
-    DARK: <Moon {...iconProps} className={`text-purple-400 ${className}`} />,
+    ENTROPY: <Flame {...iconProps} className={`text-red-300 ${className}`} />,
+    STASIS: <PauseCircle {...iconProps} className={`text-sky-300 ${className}`} />,
+    GRAVITY: <Weight {...iconProps} className={`text-purple-300 ${className}`} />,
+    RESONANCE: <Waves {...iconProps} className={`text-amber-300 ${className}`} />,
+    PARADOX: <Infinity {...iconProps} className={`text-slate-200 ${className}`} />,
+    AXIOM: <Sparkles {...iconProps} className={`text-slate-100 ${className}`} />,
   };
 
-  return icons[element] || icons.FIRE;
+  return icons[element] || icons.AXIOM;
 };
 
 ElementIcon.propTypes = {

@@ -22,7 +22,7 @@ export const useBondSystem = (inventory, setInventory, party, screen) => {
   const increaseBondFromBattle = useCallback(() => {
     setInventory(prev =>
       prev.map(char => {
-        const inParty = [...party.front, ...party.back].some(p => p && p.id === char.id);
+        const inParty = party.members.some(p => p && p.id === char.id);
         return inParty
           ? {
               ...char,

@@ -1,40 +1,46 @@
 /**
- * 속성(원소) 관련 상수
- * 각 속성의 이름, 색상, 배경, 테두리 스타일 정의
+ * 도리천 세계관 속성(원소) 상수
+ * ENTROPY / STASIS / GRAVITY / RESONANCE / PARADOX / AXIOM
  */
 
 export const ELEMENTS = {
-  FIRE: { 
-    name: '불', 
-    color: 'text-red-400', 
-    bg: 'bg-red-500/20', 
-    border: 'border-red-500/50' 
+  ENTROPY: {
+    name: '엔트로피',
+    color: 'text-red-300',
+    bg: 'bg-red-600/15',
+    border: 'border-red-400/40',
   },
-  WATER: { 
-    name: '물', 
-    color: 'text-blue-400', 
-    bg: 'bg-blue-500/20', 
-    border: 'border-blue-500/50' 
+  STASIS: {
+    name: '스테이시스',
+    color: 'text-sky-300',
+    bg: 'bg-sky-600/15',
+    border: 'border-sky-400/40',
   },
-  EARTH: { 
-    name: '대지', 
-    color: 'text-emerald-400', 
-    bg: 'bg-emerald-500/20', 
-    border: 'border-emerald-500/50' 
+  GRAVITY: {
+    name: '중력',
+    color: 'text-purple-300',
+    bg: 'bg-purple-700/15',
+    border: 'border-purple-400/40',
   },
-  LIGHT: { 
-    name: '빛', 
-    color: 'text-yellow-300', 
-    bg: 'bg-yellow-500/20', 
-    border: 'border-yellow-500/50' 
+  RESONANCE: {
+    name: '공명',
+    color: 'text-amber-300',
+    bg: 'bg-amber-500/15',
+    border: 'border-amber-300/40',
   },
-  DARK: { 
-    name: '어둠', 
-    color: 'text-purple-400', 
-    bg: 'bg-purple-500/20', 
-    border: 'border-purple-500/50' 
+  PARADOX: {
+    name: '패러독스',
+    color: 'text-slate-200',
+    bg: 'bg-slate-800/40',
+    border: 'border-slate-400/50',
+  },
+  AXIOM: {
+    name: '공리',
+    color: 'text-slate-100',
+    bg: 'bg-slate-200/10',
+    border: 'border-slate-200/50',
   },
 };
 
 // 요소 목록 (UI 반복에 사용)
-export const ELEMENT_LIST = ['FIRE', 'WATER', 'EARTH', 'LIGHT', 'DARK'];
+export const ELEMENT_LIST = ['ENTROPY', 'STASIS', 'GRAVITY', 'RESONANCE', 'PARADOX', 'AXIOM'];

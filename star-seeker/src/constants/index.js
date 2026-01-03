@@ -4,5 +4,4 @@
  */
 
 export { ELEMENTS, ELEMENT_LIST } from './elements';
-export { SYNERGIES } from './synergies';
-export { GAME_CONST } from './gameConfig';
+export { GAME_CONST, ROLES } from './gameConfig';

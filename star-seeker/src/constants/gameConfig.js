@@ -24,3 +24,11 @@ export const GAME_CONST = {
   // 방어 관련
   MIN_DEFENSE_MULTIPLIER: 0.1,       // 최소 방어 계수 (최대 90% 감소)
 };
+
+// 도리천 직군(Role) 상수
+export const ROLES = {
+  INTERCEPTOR: 'INTERCEPTOR',   // 전방 방어
+  EXECUTOR: 'EXECUTOR',         // 화력 투사
+  STABILIZER: 'STABILIZER',     // 상태 안정화
+  PATHFINDER: 'PATHFINDER',     // 변수 창출
+};

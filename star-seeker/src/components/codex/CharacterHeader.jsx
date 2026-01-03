@@ -1,6 +1,7 @@
 import React from 'react';
 import { ELEMENTS } from '../../constants/index';
 import { Tag } from 'lucide-react';
+import { getRoleLabel, getRoleBg, getRoleBorder, getRoleColor } from '../../utils/roleHelpers';
 
 /**
  * 캐릭터 상단 헤더 영역 컴포넌트
@@ -21,8 +22,8 @@ export const CharacterHeader = ({ charData }) => {
           >
             {ELEMENTS[charData.element].name} 속성
           </span>
-          <span className="px-2 py-0.5 rounded-full text-[10px] border border-white/20 text-slate-300 bg-slate-950/50">
-            {charData.role === 'FRONT' ? '전열' : charData.role === 'BACK' ? '후열' : '만능'}
+          <span className={`px-2 py-0.5 rounded-full text-[10px] border ${getRoleBorder(charData.role)} ${getRoleBg(charData.role)} ${getRoleColor(charData.role)} bg-slate-950/50`}>
+            {getRoleLabel(charData.role)}
           </span>
           {charData.tags &&
             charData.tags.map((tag, idx) => (

@@ -2,14 +2,12 @@ import { ELEMENTS } from '../constants/index';
 
 /**
  * 요소에 해당하는 Tailwind 클래스 반환
- * @param {string} element - 요소 이름 (예: 'FIRE', 'WATER')
+ * @param {string} element - 요소 이름 (예: 'ENTROPY', 'STASIS')
  * @param {string} variant - 'color', 'bg', 'border', 'all' 중 하나
  * @returns {string} Tailwind 클래스 문자열
  */
 export const getElementClasses = (element, variant = 'all') => {
-  if (!ELEMENTS[element]) return '';
-  
-  const el = ELEMENTS[element];
+  const el = ELEMENTS[element] || ELEMENTS.AXIOM;
   
   switch (variant) {
     case 'color':
@@ -31,7 +29,7 @@ export const getElementClasses = (element, variant = 'all') => {
  * @returns {Object} { name, color, bg, border }
  */
 export const getElementInfo = (element) => {
-  return ELEMENTS[element] || null;
+  return ELEMENTS[element] || ELEMENTS.AXIOM;
 };
 
 /**
@@ -40,6 +38,6 @@ export const getElementInfo = (element) => {
  * @returns {string} 진한 배경색 클래스
  */
 export const getElementHighlight = (element) => {
-  if (!ELEMENTS[element]) return '';
-  return ELEMENTS[element].bg.replace('/20', '/80');
+  const el = ELEMENTS[element] || ELEMENTS.AXIOM;
+  return el.bg.includes('/20') ? el.bg.replace('/20', '/80') : el.bg;
 };

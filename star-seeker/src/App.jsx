@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Sparkles } from 'lucide-react';
 import { useGameLogic } from './hooks/useGameLogic';
+import { MISSION_TYPES } from './constants/battle';
+
+/** @typedef {import('./constants/battle').MissionType} MissionType */
 
 // ★ 경로 수정됨: 각각의 파일에서 가져오기
 import { Sidebar } from './components/layout/Sidebar';
@@ -8,7 +11,7 @@ import { StatusBar } from './components/layout/StatusBar';
 import { Background } from './components/layout/Background';
 import { ProfileModal } from './components/ProfileModal';
 
-import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, BattleScreen, CodexScreen, InventoryScreen, ObservationScreen } from './components/Screens';
+import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, CodexScreen, InventoryScreen, ObservationScreen, BattleScreen } from './components/Screens';
 
 export default function StarSeekerApp() {
   const {
@@ -17,19 +20,33 @@ export default function StarSeekerApp() {
     party, setParty,
     mainChar, setMainChar,
     toast, showToast,
-    activeSynergies,
     handleGacha,
-    battleSystem,
     playerInfo, setPlayerInfo,
     playerStats,
     unlockedAchievements,
     handleSelectTitle,
-    addExp,
     items, setItems,
-    increaseBondFromBattle,
   } = useGameLogic();
 
   const [showProfile, setShowProfile] = useState(false);
+  // 미션 타입은 'CHAOS' | 'SILENCE' 리터럴 유니언을 명시
+  const [missionType, setMissionType] = useState(
+    /** @type {MissionType} */ (MISSION_TYPES.CHAOS)
+  );
+
+  const handleAttackResult = useCallback((result) => {
+    // BattleScreen에서 이미 전투 상태를 관리하므로 여기서는 로그만 출력
+    console.log('[App] 공격 결과:', {
+      damage: result?.damage,
+      gaugeAdded: result?.gaugeAdded,
+      reactionType: result?.reactionType,
+      isWin: result?.isWin,
+    });
+  }, []);
+
+  const startBattle = () => {
+    showToast(`전투 시작 - 미션: ${missionType === MISSION_TYPES.CHAOS ? '카오스' : '사일런스'}`);
+  };
 
   return (
     <div className="app-shell flex h-screen w-screen text-slate-200 overflow-hidden font-sans select-none relative">
@@ -42,13 +59,15 @@ export default function StarSeekerApp() {
             {screen === 'HOME' && (
               <HomeScreen 
                 showToast={showToast} mainChar={mainChar} setMainChar={setMainChar} 
-                inventory={inventory} setScreen={setScreen} playerInfo={playerInfo}
+                inventory={inventory} setScreen={setScreen}
               />
             )}
             {screen === 'PARTY' && (
               <PartyScreen 
                 party={party} setParty={setParty} inventory={inventory} 
-                showToast={showToast} activeSynergies={activeSynergies} setScreen={setScreen}
+                showToast={showToast} setScreen={setScreen}
+                missionType={missionType}
+                setMissionType={setMissionType}
               />
             )}
             {screen === 'GACHA' && (
@@ -58,10 +77,24 @@ export default function StarSeekerApp() {
               <GardenScreen inventory={inventory} showToast={showToast} setScreen={setScreen} />
             )}
             {screen === 'OBSERVATION' && (
-              <ObservationScreen setScreen={setScreen} startBattle={battleSystem.startBattle} party={party} />
+              <ObservationScreen setScreen={setScreen} startBattle={startBattle} party={party} />
             )}
             {screen === 'BATTLE' && (
-              <BattleScreen battleSystem={battleSystem} addExp={addExp} setScreen={setScreen} increaseBondFromBattle={increaseBondFromBattle} startBattle={battleSystem.startBattle} />
+              <BattleScreen 
+                partyData={party.members.filter(c => c !== null)} 
+                enemyData={{ 
+                  hp: 1500, 
+                  maxHp: 1500, 
+                  attack: 15, 
+                  name: '화염룡',
+                  element: 'ENTROPY', // 적의 기본 속성 (변하지 않음)
+                  currentElement: null, // 현재 부착된 속성 (초기값 null, 공격받으면 변경됨)
+                  speed: 110, // 적의 속도 스탯
+                }} 
+                setScreen={setScreen}
+                handleAttackResult={handleAttackResult}
+                missionType={missionType}
+              />
             )}
             {screen === 'CODEX' && (
               <CodexScreen 

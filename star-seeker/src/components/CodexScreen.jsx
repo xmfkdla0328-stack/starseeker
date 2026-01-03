@@ -74,7 +74,7 @@ export const CodexScreen = ({ inventory, items, setItems, setInventory, showToas
   return (
     <div className="flex flex-col h-full gap-4 p-4 overflow-hidden relative">
       {/* 뒤로가기 버튼 */}
-      <BackButton onClick={() => setScreen('HOME')} />
+      <BackButton onClick={() => setScreen('HOME')} disabled={false} />
 
       {/* 컨텐츠 영역 */}
       <div className="flex flex-1 gap-4 overflow-hidden">
