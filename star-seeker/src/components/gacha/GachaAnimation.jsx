@@ -55,8 +55,8 @@ export const GachaAnimation = ({ onSkip }) => {
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${2 + Math.random() * 2}s`,
+                '--animation-delay': `${Math.random() * 2}s`,
+                '--animation-duration': `${2 + Math.random() * 2}s`,
               }}
             />
           ))}

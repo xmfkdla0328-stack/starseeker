@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
+    "lib": ["es2020", "dom", "dom.iterable"],
     "paths": {
       "@/components/*": ["components/*"],
       "@/constants/*": ["constants/*"],
@@ -8,10 +9,10 @@
       "@/hooks/*": ["hooks/*"],
       "@/utils/*": ["utils/*"]
     },
-    "target": "ES6",
-    "module": "commonjs",
+    "target": "ES2020",
+    "module": "esnext",
     "jsx": "react",
-    "checkJs": true,
+    "checkJs": false,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true

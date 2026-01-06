@@ -3,19 +3,51 @@ import React from 'react';
 // 관측 버튼 내부 렌더링 컴포넌트
 // type: 'planet' | 'saturn' | 'nebula'
 export const ObservationBody = ({ obs, isHovered }) => {
+  // 행성별 입체적인 radial gradient 생성
+  const getPlanetGradient = (colorFrom, colorTo) => {
+    // colorFrom, colorTo는 'from-blue-400 to-cyan-400' 같은 형식
+    // 실제 색상 추출 (간단히 매핑)
+    const colorMap = {
+      'blue-400': '#60a5fa',
+      'cyan-400': '#22d3ee',
+      'yellow-400': '#facc15',
+      'amber-400': '#fbbf24',
+      'red-400': '#f87171',
+      'orange-400': '#fb923c',
+    };
+    
+    // 색상 추출
+    const fromMatch = colorFrom?.match(/(blue|cyan|yellow|amber|red|orange)-(\d+)/);
+    const toMatch = colorTo?.match(/(blue|cyan|yellow|amber|red|orange)-(\d+)/);
+    
+    const fromColor = fromMatch ? colorMap[`${fromMatch[1]}-${fromMatch[2]}`] : '#60a5fa';
+    const toColor = toMatch ? colorMap[`${toMatch[1]}-${toMatch[2]}`] : '#22d3ee';
+    
+    return `radial-gradient(circle at 35% 35%, 
+      rgba(255, 255, 255, 0.9) 0%, 
+      ${fromColor} 15%, 
+      ${toColor} 45%, 
+      rgba(0, 0, 0, 0.8) 85%, 
+      rgba(0, 0, 0, 0.95) 100%)`;
+  };
+
   if (obs.type === 'planet') {
+    const sphereGradient = getPlanetGradient(obs.color?.split(' ')[0]?.replace('from-', ''), obs.color?.split(' ')[1]?.replace('to-', ''));
+    
     return (
-      <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl">
-        <div className={`absolute inset-0 bg-gradient-to-br ${obs.color}`}></div>
-        <div
-          className="absolute inset-0 rounded-full"
+      <div className="relative w-32 h-32 rounded-full overflow-hidden shadow-2xl planet-visual">
+        {/* 입체적인 구체 배경 */}
+        <div 
+          className="absolute inset-0"
           style={{
-            background:
-              'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 30%, rgba(0,0,0,0.4) 80%)',
+            background: sphereGradient,
           }}
         ></div>
-        <div className="absolute top-2 left-3 w-10 h-10 rounded-full bg-white/50 blur-md"></div>
-        <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
+        {/* 추가 하이라이트 */}
+        <div
+          className="absolute top-2 left-3 w-10 h-10 rounded-full bg-white/40 blur-lg"
+        ></div>
+        {/* 외부 글로우 (뒤에서 빛나는 효과는 부모 컴포넌트에서 처리) */}
         {isHovered && (
           <div className="absolute inset-0 flex items-center justify-center transition-all duration-300">
             <span className="text-blue-100 text-lg font-serif font-light tracking-wide drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]">행성 관측</span>
@@ -26,23 +58,26 @@ export const ObservationBody = ({ obs, isHovered }) => {
   }
 
   if (obs.type === 'saturn') {
+    const sphereGradient = getPlanetGradient(obs.color?.split(' ')[0]?.replace('from-', ''), obs.color?.split(' ')[1]?.replace('to-', ''));
+    
     return (
-      <div className="relative w-full h-full">
+      <div className="relative w-32 h-32 planet-visual">
         {/* 행성 본체 */}
         <div className="absolute inset-0 rounded-full overflow-hidden shadow-2xl">
-          <div className={`absolute inset-0 bg-gradient-to-br ${obs.color}`}></div>
-          <div
-            className="absolute inset-0 rounded-full"
+          {/* 입체적인 구체 배경 */}
+          <div 
+            className="absolute inset-0"
             style={{
-              background:
-                'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 30%, rgba(0,0,0,0.4) 80%)',
+              background: sphereGradient,
             }}
           ></div>
-          <div className="absolute top-2 left-3 w-10 h-10 rounded-full bg-white/50 blur-md"></div>
-          <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.glowColor} opacity-20 blur-sm`}></div>
+          {/* 추가 하이라이트 */}
+          <div
+            className="absolute top-2 left-3 w-10 h-10 rounded-full bg-white/40 blur-lg"
+          ></div>
           {isHovered && (
             <div className="absolute inset-0 flex items-center justify-center transition-all duration-300">
-              <span className="text-yellow-100 text-lg font-serif font-light tracking-wide drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">성흔 관측</span>
+              <span className="text-yellow-100 text-lg font-serif font-light tracking-wide drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">자원 관측</span>
             </div>
           )}
         </div>
@@ -73,7 +108,7 @@ export const ObservationBody = ({ obs, isHovered }) => {
 
   // nebula: 이미지 기반 검은 손
   return (
-    <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center">
+    <div className="relative w-32 h-32 rounded-full overflow-hidden flex items-center justify-center planet-visual">
       <img
         src="/images/calamity-hand.png"
         alt="Calamity Hand"

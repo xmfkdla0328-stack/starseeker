@@ -14,6 +14,15 @@ import { CHARACTER_SKILLS } from '../data/characters/skillData';
 export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, missionType, setMissionType }) => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [showGuide, setShowGuide] = useState(false);
+
+  // PUBLIC_URL과 결합해 안전한 이미지 경로 생성
+  const getImagePath = (path) => {
+    if (!path) return '';
+    if (path.startsWith('http') || path.startsWith('data:')) return path;
+    const publicUrl = process.env.PUBLIC_URL || '';
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${publicUrl}/${cleanPath}`;
+  };
   
   // 자동 파티 편성 hook
   const handleAutoParty = useAutoParty(inventory, showToast, setParty);
@@ -58,13 +67,7 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
           <Users size={24} className="text-cyan-400" />
           동행 편성
         </h1>
-        <button
-          onClick={() => setShowGuide(true)}
-          className="p-2 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 hover:bg-cyan-500/30 transition-all"
-          title="전술 데이터베이스"
-        >
-          <HelpCircle size={20} />
-        </button>
+        <div className="w-20"></div> {/* Spacer for layout balance */}
       </div>
 
       {/* 메인 3단 레이아웃 */}
@@ -76,13 +79,22 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
               <h2 className="text-sm font-bold text-cyan-300 uppercase tracking-wider">대기 명단</h2>
               <p className="text-xs text-slate-400 mt-1">{inventory.length} Available</p>
             </div>
-            <button 
-              onClick={handleAutoParty}
-              className="px-3 py-1.5 rounded-md bg-cyan-600/20 border border-cyan-400/40 text-cyan-200 text-xs font-bold hover:bg-cyan-500/30 transition-all uppercase tracking-wider"
-              title="Auto-assign best characters"
-            >
-              Auto
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowGuide(true)}
+                className="p-1.5 rounded-md bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 hover:bg-cyan-500/30 transition-all"
+                title="전술 데이터베이스"
+              >
+                <HelpCircle size={16} />
+              </button>
+              <button 
+                onClick={handleAutoParty}
+                className="px-3 py-1.5 rounded-md bg-cyan-600/20 border border-cyan-400/40 text-cyan-200 text-xs font-bold hover:bg-cyan-500/30 transition-all uppercase tracking-wider"
+                title="Auto-assign best characters"
+              >
+                Auto
+              </button>
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-2">
             {inventory.map((char) => {
@@ -190,8 +202,8 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
           </div>
 
           {/* 미션 타입 선택 */}
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-slate-400 font-semibold">인과 연산:</span>
+          <div className="flex items-center gap-4 flex-nowrap">
+            <span className="text-sm text-slate-400 font-semibold whitespace-nowrap flex-shrink-0">인과 연산:</span>
             <div className="flex gap-2">
               {[MISSION_TYPES.CHAOS, MISSION_TYPES.SILENCE].map((type) => {
                 const isActive = missionType === type;
@@ -218,7 +230,7 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
           <div className="px-4 py-3 bg-cyan-950/30 border-b border-cyan-500/30">
             <h2 className="text-sm font-bold text-cyan-300 uppercase tracking-wider">상세 정보</h2>
           </div>
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto">
             {selectedCharacter ? (
               (() => {
                 // 레벨에 따른 실제 스탯 계산
@@ -226,7 +238,8 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
                   selectedCharacter.baseAtk || 0,
                   selectedCharacter.baseHp || 0,
                   selectedCharacter.level || 1,
-                  selectedCharacter.breakthrough || 0
+                  selectedCharacter.breakthrough || 0,
+                  selectedCharacter.baseDef || selectedCharacter.currentDef || 30
                 );
                 
                 // 캐릭터 스킬 정보 가져오기
@@ -235,20 +248,60 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
                 const skillNames = skillData?.skills || {};
                 
                 return (
-                  <div className="space-y-6">
-                    {/* 캐릭터 헤더 */}
-                    <div className="text-center space-y-2">
-                      <div className={`w-20 h-20 rounded-full ${ELEMENTS[selectedCharacter.element].bg} border-2 ${ELEMENTS[selectedCharacter.element].border} flex items-center justify-center mx-auto shadow-lg`}>
-                        <ElementIcon element={selectedCharacter.element} size={40} />
-                      </div>
-                      <h3 className="text-xl font-bold text-cyan-100">{selectedCharacter.name}</h3>
-                      <div className={`text-sm font-semibold ${getRoleColor(selectedCharacter.role)}`}>
-                        {getRoleLabel(selectedCharacter.role)}
+                  <div className="space-y-0 flex flex-col">
+                    {/* 캐릭터 헤더 - Full Bleed Card 스타일 */}
+                    <div className="relative w-full aspect-[3/4] rounded-t-2xl overflow-hidden group bg-slate-900">
+                      {/* 캐릭터 이미지 */}
+                      {selectedCharacter.portrait ? (
+                        (() => {
+                          const imgSrc = getImagePath(selectedCharacter.portrait);
+                          console.log('이미지 경로 확인:', process.env.PUBLIC_URL, imgSrc);
+                          return (
+                            <img
+                              src={imgSrc}
+                              alt={selectedCharacter.name}
+                              className="portrait-image w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                              onError={(e) => {
+                                console.error('초상화 로드 실패:', imgSrc);
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          );
+                        })()
+                      ) : (
+                        <div className={`w-full h-full ${ELEMENTS[selectedCharacter.element].bg} flex items-center justify-center`}>
+                          <ElementIcon element={selectedCharacter.element} size={80} />
+                        </div>
+                      )}
+                      
+                      {/* 하단 그라데이션 오버레이 (텍스트 가독성) */}
+                      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
+                      
+                      {/* 정보 오버레이 (이미지 위에 뜸) */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                        <div className="flex items-end justify-between">
+                          <div className="flex-1">
+                            <h3 className="text-3xl font-bold text-white tracking-wide drop-shadow-lg">{selectedCharacter.name}</h3>
+                            <div className="flex items-center gap-2 mt-2">
+                              <span className={`px-3 py-1 rounded-md text-xs font-bold drop-shadow-md ${getRoleColor(selectedCharacter.role)}`}>
+                                {getRoleLabel(selectedCharacter.role)}
+                              </span>
+                              {selectedCharacter.element && (
+                                <div className={`flex items-center gap-1 px-2 py-1 rounded-md ${ELEMENTS[selectedCharacter.element].bg} border ${ELEMENTS[selectedCharacter.element].border} text-xs font-bold drop-shadow-md`}>
+                                  <ElementIcon element={selectedCharacter.element} size={14} />
+                                  <span className={ELEMENTS[selectedCharacter.element].color}>{ELEMENTS[selectedCharacter.element].name}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          {/* 레벨 표시 */}
+                          <div className="text-2xl font-mono text-cyan-400 font-bold drop-shadow-lg">Lv. {selectedCharacter.level || 1}</div>
+                        </div>
                       </div>
                     </div>
 
                     {/* 스탯 그리드 */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 p-4">
                       <h4 className="text-xs font-bold text-cyan-300 uppercase tracking-wider">Statistics</h4>
                       <div className="grid grid-cols-2 gap-2">
                         <div className="bg-slate-800/40 rounded-lg p-3 border border-slate-700/40">
@@ -274,7 +327,7 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
                     </div>
 
                     {/* 스킬 정보 */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 p-4 pt-0">
                       <h4 className="text-xs font-bold text-cyan-300 uppercase tracking-wider">Skills</h4>
                       <div className="space-y-2">
                         {skillData ? (
@@ -284,9 +337,13 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
                               <div className="bg-gradient-to-r from-slate-700/20 to-transparent rounded-lg p-3 border border-slate-600/20">
                                 <div className="text-sm font-bold text-slate-200 flex items-center gap-2">
                                   {skillNames.normal}
-                                  {skillDetails.normal?.isAttributeAttack && (
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-amber-300 font-semibold uppercase">
-                                      속성
+                                  {skillDetails.normal?.isAttributeAttack && selectedCharacter.element && (
+                                    <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border" style={{
+                                      backgroundColor: ELEMENTS[selectedCharacter.element]?.bg?.replace('bg-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.15)',
+                                      borderColor: ELEMENTS[selectedCharacter.element]?.border?.replace('border-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.4)',
+                                    }}>
+                                      <ElementIcon element={selectedCharacter.element} size={12} />
+                                      <span className={ELEMENTS[selectedCharacter.element]?.color || 'text-amber-300'}>속성</span>
                                     </span>
                                   )}
                                 </div>
@@ -298,9 +355,13 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
                               <div className="bg-gradient-to-r from-blue-900/20 to-transparent rounded-lg p-3 border border-blue-500/20">
                                 <div className="text-sm font-bold text-blue-200 flex items-center gap-2">
                                   {skillNames.skill}
-                                  {skillDetails.skill?.isAttributeAttack && (
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-amber-300 font-semibold uppercase">
-                                      속성
+                                  {skillDetails.skill?.isAttributeAttack && selectedCharacter.element && (
+                                    <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border" style={{
+                                      backgroundColor: ELEMENTS[selectedCharacter.element]?.bg?.replace('bg-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.15)',
+                                      borderColor: ELEMENTS[selectedCharacter.element]?.border?.replace('border-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.4)',
+                                    }}>
+                                      <ElementIcon element={selectedCharacter.element} size={12} />
+                                      <span className={ELEMENTS[selectedCharacter.element]?.color || 'text-amber-300'}>속성</span>
                                     </span>
                                   )}
                                 </div>
@@ -312,9 +373,13 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
                               <div className="bg-gradient-to-r from-cyan-900/20 to-transparent rounded-lg p-3 border border-cyan-500/20">
                                 <div className="text-sm font-bold text-cyan-200 flex items-center gap-2">
                                   {skillNames.ultimate}
-                                  {skillDetails.ultimate?.isAttributeAttack && (
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-amber-300 font-semibold uppercase">
-                                      속성
+                                  {skillDetails.ultimate?.isAttributeAttack && selectedCharacter.element && (
+                                    <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border" style={{
+                                      backgroundColor: ELEMENTS[selectedCharacter.element]?.bg?.replace('bg-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.15)',
+                                      borderColor: ELEMENTS[selectedCharacter.element]?.border?.replace('border-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.4)',
+                                    }}>
+                                      <ElementIcon element={selectedCharacter.element} size={12} />
+                                      <span className={ELEMENTS[selectedCharacter.element]?.color || 'text-amber-300'}>속성</span>
                                     </span>
                                   )}
                                 </div>
@@ -330,7 +395,7 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
 
                     {/* 태그 */}
                     {selectedCharacter.tags && selectedCharacter.tags.length > 0 && (
-                      <div className="space-y-2">
+                      <div className="space-y-2 p-4 pt-0">
                         <h4 className="text-xs font-bold text-cyan-300 uppercase tracking-wider">Tags</h4>
                         <div className="flex flex-wrap gap-1">
                           {selectedCharacter.tags.map((tag, idx) => (

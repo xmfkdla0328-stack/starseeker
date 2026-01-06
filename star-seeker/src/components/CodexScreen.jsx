@@ -6,10 +6,9 @@ import { CharacterHeader } from './codex/CharacterHeader';
 import { CharacterInfoTab } from './codex/CharacterInfoTab';
 import { CharacterProfileTab } from './codex/CharacterProfileTab';
 import { BondDisplay } from './common/BondDisplay';
-import { BackButton } from './common/BackButton';
 import { performBreakthrough, getNextBreakthroughRequiredLevel } from '../data/breakthroughItems';
 
-export const CodexScreen = ({ inventory, items, setItems, setInventory, showToast, setScreen }) => {
+export const CodexScreen = ({ inventory, items, setItems, setInventory, handleLevelUp, expPerChip, showToast, setScreen }) => {
   const [selectedCharId, setSelectedCharId] = useState(CHAR_DB[0].id);
   const [tab, setTab] = useState('INFO'); 
 
@@ -72,60 +71,79 @@ export const CodexScreen = ({ inventory, items, setItems, setInventory, showToas
   };
 
   return (
-    <div className="flex flex-col h-full gap-4 p-4 overflow-hidden relative">
-      {/* 뒤로가기 버튼 */}
-      <BackButton onClick={() => setScreen('HOME')} disabled={false} />
+    <div className="flex h-full gap-6 p-6 overflow-hidden relative">
+       {/* 닫기 버튼 */}
+       <button
+        onClick={() => setScreen('HOME')}
+        className="absolute top-8 right-8 flex items-center justify-center w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-100 hover:text-white shadow-[0_0_12px_rgba(255,255,255,0.1)] backdrop-blur-md transition-all duration-300 z-50"
+        aria-label="닫기"
+      >
+        X
+      </button>
 
-      {/* 컨텐츠 영역 */}
-      <div className="flex flex-1 gap-4 overflow-hidden">
-        {/* 왼쪽: 캐릭터 목록 */}
-      <CharacterList charList={CHAR_DB} selectedCharId={selectedCharId} onSelectChar={setSelectedCharId} inventory={inventory} />
+       {/* 배경 타이틀 장식 */}
+       <div className="absolute top-4 right-8 pointer-events-none text-right z-0">
+        <h1 className="text-4xl font-serif text-white/5 tracking-widest font-black">ARCHIVE</h1>
+        <p className="text-xs text-cyan-500/20 font-mono tracking-[0.5em]">PERSONNEL DATABASE</p>
+      </div>
 
-      {/* 오른쪽: 상세 정보 패널 */}
-      <div className="flex-1 bg-slate-950/60 backdrop-blur-xl rounded-xl border border-white/10 flex flex-col overflow-y-auto relative shadow-2xl">
+      {/* 왼쪽: 캐릭터 목록 (유리 패널 스타일) */}
+      <CharacterList 
+        charList={CHAR_DB} 
+        selectedCharId={selectedCharId} 
+        onSelectChar={setSelectedCharId} 
+        inventory={inventory} 
+      />
+
+      {/* 오른쪽: 상세 정보 패널 (투명도 높임) */}
+      <div className="flex-1 bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-white/10 flex flex-col overflow-hidden relative shadow-[0_0_50px_rgba(0,0,0,0.3)] z-10">
+        
         {/* 상단 헤더 */}
-        <div className="flex-shrink-0">
-          <CharacterHeader charData={charData} />
-        </div>
+        <CharacterHeader charData={charData} />
 
-        {/* 탭 버튼 */}
-        <div className="flex px-6 mt-6 border-b border-white/10 gap-6 relative z-10 flex-shrink-0">
-          <button
-            onClick={() => setTab('INFO')}
-            className={`pb-2 text-sm font-bold transition-colors relative ${
-              tab === 'INFO' ? 'text-yellow-400' : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            전투 정보
-            {tab === 'INFO' && <div className="absolute bottom-0 inset-x-0 h-0.5 bg-yellow-400 rounded-t-full"></div>}
-          </button>
-          <button
-            onClick={() => setTab('PROFILE')}
-            className={`pb-2 text-sm font-bold transition-colors relative ${
-              tab === 'PROFILE' ? 'text-yellow-400' : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            프로필 & 스토리
-            {tab === 'PROFILE' && <div className="absolute bottom-0 inset-x-0 h-0.5 bg-yellow-400 rounded-t-full"></div>}
-          </button>
+        {/* 탭 버튼 (네온 캡슐 스타일) */}
+        <div className="flex px-8 mt-4 border-b border-white/5 gap-4 relative z-10 shrink-0 pb-4">
+          {['INFO', 'PROFILE'].map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border ${
+                tab === t 
+                  ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-[0_0_15px_rgba(34,211,238,0.3)]' 
+                  : 'bg-transparent border-transparent text-slate-500 hover:text-slate-300 hover:bg-white/5'
+              }`}
+            >
+              {t === 'INFO' ? 'COMBAT DATA' : 'ARCHIVE & STORY'}
+            </button>
+          ))}
         </div>
 
         {/* 내용 영역 */}
-        <div className="flex-1 p-6 relative flex-shrink-0">
+        <div className="flex-1 overflow-y-auto p-8 relative custom-scrollbar">
+          {/* 배경 그라데이션 (속성별 색상 은은하게) */}
           <div className={`absolute inset-0 bg-gradient-to-br ${ELEMENTS[charData.element].bg.replace('/20', '/5')} to-transparent pointer-events-none`}></div>
 
-          {/* 인연도 섹션 (보유 중일 때만) */}
+          {/* 인연도 섹션 */}
           {isOwned && (
-            <div className="mb-6 p-4 bg-white/5 border border-red-500/20 rounded-lg relative z-10">
-              <h3 className="text-sm font-bold text-red-400 mb-3">인연도</h3>
+            <div className="mb-8 p-0 relative z-10">
               <BondDisplay bondLevel={charData.bondLevel || 0} detailed={true} />
             </div>
           )}
 
-          {tab === 'INFO' && <CharacterInfoTab charData={charData} getSkillInfo={getSkillInfo} items={items} onBreakthrough={isOwned ? handleBreakthrough : null} />}
-          {tab === 'PROFILE' && <CharacterProfileTab charData={charData} />}
+          <div className="animate-fade-in-up">
+            {tab === 'INFO' && (
+              <CharacterInfoTab
+                charData={charData}
+                getSkillInfo={getSkillInfo}
+                items={items}
+                expPerChip={expPerChip}
+                onLevelUp={isOwned ? handleLevelUp : null}
+                onBreakthrough={isOwned ? handleBreakthrough : null}
+              />
+            )}
+            {tab === 'PROFILE' && <CharacterProfileTab charData={charData} />}
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

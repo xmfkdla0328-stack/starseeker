@@ -1,5 +1,4 @@
 import React from 'react';
-import { X } from 'lucide-react';
 import { GradientDivider } from '../common/GradientDivider';
 import { IconCircle } from '../common/IconCircle';
 
@@ -29,9 +28,10 @@ export const ItemDetailModal = ({ item, onClose, onUse }) => {
         {/* 닫기 버튼 */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-all"
+          className="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-100 hover:text-white shadow-[0_0_12px_rgba(255,255,255,0.1)] backdrop-blur-md transition-all duration-300"
+          aria-label="Close"
         >
-          <X size={20} className="text-slate-400" />
+          X
         </button>
 
         {/* 아이템 정보 */}

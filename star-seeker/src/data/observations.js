@@ -18,10 +18,10 @@ export const observations = [
   },
   {
     id: 'RUIN',
-    name: '성흔 관측',
+    name: '자원 관측',
     shortName: 'RUIN',
     description:
-      '별의 조각과 별의 먼지를 획득할 수 있는 컨텐츠입니다. 캐릭터 강화에 필수적인 아이템들을 파밍합니다.',
+      '기억 추출물, 성석, 별의 파편 등 캐릭터 강화에 필수적인 아이템들을 파밍할 수 있는 컨텐츠입니다. 다양한 자원을 효율적으로 수급합니다.',
     color: 'from-yellow-400 to-amber-400',
     glowColor: 'from-yellow-500/80 to-amber-500/80',
     textColor: 'text-yellow-300',

@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import SoundManager, { AUDIO_KEYS } from '../../../utils/audio/SoundManager';
 import UltimateGauge from './UltimateGauge';
 import { CHARACTER_SKILLS } from '../../../data/characters/skillData';
+import { ElementIcon } from '../../common/ElementIcon';
+import { ELEMENTS } from '../../../constants/elements';
 
 const ControlDeck = ({
   gaugePercent,
@@ -12,6 +14,7 @@ const ControlDeck = ({
   onNormal,
   onSkill,
   onUltimate,
+  isLocked = false,
 }) => {
   // 현재 턴 캐릭터의 SP 상태
   const currentSp = activeCharacter?.sp || 0;
@@ -20,7 +23,7 @@ const ControlDeck = ({
   
   // 스킬 쿨타임 상태
   const skillCooldown = activeCharacter?.currentSkillCooldown || 0;
-  const canUseSkill = skillCooldown === 0;
+  const canUseSkill = !isLocked && skillCooldown === 0;
   
   // 현재 캐릭터의 스킬 정보 가져오기
   const characterSkillData = activeCharacter?.id ? CHARACTER_SKILLS[activeCharacter.id] : null;
@@ -47,38 +50,39 @@ const ControlDeck = ({
   const renderActions = () => {
     if (activeTurn?.type === 'party' && activeCharacter) {
       return (
-        <div className="flex gap-4 mb-3 justify-center items-end">
+        <div className="flex gap-4 mb-3 justify-center items-center">
           {/* 일반 공격 버튼 */}
           <button
             onClick={() => {
+              if (isLocked) return;
               SoundManager.playSFX(AUDIO_KEYS.SFX_UI_CLICK);
               onNormal?.();
             }}
             className="action-button"
+            style={{ flex: '1 1 0', minWidth: 0 }}
           >
             <span className="action-icon">⚔️</span>
             <span className="action-label">
               일반 공격
-              {isNormalAttributeAttack && (
-                <span style={{
-                  marginLeft: '4px',
+              {isNormalAttributeAttack && activeCharacter?.element && (
+                <span className="inline-flex items-center gap-1" style={{
+                  marginLeft: '6px',
                   fontSize: '9px',
-                  padding: '1px 4px',
-                  borderRadius: '3px',
-                  backgroundColor: 'rgba(251, 191, 36, 0.2)',
-                  border: '1px solid rgba(251, 191, 36, 0.4)',
-                  color: '#fbbf24',
+                  padding: '2px 6px',
+                  borderRadius: '9999px',
+                  backgroundColor: ELEMENTS[activeCharacter.element]?.bg?.replace('bg-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.15)',
+                  border: `1px solid ${ELEMENTS[activeCharacter.element]?.border?.replace('border-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.4)'}`,
                   fontWeight: '600',
-                  textTransform: 'uppercase'
                 }}>
-                  속성
+                  <ElementIcon element={activeCharacter.element} size={10} />
+                  <span className={ELEMENTS[activeCharacter.element]?.color || 'text-amber-300'} style={{ fontSize: '9px' }}>속성</span>
                 </span>
               )}
             </span>
           </button>
           
           {/* 스킬 버튼 (쿨타임 적용) */}
-          <div className="relative">
+          <div className="relative" style={{ flex: '1 1 0', minWidth: 0 }}>
             <button
               onClick={() => {
                 if (canUseSkill) {
@@ -93,6 +97,7 @@ const ControlDeck = ({
               style={{
                 position: 'relative',
                 overflow: 'hidden',
+                width: '100%',
               }}
             >
               {/* 쿨타임 오버레이 */}
@@ -161,19 +166,18 @@ const ControlDeck = ({
               <span className="action-icon" style={{ position: 'relative', zIndex: 1 }}>✴️</span>
               <span className="action-label" style={{ position: 'relative', zIndex: 1 }}>
                 스킬
-                {isSkillAttributeAttack && (
-                  <span style={{
-                    marginLeft: '4px',
+                {isSkillAttributeAttack && activeCharacter?.element && (
+                  <span className="inline-flex items-center gap-1" style={{
+                    marginLeft: '6px',
                     fontSize: '9px',
-                    padding: '1px 4px',
-                    borderRadius: '3px',
-                    backgroundColor: 'rgba(251, 191, 36, 0.2)',
-                    border: '1px solid rgba(251, 191, 36, 0.4)',
-                    color: '#fbbf24',
+                    padding: '2px 6px',
+                    borderRadius: '9999px',
+                    backgroundColor: ELEMENTS[activeCharacter.element]?.bg?.replace('bg-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.15)',
+                    border: `1px solid ${ELEMENTS[activeCharacter.element]?.border?.replace('border-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.4)'}`,
                     fontWeight: '600',
-                    textTransform: 'uppercase'
                   }}>
-                    속성
+                    <ElementIcon element={activeCharacter.element} size={10} />
+                    <span className={ELEMENTS[activeCharacter.element]?.color || 'text-amber-300'} style={{ fontSize: '9px' }}>속성</span>
                   </span>
                 )}
               </span>
@@ -181,25 +185,25 @@ const ControlDeck = ({
           </div>
           
           {/* 필살기 버튼 (게이지 통합) */}
-          <div className="relative">
+          <div className="relative" style={{ flex: '1 1 0', minWidth: 0 }}>
             <button
               onClick={() => {
+                if (isLocked) return;
                 if (canUseUlt) {
                   SoundManager.playSFX(AUDIO_KEYS.SFX_UI_CLICK);
                   onUltimate?.();
                 }
               }}
-              disabled={!canUseUlt}
+              disabled={!canUseUlt || isLocked}
               className={`action-button action-button-ultimate relative ${
-                !canUseUlt ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                (!canUseUlt || isLocked) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
               }`}
               style={{
-                minWidth: '140px',
-                minHeight: '140px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
+                width: '100%',
               }}
             >
               {/* 필살기 게이지 - 버튼 뒤에 배치 */}
@@ -220,22 +224,23 @@ const ControlDeck = ({
               </div>
               
               {/* 버튼 라벨 - 게이지 위에 배치 */}
-              <div style={{ position: 'relative', zIndex: 2, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span className="action-label text-xs">필살기</span>
-                {isUltimateAttributeAttack && (
-                  <span style={{
-                    fontSize: '9px',
-                    padding: '1px 4px',
-                    borderRadius: '3px',
-                    backgroundColor: 'rgba(251, 191, 36, 0.2)',
-                    border: '1px solid rgba(251, 191, 36, 0.4)',
-                    color: '#fbbf24',
-                    fontWeight: '600',
-                    textTransform: 'uppercase'
-                  }}>
-                    속성
-                  </span>
-                )}
+              <div style={{ position: 'relative', zIndex: 2, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span className="action-label text-xs">필살기</span>
+                  {isUltimateAttributeAttack && activeCharacter?.element && (
+                    <span className="inline-flex items-center gap-1" style={{
+                      fontSize: '9px',
+                      padding: '2px 6px',
+                      borderRadius: '9999px',
+                      backgroundColor: ELEMENTS[activeCharacter.element]?.bg?.replace('bg-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.15)',
+                      border: `1px solid ${ELEMENTS[activeCharacter.element]?.border?.replace('border-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.4)'}`,
+                      fontWeight: '600',
+                    }}>
+                      <ElementIcon element={activeCharacter.element} size={10} />
+                      <span className={ELEMENTS[activeCharacter.element]?.color || 'text-amber-300'} style={{ fontSize: '9px' }}>속성</span>
+                    </span>
+                  )}
+                </div>
               </div>
             </button>
           </div>
@@ -260,7 +265,7 @@ const ControlDeck = ({
 
   return (
     <div 
-      className="control-deck" 
+      className="control-deck battle-control-deck" 
       style={{ 
         position: 'absolute', 
         bottom: '30px', 
@@ -273,28 +278,15 @@ const ControlDeck = ({
         WebkitBackdropFilter: 'blur(10px)'
       }}
     >
-      <div className="telescope-gauge mb-4">
-        <div className="gauge-track">
-          <div className="gauge-glow" style={{ width: `${gaugePercent}%` }} />
-          <div className="gauge-stars">
-            {[0, 20, 40, 60, 80, 100].map((p) => (
-              <span key={p} style={{ left: `${p}%` }} className={gaugePercent >= p ? 'active' : ''} />
-            ))}
-          </div>
-        </div>
-        <div className="gauge-label">
-          <span>인과율 게이지</span>
-          <span className="badge">{missionGauge}/100</span>
-        </div>
-      </div>
-
       {lastReaction && (
         <div className="mb-3 px-3 py-2 rounded-lg border border-amber-300/40 bg-amber-200/5 text-amber-100 text-sm font-semibold">
           🔥 속성 반응: {lastReaction}
         </div>
       )}
 
-      {renderActions()}
+      <div className="battle-actions-wrapper">
+        {renderActions()}
+      </div>
     </div>
   );
 };

@@ -4,7 +4,7 @@ const EnemyStatusBar = ({ enemyHp, enemyMaxHp }) => {
   const widthPercent = ((enemyHp / (enemyMaxHp || 1)) * 100).toFixed(2);
   return (
     <div 
-      className="astro-panel rounded-xl p-3" 
+      className="astro-panel rounded-xl p-3 battle-enemy-status" 
       style={{ 
         position: 'absolute', 
         top: '20px', 

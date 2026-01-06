@@ -1,6 +1,14 @@
 import React from 'react';
 import { ELEMENTS } from '../../constants/index';
 
+const getImagePath = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http') || path.startsWith('data:')) return path;
+  const publicUrl = process.env.PUBLIC_URL || '';
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${publicUrl}/${cleanPath}`;
+};
+
 /**
  * 메인 캐릭터 원형 디스플레이
  * @param {object} character - 캐릭터 데이터
@@ -27,15 +35,29 @@ export const CharacterCircle = ({ character, onCycle }) => {
 
       {/* 캐릭터 원형 컨테이너 */}
       <div
-        className={`w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 xl:w-72 xl:h-72 rounded-full border-2 ${element.border} ${element.bg} flex items-center justify-center shadow-[0_0_40px_rgba(34,211,238,0.3)] transition-all duration-500 group-hover:scale-105 group-hover:shadow-[0_0_60px_rgba(34,211,238,0.5)] relative overflow-hidden backdrop-blur-sm`}
+        className={`w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 xl:w-72 xl:h-72 rounded-full border-2 ${element.border} ${element.bg} flex items-center justify-center shadow-[0_0_40px_rgba(34,211,238,0.4)] transition-all duration-500 group-hover:scale-105 group-hover:shadow-[0_0_80px_rgba(34,211,238,0.6)] relative overflow-hidden backdrop-blur-md`}
       >
         {/* 홀로그램 스캔 라인 */}
         <div className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent animate-scan"></div>
 
-        {/* 캐릭터 이니셜 */}
-        <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-bold text-white opacity-90 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] select-none relative z-10">
-          {character.name[0]}
-        </span>
+        {/* 캐릭터 초상화 또는 이니셜 */}
+        {character.portrait ? (
+          (() => {
+            const imgSrc = getImagePath(character.portrait);
+            return (
+              <img
+                src={imgSrc}
+                alt={character.name}
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={(e) => { console.error('프로필 이미지 로드 실패:', imgSrc); e.currentTarget.style.display = 'none'; }}
+              />
+            );
+          })()
+        ) : (
+          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-bold text-white opacity-90 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] select-none relative z-10">
+            {character.name[0]}
+          </span>
+        )}
 
         {/* 별 입자 효과 */}
         <div className="absolute inset-0 animate-spin-slow opacity-40">

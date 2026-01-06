@@ -1,4 +1,6 @@
 import React from 'react';
+import { ElementIcon } from '../common/ElementIcon';
+import { ELEMENTS } from '../../constants/elements';
 
 /**
  * 캐릭터 스킬 정보 표시 컴포넌트
@@ -16,7 +18,8 @@ export const SkillBlock = ({
   isUltimate = false,
   ultLevel = 0,
   descWithBonus = null, // 한계 돌파 보너스가 포함된 설명
-  isAttributeAttack = false // 속성 공격 여부
+  isAttributeAttack = false, // 속성 공격 여부
+  element = null // 캐릭터 속성
 }) => {
   // 한계 돌파 보너스 계산: 1: 20%, 2: 30%, 3: 40%, 4: 50%, 5: 70%
   const bonusLevels = [20, 30, 40, 50, 70];
@@ -37,9 +40,13 @@ export const SkillBlock = ({
         <div className={`text-sm font-bold flex items-center gap-2 flex-wrap ${accentClass || 'text-slate-200'}`}>
           {name}
           <span className="text-[11px] px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-slate-300">Lv.{level}</span>
-          {isAttributeAttack && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-amber-300 font-semibold uppercase">
-              속성
+          {isAttributeAttack && element && (
+            <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border" style={{
+              backgroundColor: ELEMENTS[element]?.bg?.replace('bg-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.15)',
+              borderColor: ELEMENTS[element]?.border?.replace('border-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.4)',
+            }}>
+              <ElementIcon element={element} size={12} />
+              <span className={ELEMENTS[element]?.color || 'text-amber-300'}>속성</span>
             </span>
           )}
           {breakthroughBadge && (

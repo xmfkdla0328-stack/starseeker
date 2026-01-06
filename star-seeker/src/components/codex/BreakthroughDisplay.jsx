@@ -6,7 +6,7 @@ import { Star } from 'lucide-react';
  */
 export const BreakthroughDisplay = ({ ultLevel = 0 }) => {
   return (
-    <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-400/20 rounded-lg p-4">
+    <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/40 rounded-lg p-4 backdrop-blur-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Star className="w-4 h-4 text-purple-400" />

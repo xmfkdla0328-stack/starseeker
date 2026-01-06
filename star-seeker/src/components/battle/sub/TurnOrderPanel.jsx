@@ -1,11 +1,18 @@
 import React from 'react';
 
 const TurnOrderPanel = ({ turnQueue = [] }) => {
-  if (!turnQueue.length) return null;
+  // 테스트용: turnQueue가 비어있으면 더미 데이터 표시
+  const displayQueue = turnQueue.length > 0 ? turnQueue : [
+    { id: 'char1', name: '서주목', type: 'party', speed: 126 },
+    { id: 'char2', name: '슬라', type: 'party', speed: 122 },
+    { id: 'char3', name: '막주', type: 'party', speed: 116 },
+    { id: 'char4', name: '칼슴', type: 'party', speed: 110 },
+    { id: 'enemy', name: '보스', type: 'enemy', speed: 100 },
+  ];
 
   return (
     <div 
-      className="timeline-panel" 
+      className="timeline-panel battle-turn-order-panel" 
       style={{ 
         position: 'absolute', 
         top: '90px', 
@@ -17,7 +24,7 @@ const TurnOrderPanel = ({ turnQueue = [] }) => {
         scrollbarWidth: 'none'
       }}
     >
-      {turnQueue.map((turn, index) => {
+      {displayQueue.map((turn, index) => {
         const isActive = index === 0;
         const isEnemy = turn.type === 'enemy';
         return (

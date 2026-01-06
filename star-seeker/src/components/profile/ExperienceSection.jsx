@@ -6,27 +6,27 @@ export const ExperienceSection = ({ playerInfo }) => {
   const expData = getExpProgress(playerInfo.level, playerInfo.exp);
   
   return (
-    <div className="bg-gradient-to-br from-purple-500/8 to-violet-600/8 border border-purple-300/15 rounded-xl p-5 backdrop-blur-md">
+    <div className="bg-white/5 hover:bg-white/8 border border-white/10 rounded-xl shadow-lg shadow-cyan-500/10 p-5 backdrop-blur-md transition-all duration-300">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <TrendingUp size={18} className="text-purple-300" />
-          <h3 className="text-sm font-bold text-purple-200 uppercase tracking-widest">Journey</h3>
+          <TrendingUp size={18} className="text-cyan-400" />
+          <h3 className="text-sm font-bold text-cyan-100 uppercase tracking-widest">탐사 경험치</h3>
         </div>
-        <p className="text-sm font-mono text-purple-300">
+        <p className="text-sm font-mono text-cyan-100 font-bold">
           {expData.progressExp} / {expData.requiredExp}
         </p>
       </div>
       
-      <div className="relative h-4 bg-black/20 rounded-full overflow-hidden border border-purple-300/15 backdrop-blur-sm">
+      <div className="relative h-4 bg-white/5 rounded-full overflow-hidden border border-white/10 backdrop-blur-md">
         <div
-          className="h-full bg-gradient-to-r from-purple-500 via-violet-500 to-blue-500 transition-all duration-500 rounded-full shadow-[0_0_12px_rgba(168,85,247,0.5)]"
+          className="h-full bg-gradient-to-r from-cyan-400 via-cyan-300 to-blue-400 transition-all duration-500 rounded-full shadow-[0_0_15px_rgba(34,211,238,0.7)]"
           style={{ width: `${expData.progress}%` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent animate-scan"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-scan"></div>
         </div>
       </div>
-      <p className="text-xs text-purple-300/50 mt-2">
-        {Math.round(expData.progress)}% to Level {playerInfo.level + 1}
+      <p className="text-xs text-slate-400 font-mono mt-2">
+        Lv. {playerInfo.level + 1}까지 {Math.round(expData.progress)}%
       </p>
     </div>
   );

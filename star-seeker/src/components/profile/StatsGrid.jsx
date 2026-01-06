@@ -7,27 +7,27 @@ export const StatsGrid = ({ charCount, playerStats, unlockedAchievements }) => {
     <div className="grid grid-cols-3 gap-3">
       <StatCard 
         icon={Users}
-        label="Characters"
+        label="수집 달성률"
         value={charCount}
-        subtitle={charCount === 8 ? '◇ Complete' : `${8 - charCount} left`}
+        subtitle={charCount === 8 ? '◇ 완료' : `${8 - charCount}명 남음`}
         color="cyan"
       />
 
       <StatCard 
         icon={Sword}
-        label="Battles"
+        label="총 전투"
         value={playerStats.totalBattles}
         subtitle={playerStats.totalBattles > 0 
-          ? `${Math.round((playerStats.totalWins / playerStats.totalBattles) * 100)}% win` 
-          : 'Not started'}
+          ? `${Math.round((playerStats.totalWins / playerStats.totalBattles) * 100)}% 승률` 
+          : '미시작'}
         color="red"
       />
 
       <StatCard 
         icon={Award}
-        label="Achievements"
+        label="업적"
         value={unlockedAchievements.length}
-        subtitle="/ 14 total"
+        subtitle="/ 14개"
         color="amber"
       />
     </div>

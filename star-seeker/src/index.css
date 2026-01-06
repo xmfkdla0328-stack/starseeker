@@ -6,6 +6,24 @@
 @tailwind utilities;
 /* stylelint-enable */
 
+/* 전역 레이아웃 고정 (스크롤바 방지) */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #000;
+}
+
+#root, #phaser-container {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 /* 커스텀 스크롤바 숨기기 */
 .no-scrollbar::-webkit-scrollbar { 
   display: none; 
@@ -21,7 +39,11 @@
   50% { transform: translateY(-10px); } 
 }
 .animate-float-slow { 
-  animation: float-slow 6s ease-in-out infinite; 
+  animation-name: float-slow;
+  animation-duration: 6s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-delay: var(--animation-delay, 0s);
 }
 
 @keyframes pulse-slow { 
@@ -29,7 +51,11 @@
   50% { opacity: 0.5; } 
 }
 .animate-pulse-slow { 
-  animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
+  animation-name: pulse-slow;
+  animation-duration: 4s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+  animation-iteration-count: infinite;
+  animation-delay: var(--animation-delay, 0s);
 }
 
 @keyframes pan-slow { 
@@ -37,7 +63,11 @@
   100% { background-position: 100% 100%; } 
 }
 .animate-pan-slow { 
-  animation: pan-slow 60s linear infinite; 
+  animation-name: pan-slow;
+  animation-duration: 60s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: var(--animation-delay, 0s);
 }
 
 @keyframes twinkle { 
@@ -45,7 +75,11 @@
   50% { opacity: 0.8; transform: scale(1.5); } 
 }
 .animate-twinkle { 
-  animation: twinkle 3s ease-in-out infinite; 
+  animation-name: twinkle;
+  animation-duration: 3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-delay: var(--animation-delay, 0s);
 }
 
 @keyframes bounce-slight { 
@@ -53,7 +87,11 @@
   50% { transform: translate(-50%, -10px); } 
 }
 .animate-bounce-slight { 
-  animation: bounce-slight 2s ease-in-out infinite; 
+  animation-name: bounce-slight;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-delay: var(--animation-delay, 0s);
 }
 
 @keyframes fade-in { 
@@ -61,7 +99,11 @@
   to { opacity: 1; } 
 }
 .animate-fade-in { 
-  animation: fade-in 0.3s ease-out forwards; 
+  animation-name: fade-in;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  animation-delay: var(--animation-delay, 0s);
 }
 
 /* 렌즈 회전 애니메이션 (App.jsx 버튼용) */
@@ -76,7 +118,11 @@
   to { transform: rotate(360deg); }
 }
 .animate-spin-slow {
-  animation: spin-slow 30s linear infinite;
+  animation-name: spin-slow;
+  animation-duration: 30s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: var(--animation-delay, 0s);
 }
 
 @keyframes float {
@@ -86,7 +132,11 @@
   75% { transform: translateY(-20px) translateX(5px); opacity: 0.6; }
 }
 .animate-float {
-  animation: float 10s ease-in-out infinite;
+  animation-name: float;
+  animation-duration: var(--animation-duration, 10s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-delay: var(--animation-delay, 0s);
 }
 
 @keyframes scan {
@@ -95,7 +145,42 @@
   100% { top: 100%; opacity: 0; }
 }
 .animate-scan {
-  animation: scan 3s ease-in-out infinite;
+  animation-name: scan;
+  animation-duration: 3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-delay: var(--animation-delay, 0s);
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-bounce-in {
+  animation-name: bounce-in;
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  animation-fill-mode: forwards;
+  animation-delay: var(--animation-delay, 0s);
+}
+
+@keyframes particle-burst {
+  0% { 
+    transform: rotate(var(--rotation, 0deg)) translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% { 
+    transform: rotate(var(--rotation, 0deg)) translateY(-120px) scale(0);
+    opacity: 0;
+  }
+}
+.animate-particle-burst {
+  animation-name: particle-burst;
+  animation-duration: 1.5s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  animation-delay: var(--animation-delay, 0s);
 }
 
 @keyframes glow-pulse {
@@ -180,98 +265,6 @@ h1, h2, h3, h4, .font-cinzel {
 
 .bottom-safe {
   padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* 커스텀 스크롤바 숨기기 */
-.no-scrollbar::-webkit-scrollbar { 
-  display: none; 
-}
-.no-scrollbar { 
-  -ms-overflow-style: none; 
-  scrollbar-width: none; 
-}
-
-/* 애니메이션 정의 */
-@keyframes float-slow { 
-  0%, 100% { transform: translateY(0); } 
-  50% { transform: translateY(-10px); } 
-}
-.animate-float-slow { 
-  animation: float-slow 6s ease-in-out infinite; 
-}
-
-@keyframes pulse-slow { 
-  0%, 100% { opacity: 1; } 
-  50% { opacity: 0.5; } 
-}
-.animate-pulse-slow { 
-  animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
-}
-
-@keyframes pan-slow { 
-  0% { background-position: 0% 0%; } 
-  100% { background-position: 100% 100%; } 
-}
-.animate-pan-slow { 
-  animation: pan-slow 60s linear infinite; 
-}
-
-@keyframes twinkle { 
-  0%, 100% { opacity: 0.2; transform: scale(1); } 
-  50% { opacity: 0.8; transform: scale(1.5); } 
-}
-.animate-twinkle { 
-  animation: twinkle 3s ease-in-out infinite; 
-}
-
-@keyframes bounce-slight { 
-  0%, 100% { transform: translate(-50%, 0); } 
-  50% { transform: translate(-50%, -10px); } 
-}
-.animate-bounce-slight { 
-  animation: bounce-slight 2s ease-in-out infinite; 
-}
-
-@keyframes fade-in { 
-  from { opacity: 0; } 
-  to { opacity: 1; } 
-}
-.animate-fade-in { 
-  animation: fade-in 0.3s ease-out forwards; 
-}
-
-/* 렌즈 회전 애니메이션 (App.jsx 버튼용) */
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* 우주 테마 추가 애니메이션 */
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.animate-spin-slow {
-  animation: spin-slow 30s linear infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
-  25% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
-  50% { transform: translateY(-40px) translateX(-10px); opacity: 0.8; }
-  75% { transform: translateY(-20px) translateX(5px); opacity: 0.6; }
-}
-.animate-float {
-  animation: float 10s ease-in-out infinite;
-}
-
-@keyframes scan {
-  0% { top: 0%; opacity: 0; }
-  50% { opacity: 0.6; }
-  100% { top: 100%; opacity: 0; }
-}
-.animate-scan {
-  animation: scan 3s ease-in-out infinite;
 }
 
 /* ===== Ghost Buttons (Telescope rim) ===== */
@@ -616,8 +609,7 @@ h1, h2, h3, h4, .font-cinzel {
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  width: 140px;
-  height: 72px;
+  height: 80px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(107, 220, 255, 0.45);
   border-radius: 0.75rem;
@@ -1051,4 +1043,593 @@ h1, h2, h3, h4, .font-cinzel {
 }
 .animate-hover-lift {
   animation: hover-lift 2s ease-in-out infinite;
+}
+
+/* ===========================
+   Mobile Responsive Styles
+   =========================== */
+@media (max-width: 768px) {
+  .action-button {
+    height: 70px;
+    font-size: 0.75rem;
+    gap: 0.25rem;
+  }
+  
+  .action-icon {
+    font-size: 1.25rem;
+  }
+  
+  .action-label {
+    font-size: 0.7rem;
+  }
+  
+  /* 게임 컨테이너 크기 조정 */
+  #phaser-game {
+    max-height: 50vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-button {
+    height: 60px;
+    font-size: 0.7rem;
+    gap: 0.2rem;
+  }
+  
+  .action-icon {
+    font-size: 1.1rem;
+  }
+  
+  .action-label {
+    font-size: 0.65rem;
+  }
+}
+
+/* ===========================
+   Mobile Landscape (Compact Layout)
+   세로 폭이 좁은 모바일 가로 모드 전용
+   =========================== */
+@media (max-height: 600px) {
+  /* 하단 컨트롤 패널 컴팩트 모드 */
+  .battle-control-deck {
+    transform: scale(0.8) !important;
+    transform-origin: bottom center !important;
+    bottom: 0 !important;
+    padding-bottom: 0.5rem !important;
+  }
+  
+  .battle-control-deck .astro-panel {
+    background: rgba(0, 0, 0, 0.6) !important;
+    padding: 0.5rem 1rem !important;
+  }
+  
+  /* 턴 순서 바 컴팩트 모드 */
+  .battle-turn-order-bar {
+    transform: scale(0.8) !important;
+    transform-origin: top left !important;
+    top: 0.5rem !important;
+    left: 0.5rem !important;
+  }
+  
+  /* 우측 턴 대기열 컴팩트 모드 */
+  .battle-turn-order-panel {
+    transform: scale(0.8) !important;
+    transform-origin: top right !important;
+    top: 3rem !important;
+    right: 0.5rem !important;
+    width: 70px !important;
+    max-height: 300px !important;
+  }
+  
+  .battle-turn-order-panel .timeline-item {
+    margin-bottom: 6px !important;
+  }
+  
+  .battle-turn-order-panel .timeline-avatar {
+    width: 50px !important;
+    height: 50px !important;
+  }
+  
+  /* 적 HP 바 컴팩트 모드 */
+  .battle-enemy-status {
+    transform: scale(0.8) !important;
+    transform-origin: top center !important;
+    top: 0.5rem !important;
+  }
+  
+  /* 미션 배너 컴팩트 모드 */
+  .battle-mission-banner {
+    transform: scale(0.8) !important;
+    transform-origin: top left !important;
+    top: 3rem !important;
+    left: 0.5rem !important;
+  }
+  
+  /* 일시정지 버튼 컴팩트 모드 */
+  .pause-toggle {
+    transform: scale(0.8) !important;
+    transform-origin: top right !important;
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+  }
+  
+  /* 턴 정보 패널 컴팩트 모드 (TurnOrderBar가 사용하는 스타일) */
+  .battle-turn-info {
+    transform: scale(0.8) !important;
+    transform-origin: top left !important;
+  }
+  
+  /* 액션 버튼 추가 축소 */
+  .action-button {
+    height: 55px !important;
+    font-size: 0.65rem !important;
+  }
+  
+  .action-icon {
+    font-size: 1rem !important;
+  }
+  
+  .action-label {
+    font-size: 0.6rem !important;
+  }
+  
+  /* 게이지 표시 컴팩트 */
+  .gauge-container {
+    height: 0.4rem !important;
+  }
+  
+  /* astro-panel 기본 패딩 축소 */
+  .astro-panel {
+    padding: 0.5rem 0.75rem !important;
+  }
+}
+
+/* 극단적으로 작은 화면 (height < 500px) - 슬림 UI */
+@media (max-height: 500px) {
+  /* ===== 하단 컨트롤 패널 초경량화 ===== */
+  .battle-control-deck {
+    transform: scale(1) !important; /* scale 제거하고 실제 크기 조정 */
+    bottom: 0 !important;
+    padding-bottom: 0 !important;
+    max-height: 25vh !important; /* 화면의 25% 이하로 제한 */
+  }
+  
+  .battle-control-deck .astro-panel {
+    padding: 0.25rem 0.5rem !important; /* 패딩 대폭 축소 */
+  }
+  
+  /* 미션 게이지 초경량화 */
+  .telescope-gauge {
+    padding: 6px 10px 4px !important; /* 높이 대폭 축소 */
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .telescope-gauge .gauge-track {
+    height: 3px !important; /* 게이지 바 두께 절반 */
+  }
+  
+  .telescope-gauge .gauge-stars span {
+    width: 6px !important;
+    height: 6px !important;
+  }
+  
+  .telescope-gauge .gauge-label {
+    font-size: 8px !important; /* 텍스트 축소 */
+    margin-top: 4px !important;
+    letter-spacing: 0.1em !important;
+  }
+  
+  .telescope-gauge .gauge-label > span:first-child {
+    display: none !important; /* 모바일에서 '인과율 게이지' 텍스트 숨김 */
+  }
+  
+  .telescope-gauge .gauge-label .badge {
+    padding: 2px 6px !important;
+    font-size: 9px !important;
+  }
+  
+  /* 액션 버튼 초슬림화 */
+  .action-button {
+    height: 45px !important; /* 버튼 높이 축소 */
+    font-size: 0.6rem !important;
+    gap: 0.15rem !important;
+    padding: 0.25rem !important;
+  }
+  
+  .action-icon {
+    font-size: 0.9rem !important;
+  }
+  
+  .action-label {
+    font-size: 0.55rem !important;
+    line-height: 1 !important;
+  }
+  
+  /* 필살기 버튼 특수 처리 */
+  .action-button-ultimate {
+    height: 45px !important; /* 필살기도 같은 높이 */
+  }
+  
+  .action-button-ultimate .action-icon {
+    font-size: 1.1rem !important;
+  }
+  
+  /* 쿨다운 오버레이 폰트 */
+  .cooldown-overlay span {
+    font-size: 1.5rem !important;
+  }
+  
+  /* ===== 적 HP 바 초슬림화 ===== */
+  .battle-enemy-status {
+    transform: scale(1) !important; /* scale 제거 */
+    top: 5px !important; /* 최상단 밀착 */
+    padding: 0.4rem 0.6rem !important; /* 패딩 축소 */
+    width: 320px !important;
+  }
+  
+  .battle-enemy-status .text-xs {
+    font-size: 0.65rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .battle-enemy-status .h-3 {
+    height: 0.5rem !important; /* HP 바 두께 얇게 */
+  }
+  
+  /* ===== 좌우측 패널 밀착 및 Safe Area 대응 ===== */
+  .battle-turn-order-bar {
+    transform: scale(0.65) !important;
+    top: 5px !important;
+    left: max(0.25rem, env(safe-area-inset-left)) !important; /* Safe area 대응 */
+  }
+  
+  .battle-turn-order-panel {
+    transform: scale(0.6) !important; /* 30% 추가 축소 */
+    top: 2.5rem !important;
+    right: max(0.25rem, env(safe-area-inset-right)) !important; /* Safe area 대응 */
+    width: 60px !important;
+    max-height: 250px !important;
+  }
+  
+  .battle-turn-order-panel .timeline-item {
+    margin-bottom: 4px !important;
+  }
+  
+  .battle-turn-order-panel .timeline-avatar {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .battle-turn-order-panel .text-\[9px\] {
+    font-size: 7px !important;
+  }
+  
+  /* 미션 배너 축소 */
+  .battle-mission-banner {
+    transform: scale(0.65) !important;
+    top: 2.5rem !important;
+    left: max(0.25rem, env(safe-area-inset-left)) !important;
+  }
+  
+  /* 일시정지 버튼 축소 */
+  .pause-toggle {
+    transform: scale(0.65) !important;
+    top: 5px !important;
+    right: max(0.25rem, env(safe-area-inset-right)) !important;
+  }
+  
+  /* astro-panel 전역 패딩 축소 */
+  .astro-panel {
+    padding: 0.4rem 0.6rem !important;
+  }
+  
+  /* 게임 컨테이너 최대 활용 */
+  #phaser-game {
+    max-height: 70vh !important; /* 중앙 게임 영역 확보 */
+  }
+  
+  /* 컨트롤 덱 전체 간격 축소 */
+  .control-deck > * {
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .control-deck .flex.gap-4 {
+    gap: 0.5rem !important; /* 버튼 간격 축소 */
+  }
+}
+
+/* 초극단적으로 작은 화면 (height < 400px) */
+@media (max-height: 400px) {
+  .battle-control-deck {
+    max-height: 20vh !important;
+  }
+  
+  .action-button {
+    height: 38px !important;
+  }
+  
+  .telescope-gauge {
+    padding: 4px 8px 3px !important;
+  }
+  
+  .telescope-gauge .gauge-track {
+    height: 2px !important;
+  }
+  
+  .battle-turn-order-panel {
+    display: none !important; /* 극단적으로 작으면 턴 순서 숨김 */
+  }
+}
+
+/* ===========================
+   모바일 가로 모드 - PartyScreen & Global
+   =========================== */
+@media (max-height: 600px) and (orientation: landscape) {
+  /* 글로벌 폰트 축소 */
+  body, #root {
+    font-size: 14px !important;
+  }
+  
+  /* PartyScreen 전체 여백 축소 */
+  .flex.flex-col.h-full.relative {
+    font-size: 0.875rem;
+  }
+  
+  /* 헤더 높이 축소 */
+  .flex.items-center.justify-between.p-4.border-b {
+    padding: 0.5rem 1rem !important;
+  }
+  
+  .flex.items-center.justify-between.p-4 h1 {
+    font-size: 1.125rem !important;
+  }
+  
+  /* 메인 그리드 여백 축소 */
+  .flex-1.grid.grid-cols-12.gap-4.p-4 {
+    gap: 0.5rem !important;
+    padding: 0.5rem !important;
+  }
+  
+  /* 3단 레이아웃 비율 조정: 좌측 확대(30%), 중앙 축소(45%), 우측 유지(25%) */
+  .flex-1.grid.grid-cols-12 > div.col-span-3:first-child {
+    grid-column: span 4 / span 4 !important; /* 25% → 33% (3칸) → 실제로는 30% 효과 */
+  }
+  
+  .flex-1.grid.grid-cols-12 > div.col-span-6 {
+    grid-column: span 5 / span 5 !important; /* 50% → 45% 효과 */
+  }
+  
+  .flex-1.grid.grid-cols-12 > div.col-span-3:last-child {
+    grid-column: span 3 / span 3 !important; /* 25% 유지 */
+  }
+  
+  /* 명단 섹션 헤더 축소 */
+  .px-4.py-3.bg-cyan-950\/30 {
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  .px-4.py-3 h2 {
+    font-size: 0.75rem !important;
+  }
+  
+  /* 슬롯 그리드 축소 */
+  .grid.grid-cols-4.gap-4 {
+    transform: scale(0.85);
+    transform-origin: top center;
+    gap: 0.5rem !important;
+  }
+  
+  /* 캐릭터 카드 텍스트 최적화 */
+  .grid.grid-cols-4 .text-lg {
+    font-size: 14px !important; /* 이름은 14px로 충분히 크게 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600; /* 이름 강조 */
+  }
+  
+  /* 모바일에서 역할명(Role) 숨기기 */
+  .grid.grid-cols-4 .text-xs {
+    font-size: 0.65rem !important;
+    display: none !important; /* 모바일에서는 직업명 숨김 */
+  }
+  
+  /* 하단 액션 바 축소 */
+  .p-4.bg-slate-950\/80.backdrop-blur-sm.border-t {
+    padding: 0.5rem !important;
+    position: sticky;
+    bottom: 0;
+  }
+  
+  .p-4.bg-slate-950\/80 button {
+    height: 48px !important;
+    padding: 0 !important;
+    font-size: 0.875rem !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* 더 작은 화면 (500px 이하) */
+@media (max-height: 500px) and (orientation: landscape) {
+  .flex-1.grid.grid-cols-12.gap-4.p-4 {
+    padding: 0.25rem !important;
+  }
+  
+  .grid.grid-cols-4.gap-4 {
+    transform: scale(0.75);
+  }
+  
+  .p-4.bg-slate-950\/80 button {
+    height: 42px !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+/* ===========================
+   모바일 가로 모드 - BattleScreen ControlDeck 초박형
+   =========================== */
+@media (max-height: 600px) and (orientation: landscape) {
+  /* 컨트롤 덱: 절대 중앙 정렬 */
+  .battle-control-deck {
+    position: fixed !important;
+    bottom: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) scale(0.9) !important;
+    width: 95vw !important;
+    background: rgba(0, 0, 0, 0.15) !important;
+    backdrop-filter: blur(8px) !important;
+    padding: 0.4rem 0.6rem !important;
+    border: 1px solid rgba(107, 220, 255, 0.15) !important;
+    max-height: none !important;
+  }
+  
+  .battle-control-deck .astro-panel {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  
+  /* 게이지 축소 */
+  .telescope-gauge {
+    margin-bottom: 0.5rem !important;
+    padding: 4px 10px !important;
+  }
+  
+  .telescope-gauge .gauge-track {
+    height: 3px !important;
+  }
+  
+  .telescope-gauge .gauge-label {
+    font-size: 0.7rem !important;
+    gap: 0.25rem !important;
+  }
+  
+  .telescope-gauge .badge {
+    font-size: 0.65rem !important;
+    padding: 2px 6px !important;
+  }
+  
+  /* 속성 반응 메시지 축소 */
+  .mb-3.px-3.py-2.rounded-lg.border {
+    margin-bottom: 0.5rem !important;
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  /* 액션 버튼 컨테이너 */
+  .battle-actions-wrapper {
+    margin-bottom: 0 !important;
+  }
+  
+  .flex.gap-4.mb-3 {
+    gap: 0.5rem !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    justify-content: center !important; /* 버튼들 중앙 정렬 */
+  }
+  
+  /* 버튼 균등 분할: flex: 1로 1/3씩 차지 */
+  .action-button {
+    height: 46px !important;
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.75rem !important;
+    flex: 1 !important; /* 남은 공간을 정확히 1/3씩 */
+    min-width: 0 !important; /* flex 축소 허용 */
+  }
+  
+  .action-icon {
+    font-size: 1.1rem !important;
+    margin-bottom: 0 !important;
+  }
+  
+  .action-label {
+    font-size: 0.7rem !important;
+    line-height: 1.2 !important;
+  }
+
+  /* 캐릭터 초상화 공통 스타일 */
+  .portrait-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  /* 필살기 버튼 특별 처리 */
+  .action-button-ultimate {
+    padding: 0.3rem 0.5rem !important;
+  }
+  
+  /* 적 턴 메시지 축소 */
+  .text-center.text-sm.text-slate-300\/60.mb-3 {
+    margin-bottom: 0 !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* 더 작은 화면 (500px 이하) - 극단적 축소 */
+@media (max-height: 500px) and (orientation: landscape) {
+  .battle-control-deck {
+    padding: 0.25rem 0.4rem !important;
+    bottom: 10px !important;
+  }
+  
+  .telescope-gauge {
+    padding: 3px 8px !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .telescope-gauge .gauge-track {
+    height: 2px !important;
+  }
+  
+  .telescope-gauge .gauge-label span:first-child {
+    display: none !important; /* "인과율 게이지" 텍스트 숨김 */
+  }
+  
+  .action-button {
+    height: 40px !important;
+    padding: 0.25rem 0.4rem !important;
+  }
+  
+  .action-icon {
+    font-size: 1rem !important;
+  }
+  
+  .action-label {
+    font-size: 0.65rem !important;
+  }
+  
+  /* 속성 반응 메시지 숨김 */
+  .mb-3.px-3.py-2.rounded-lg.border {
+    display: none !important;
+  }
+}
+
+/* 초극단적 작은 화면 (400px 이하) */
+@media (max-height: 400px) and (orientation: landscape) {
+  .battle-control-deck {
+    bottom: 5px !important;
+    padding: 0.2rem !important;
+  }
+  
+  .telescope-gauge {
+    display: none !important; /* 게이지 완전 숨김 */
+  }
+  
+  .action-button {
+    height: 36px !important;
+    padding: 0.2rem 0.3rem !important;
+  }
+  
+  .action-icon {
+    font-size: 0.9rem !important;
+  }
+  
+  .action-label {
+    font-size: 0.6rem !important;
+  }
 }

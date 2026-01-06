@@ -1,420 +1,357 @@
 import React, { useState } from 'react';
-import { ChevronLeft } from 'lucide-react';
-import { ObservationBody } from './observation/ObservationBody';
-import { StarField } from './observation/StarField';
-import { useObservationSelection } from '../hooks/useObservationSelection';
-import './observation/ObservationScreen.css';
+import { ChevronLeft, Lock, AlertTriangle, Swords, Gift } from 'lucide-react';
 import { observations as observationDefs } from '../data/observations';
-import { resolveObservationLayout, OBS_ANIM } from '../utils/screenConfig';
+import { StarField } from './observation/StarField';
+import { ObservationBody } from './observation/ObservationBody';
+import { ElementIcon } from './common/ElementIcon';
+import './ObservationConsole.css';
 
 /**
- * 망원경 관측 화면 (서정적 UI)
- * 어두운 우주 공간에서 망원경으로 관측하는 컨셉
- * 망원경 내부에서만 선명하게 보이는 비네팅 효과
+ * 관측 콘솔 (Observatory Console)
+ * Master-Detail View: 좌측 스테이지 리스트 + 우측 뷰포트
  */
 export const ObservationScreen = ({ setScreen, startBattle, party }) => {
-  // 망원경 줌 상태 관리 (최소: 100, 최대: 400)
-  const [zoom, setZoom] = useState(250);
-  const minZoom = 100;
-  const maxZoom = 400;
-  const zoomStep = 50;
-
-  // 망원경 렌즈 위치 추적 (마우스/터치 따라가기)
-  const [lensOffset, setLensOffset] = useState({ x: 0, y: 0 });
-  const maxLensOffset = 60; // 최대 오프셋 (픽셀) - 더 자연스러운 범위로 조정
-
-  const handleZoomIn = () => {
-    setZoom(prev => Math.min(prev + zoomStep, maxZoom));
-  };
-
-  const handleZoomOut = () => {
-    setZoom(prev => Math.max(prev - zoomStep, minZoom));
-  };
-
-  // 마우스/터치 위치를 추적하여 망원경 렌즈 위치 업데이트
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    
-    // 중심으로부터의 거리 계산 (거리 비율로 오프셋 계산)
-    const deltaX = (mouseX - centerX) / centerX;
-    const deltaY = (mouseY - centerY) / centerY;
-    
-    // 부드러운 이동을 위해 제한된 범위로 오프셋 적용
-    setLensOffset({
-      x: deltaX * maxLensOffset,
-      y: deltaY * maxLensOffset,
-    });
-  };
-
-  // 터치 이벤트 처리
-  const handleTouchMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const touch = e.touches[0];
-    const touchX = touch.clientX - rect.left;
-    const touchY = touch.clientY - rect.top;
-    
-    // 중심으로부터의 거리 비율 계산
-    const deltaX = (touchX - centerX) / centerX;
-    const deltaY = (touchY - centerY) / centerY;
-    
-    setLensOffset({
-      x: deltaX * maxLensOffset,
-      y: deltaY * maxLensOffset,
-    });
-  };
-
-  // 마우스/터치 이탈 시 원래 위치로 복구
-  const handleMouseLeave = () => {
-    setLensOffset({ x: 0, y: 0 });
-  };
-
-  const {
-    selectedObservation,
-    setSelectedObservation,
-    hoveredObservation,
-    setHoveredObservation,
-    rotating,
-    setRotating,
-    partyWarning,
-    setPartyWarning,
-    clearPartyWarning,
-  } = useObservationSelection();
-
+  const [selectedStage, setSelectedStage] = useState(observationDefs[0]);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isDeploying, setIsDeploying] = useState(false);
+  
   const observations = observationDefs;
 
-  const handleObservationSelect = (obs) => {
-    if (selectedObservation?.id === obs.id) {
-      // 재앙 관측의 경우 파티 편성 확인
-      if (obs.id === 'CALAMITY') {
-        const partyChars = party.members.filter((c) => c !== null);
-        if (partyChars.length === 0) {
-          setPartyWarning(true);
-          clearPartyWarning();
-          return;
-        }
-      }
-      
-      // 같은 버튼 재클릭 시 회전 시작
-      setRotating(true);
-      
-      if (obs.id === 'CALAMITY') {
-        // 재앙 관측은 화염룡 전투로 직접 이동
-        startBattle();
-        setTimeout(() => {
-          setScreen('BATTLE');
-        }, 1200);
-      } else {
-        // 다른 관측은 전투 준비 화면 (PARTY)으로 이동
-        setTimeout(() => {
-          setScreen('PARTY');
-        }, 1200);
-      }
+  // 스테이지 선택 핸들러
+  const handleStageSelect = (stage) => {
+    if (selectedStage?.id === stage.id || isTransitioning) return;
+    
+    setIsTransitioning(true);
+    setSelectedStage(stage);
+    
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 600);
+  };
+
+  // 관측 개시 핸들러
+  const handleEngage = () => {
+    if (!selectedStage || isDeploying) return;
+    
+    // 파티 체크 - 최소 1명 이상 필요
+    const partyChars = party.members.filter((c) => c !== null);
+    if (partyChars.length === 0) {
+      alert('최소 1명의 캐릭터가 필요합니다.');
+      return;
+    }
+    
+    // 스테이지별 처리
+    if (selectedStage.id === 'RUIN') {
+      // 자원 관측 → 자원 추출 화면으로
+      setIsDeploying(true);
+      setTimeout(() => {
+        setScreen('EXTRACTION');
+      }, 800);
+    } else if (selectedStage.id === 'CALAMITY') {
+      setIsDeploying(true);
+      startBattle();
+      setTimeout(() => {
+        setScreen('BATTLE');
+      }, 1000);
     } else {
-      // 다른 버튼 클릭 시 선택만 변경
-      setSelectedObservation(obs);
+      setIsDeploying(true);
+      setTimeout(() => {
+        setScreen('PARTY');
+      }, 1000);
     }
   };
 
   return (
-    <div className="min-h-full bg-black relative">
-      {/* 암흑 우주 배경 - 거의 검은색 */}
-      <div className="absolute inset-0 bg-gradient-radial from-slate-950/50 via-black to-black"></div>
-
-      {/* 희미한 별 배경 (망원경 밖의 어두운 우주) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-        <StarField count={100} variant="outside" />
+    <div className="min-h-screen bg-transparent text-white flex relative overflow-hidden">
+      {/* 배경: 암흑 우주 (투명) */}
+      <div className="absolute inset-0 bg-gradient-radial from-slate-950/30 via-transparent to-transparent" />
+      <div className="absolute inset-0 opacity-30 pointer-events-none">
+        <StarField count={200} variant="outside" />
       </div>
 
-      {/* 망원경 비네팅 효과 - 가장자리가 점점 어두워짐 */}
-      <div 
-        className="absolute inset-0 pointer-events-none z-40"
-        style={{
-          background: 'radial-gradient(circle at center, transparent 0%, transparent 28%, rgba(0,0,0,0.3) 42%, rgba(0,0,0,0.7) 57%, rgba(0,0,0,0.95) 72%, black 87%)',
-        }}
-      />
-
-      {/* 망원경 렌즈 테두리 */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-        <div 
-          className="relative"
-          style={{
-            width: 'min(95vw, 90vh)',
-            height: 'min(95vw, 90vh)',
-            background: 'radial-gradient(circle, transparent 48%, rgba(30,41,59,0.8) 50%, rgba(15,23,42,0.95) 52%, transparent 54%)',
-          }}
-        >
-          {/* 망원경 금속 테두리 효과 */}
-          <div className="absolute inset-0 rounded-full" style={{
-            background: 'radial-gradient(circle, transparent 48%, rgba(71,85,105,0.5) 49%, rgba(51,65,85,0.8) 50%, rgba(30,41,59,0.9) 51%, transparent 53%)',
-            boxShadow: 'inset 0 0 60px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5)',
-          }}></div>
-          
-          {/* 망원경 렌즈 반사광 */}
-          <div className="absolute inset-0 rounded-full" style={{
-            background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 20%)',
-          }}></div>
-        </div>
+      {/* 배경 그리드 라인 (더 희미하게) */}
+      <div className="absolute inset-0 opacity-3 pointer-events-none">
+        <svg className="w-full h-full">
+          <defs>
+            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="cyan" strokeWidth="0.5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
       </div>
 
-      {/* 헤더 (망원경 밖의 어두운 영역) */}
-      <div className="absolute top-3 left-3 md:top-8 md:left-8 flex items-center gap-3 md:gap-4 z-50 opacity-70 hover:opacity-100 transition-opacity duration-300">
+      {/* 상단 헤더 - 유리 패널 */}
+      <div className="absolute top-0 left-0 right-0 z-50 px-6 py-4 flex items-center gap-4 border-b border-white/10 backdrop-blur-xl bg-slate-900/40">
         <button
           onClick={() => setScreen('HOME')}
-          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 backdrop-blur-sm border border-white/10"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-100 hover:text-white shadow-[0_0_12px_rgba(255,255,255,0.1)] backdrop-blur-md transition-all duration-300"
         >
-          <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-slate-300" />
+          <ChevronLeft className="w-5 h-5" />
         </button>
-        <div>
-          <h1 className="text-lg md:text-2xl font-bold text-slate-400">
-            우주 망원경
+        <div className="flex-1">
+          <h1 className="text-2xl font-serif font-bold bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 text-transparent tracking-wider">
+            우주 망원경 제어실
           </h1>
-          <p className="text-[10px] md:text-xs text-slate-500 mt-0.5">관측 대기 중...</p>
+          <p className="text-xs text-slate-400 mt-0.5 tracking-widest font-mono">DEEP SPACE OBSERVATION SYSTEM</p>
+        </div>
+        <div className="text-right">
+          <div className="text-xs text-cyan-400/60 tracking-wider font-mono">STATUS</div>
+          <div className="text-sm text-green-400 font-bold font-mono">● OPERATIONAL</div>
         </div>
       </div>
 
-      {/* 망원경 뷰포트 중앙 컨텐츠 */}
-      <div 
-        className="absolute inset-0 flex items-center justify-center z-30"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleMouseLeave}
-      >
-        {/* 망원경 뷰포트 - 중앙 원형 영역 (줌에 따라 크기 변경, 마우스/터치 위치에 따라 이동) */}
-        <div 
-          className="relative transition-all duration-300"
-          style={{
-            width: `calc(min(82vw, 75vh) * ${zoom / 250})`,
-            height: `calc(min(82vw, 75vh) * ${zoom / 250})`,
-            transform: `translate(${lensOffset.x}px, ${lensOffset.y}px)`,
-          }}
-        >
-          {/* 망원경 내부 - 우주 공간 (선명하게 보이는 영역) */}
-          <div className="absolute inset-0 rounded-full overflow-hidden">
-            {/* 깊은 우주 배경 그라디언트 */}
-            <div className="absolute inset-0 bg-gradient-radial from-indigo-950/80 via-slate-950 to-black"></div>
-200 ease-out
-            {/* 망원경 안의 선명한 별들 */}
-            <StarField count={50} variant="inside" />
+      {/* === 좌측: 관측 로그 (Stage List) - 유리 패널 === */}
+      <div className="relative w-[30%] min-w-[320px] pt-20 z-40 border-r border-white/10 bg-slate-900/30 backdrop-blur-md">
+        {/* 패널 헤더 */}
+        <div className="px-4 py-3 border-b border-white/10 bg-gradient-to-r from-slate-900/40 to-transparent relative">
+          <h2 className="text-sm font-bold text-cyan-200 tracking-widest">관측 기록</h2>
+          <p className="text-xs text-slate-400 mt-1 font-mono">Detected Anomalies</p>
+          <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-cyan-400/50 to-transparent"></div>
+        </div>
 
-            {/* 망원경 포커스 그리드 (희미하게) */}
-            <div className="absolute inset-0 opacity-10">
-              <svg className="w-full h-full" viewBox="0 0 400 400">
-                <circle cx="200" cy="200" r="180" fill="none" stroke="currentColor" className="text-cyan-400" strokeWidth="0.5" strokeDasharray="8,8" />
-                <circle cx="200" cy="200" r="120" fill="none" stroke="currentColor" className="text-cyan-400" strokeWidth="0.5" strokeDasharray="8,8" />
-                <circle cx="200" cy="200" r="60" fill="none" stroke="currentColor" className="text-cyan-400" strokeWidth="1" />
-                <line x1="200" y1="0" x2="200" y2="400" stroke="currentColor" className="text-cyan-500" strokeWidth="0.5" opacity="0.3" />
-                <line x1="0" y1="200" x2="400" y2="200" stroke="currentColor" className="text-cyan-500" strokeWidth="0.5" opacity="0.3" />
-              </svg>
-            </div>
+        {/* 스테이지 리스트 */}
+        <div className="overflow-y-auto h-[calc(100vh-140px)] px-4 py-4 space-y-3 custom-scrollbar">
+          {observations.map((stage, index) => {
+            const isSelected = selectedStage?.id === stage.id;
+            const isLocked = false; // TODO: 잠금 로직 추가
+            
+            return (
+              <button
+                key={stage.id}
+                onClick={() => !isLocked && handleStageSelect(stage)}
+                disabled={isLocked}
+                className={`w-full text-left p-4 rounded-lg border transition-all duration-300 relative overflow-hidden backdrop-blur-sm ${
+                  isSelected
+                    ? 'border-cyan-400/50 bg-slate-800/60 shadow-[inset_0_0_15px_rgba(34,211,238,0.15)]'
+                    : isLocked
+                    ? 'border-slate-700/30 bg-slate-950/30 opacity-50 cursor-not-allowed'
+                    : 'border-white/10 bg-slate-900/30 hover:border-cyan-400/40 hover:bg-slate-800/40'
+                }`}
+              >
+                {/* 선택된 아이템 - 좌측 표시기 */}
+                {isSelected && (
+                  <div className="absolute left-0 inset-y-0 w-1 bg-gradient-to-b from-cyan-400 via-cyan-400/50 to-transparent rounded-l-lg"></div>
+                )}
+                
+                {/* 잠금 오버레이 */}
+                {isLocked && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <Lock className="w-8 h-8 text-slate-600" />
+                  </div>
+                )}
 
-            {/* 중앙 조준점 */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-              <div className="relative w-8 h-8">
-                <div className="absolute inset-0 rounded-full border border-cyan-400/40"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-cyan-400 rounded-full animate-pulse shadow-lg shadow-cyan-400/80"></div>
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-3 bg-cyan-400/60"></div>
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-px h-3 bg-cyan-400/60"></div>
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-px w-3 bg-cyan-400/60"></div>
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 h-px w-3 bg-cyan-400/60"></div>
-              </div>
-            </div>
-
-            {/* 관측 대상들 (행성/별) */}
-            {observations.map((obs) => {
-              const isSelected = selectedObservation?.id === obs.id;
-              const isHovered = hoveredObservation?.id === obs.id;
-              
-              // 크기 설정
-              const { buttonSize, offset, posX, posY } = resolveObservationLayout(obs);
-
-              return (
-                <div
-                  key={obs.id}
-                  className={`absolute transition-all duration-700 ${
-                    rotating && isSelected ? 'scale-[3] opacity-0' : 'scale-100 opacity-100'
-                  }`}
-                  style={{
-                    left: `calc(50% + ${posX}px - ${offset}px)`,
-                    top: `calc(50% + ${posY}px - ${offset}px)`,
-                  }}
-                >
-                  <button
-                    aria-label={obs.name}
-                    aria-disabled={rotating}
-                    onClick={() => handleObservationSelect(obs)}
-                    onMouseEnter={() => !rotating && setHoveredObservation(obs)}
-                    onMouseLeave={() => setHoveredObservation(null)}
-                    disabled={rotating}
-                    className={`relative ${buttonSize} transition-all duration-500 disabled:cursor-not-allowed outline-none border-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
-                      isHovered ? `scale-[${OBS_ANIM.hoverScale}]` : 'scale-100'
-                    }`}
-                  >
-                    {/* 외부 글로우 효과 (edge 타입 제외) */}
-                    {obs.size !== 'edge' && (
-                      <div
-                        className={`absolute -inset-8 rounded-full blur-3xl bg-gradient-to-r ${obs.glowColor} transition-all duration-500 ${
-                          isHovered || isSelected ? `opacity-${(OBS_ANIM.glowOpacity * 100).toFixed(0)} scale-${(OBS_ANIM.glowScale * 100).toFixed(0)}` : 'opacity-0 scale-75'
-                        }`}
-                      ></div>
+                <div className="relative z-10">
+                  {/* 섹터 번호 */}
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-cyan-400/70 tracking-widest">
+                      SECTOR {String(index + 1).padStart(2, '0')}
+                    </span>
+                    {isSelected && (
+                      <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-lg shadow-cyan-400/80" />
                     )}
+                  </div>
 
-                    {/* 호버 시 궤도 링 (edge 타입 제외) */}
-                    {isHovered && obs.size !== 'edge' && (
-                      <div 
-                        className="absolute -inset-6 rounded-full border border-dashed opacity-40 animate-spin" 
-                        style={{ 
-                          borderColor: obs.color.split(' ')[1].replace('to-', ''),
-                          animationDuration: `${OBS_ANIM.orbitSpinSec}s`,
-                        }}
-                      ></div>
-                    )}
+                  {/* 재앙 명칭 */}
+                  <h3 className={`text-lg font-bold mb-1 ${stage.textColor}`}>
+                    {stage.name}
+                  </h3>
 
-                    {/* 행성/별 본체 렌더링 */}
-                    <ObservationBody obs={obs} isHovered={isHovered} />
+                  {/* 짧은 설명 */}
+                  <p className="text-xs text-slate-400 mb-2 line-clamp-2">
+                    {stage.description}
+                  </p>
 
-                    {/* 펄스 효과 (호버 시) */}
-                    {isHovered && (
-                      <div 
-                        className={`absolute inset-0 rounded-full bg-gradient-to-r ${obs.color} opacity-30`}
-                        style={{
-                          animation: `ping ${OBS_ANIM.pingDurationSec}s cubic-bezier(0, 0, 0.2, 1) infinite`,
-                        }}
-                      ></div>
-                    )}
-                  </button>
+                  {/* 위험도 */}
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                    <span className="text-xs text-slate-300 font-semibold">
+                      위험도: {stage.level}
+                    </span>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
 
-          {/* 망원경 렌즈 내부 테두리 빛 반사 */}
-          <div 
-            className="absolute inset-0 rounded-full pointer-events-none"
-            style={{
-              background: 'radial-gradient(circle at 25% 25%, rgba(255,255,255,0.08) 0%, transparent 30%)',
-            }}
-          ></div>
+                {/* 하단 액센트 라인 */}
+                {isSelected && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* 좌측 정보 패널 (망원경 밖의 어두운 영역) */}
-      <div className="absolute left-8 top-1/2 -translate-y-1/2 w-full max-w-sm px-4 z-50">
-        {partyWarning ? (
+      {/* === 우측: 뷰포트 (Main Viewport) === */}
+      <div className="flex-1 relative pt-20 flex flex-col">
+        {/* 망원경 렌즈 영역 */}
+        <div className="flex-1 flex items-center justify-center relative">
+          {/* 중앙 원형 렌즈 */}
           <div 
-            className="p-6 rounded-xl backdrop-blur-md border transition-all duration-500 transform animate-pulse"
+            className={`relative transition-all duration-700 ease-out ${
+              isTransitioning ? 'scale-110 rotate-12 opacity-0' : 'scale-100 rotate-0 opacity-100'
+            }`}
             style={{
-              background: 'rgba(127, 29, 29, 0.6)',
-              borderColor: 'rgba(239, 68, 68, 0.6)',
-              boxShadow: '0 0 30px rgba(239, 68, 68, 0.3)',
+              width: 'min(60vw, 60vh)',
+              height: 'min(60vw, 60vh)',
             }}
           >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-700 shadow-lg flex items-center justify-center flex-shrink-0">
-                <span className="text-2xl">⚠️</span>
+            {/* 외부 링 프레임 */}
+            <div className="absolute inset-0 rounded-full border-4 border-cyan-500/30 shadow-2xl shadow-cyan-500/20" />
+            <div className="absolute -inset-2 rounded-full border border-cyan-400/20" />
+            
+            {/* 렌즈 내부 */}
+            <div className="absolute inset-4 rounded-full overflow-hidden bg-gradient-radial from-indigo-950/80 via-slate-950 to-black shadow-inner">
+              {/* 배경 별 */}
+              <StarField count={80} variant="inside" />
+              
+              {/* 포커스 그리드 */}
+              <div className="absolute inset-0 opacity-20">
+                <svg className="w-full h-full" viewBox="0 0 400 400">
+                  <circle cx="200" cy="200" r="180" fill="none" stroke="currentColor" className="text-cyan-400" strokeWidth="0.5" strokeDasharray="8,8" />
+                  <circle cx="200" cy="200" r="120" fill="none" stroke="currentColor" className="text-cyan-400" strokeWidth="0.5" strokeDasharray="8,8" />
+                  <circle cx="200" cy="200" r="60" fill="none" stroke="currentColor" className="text-cyan-400" strokeWidth="1" />
+                  <line x1="200" y1="0" x2="200" y2="400" stroke="currentColor" className="text-cyan-500" strokeWidth="0.5" opacity="0.3" />
+                  <line x1="0" y1="200" x2="400" y2="200" stroke="currentColor" className="text-cyan-500" strokeWidth="0.5" opacity="0.3" />
+                </svg>
               </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-red-200">
-                  경고
-                </h3>
+
+              {/* 중앙 조준점 */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                <div className="relative w-8 h-8">
+                  <div className="absolute inset-0 rounded-full border border-cyan-400/40" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-cyan-400 rounded-full animate-pulse shadow-lg shadow-cyan-400/80" />
+                </div>
               </div>
+
+              {/* 선택된 스테이지 비주얼 */}
+              {selectedStage && (
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                  <div className={`transition-all duration-500 ${
+                    isTransitioning ? 'scale-50 opacity-0 rotate-180' : 'scale-100 opacity-100 rotate-0'
+                  }`}>
+                    {/* 외부 글로우 */}
+                    <div className={`absolute -inset-16 rounded-full blur-3xl bg-gradient-to-r ${selectedStage.glowColor} opacity-60`} />
+                    
+                    {/* 행성/별 본체 */}
+                    <div className="relative">
+                      <ObservationBody obs={selectedStage} isHovered={false} />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-            <p className="text-base text-red-100 leading-relaxed font-semibold">
-              파티 편성이 필요합니다.
-            </p>
-            <p className="text-sm text-red-200 mt-2 opacity-80">
-              전투에 참여할 캐릭터를 파티에 배치해주세요.
-            </p>
+
+            {/* 렌즈 반사광 효과 */}
+            <div 
+              className="absolute inset-0 rounded-full pointer-events-none"
+              style={{
+                background: 'radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 0%, transparent 40%)',
+              }}
+            />
           </div>
-        ) : selectedObservation ? (
-          <div 
-            className="p-4 rounded-xl backdrop-blur-md border transition-all duration-500 transform"
-            style={{
-              background: 'rgba(15, 23, 42, 0.6)',
-              borderColor: 'rgba(71, 85, 105, 0.4)',
-            }}
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${selectedObservation.color} shadow-lg flex-shrink-0`}></div>
-              <div className="flex-1">
-                <h3 className={`text-lg font-bold ${selectedObservation.textColor}`}>
-                  {selectedObservation.name}
-                </h3>
-                <p className="text-xs text-slate-400">난이도: {selectedObservation.level}</p>
+
+          {/* 스캔 라인 효과 */}
+          <div className="absolute inset-0 pointer-events-none opacity-10">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-400/10 to-transparent animate-scan" />
+          </div>
+        </div>
+
+        {/* 하단 정보 패널 - 유리 패널 */}
+        {selectedStage && (
+          <div className="relative z-40 px-8 pb-8 pt-6 border-t border-white/10 bg-slate-900/60 backdrop-blur-xl">
+            {/* 상단 스캔라인 장식 */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+            <div className="max-w-6xl mx-auto grid grid-cols-3 gap-6">
+              {/* 좌: 위협 정보 */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-cyan-300 mb-2">
+                  <Swords className="w-4 h-4" />
+                  <h3 className="text-sm font-bold tracking-wider font-mono">관측 데이터</h3>
+                </div>
+                <div className="pl-6 space-y-2 text-xs text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 rounded-full bg-cyan-400" />
+                    <span>Classification: <span className={selectedStage.textColor}>{selectedStage.shortName}</span></span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 rounded-full bg-yellow-400" />
+                    <span>Danger Level: {selectedStage.level}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 rounded-full bg-green-400" />
+                    <span>Status: Active</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 중앙: 속성 정보 */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-cyan-300 mb-2">
+                  <div className="w-4 h-4 rounded-full border-2 border-cyan-400" />
+                  <h3 className="text-sm font-bold tracking-wider font-mono">주요 속성</h3>
+                </div>
+                <div className="pl-6 flex items-center gap-2">
+                  <ElementIcon element="FIRE" size={20} />
+                  <ElementIcon element="WATER" size={20} />
+                  <ElementIcon element="WIND" size={20} />
+                  <span className="text-xs text-slate-400 ml-2">Multiple elements detected</span>
+                </div>
+              </div>
+
+              {/* 우: 보상 정보 */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-cyan-300 mb-2">
+                  <Gift className="w-4 h-4" />
+                  <h3 className="text-sm font-bold tracking-wider font-mono">획득 보상</h3>
+                </div>
+                <div className="pl-6 space-y-2 text-xs text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <span>⭐</span>
+                    <span>Star Fragments x5-10</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span>💎</span>
+                    <span>Stellar Dust x100-200</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <p className="text-sm text-slate-300 leading-relaxed mb-3">
-              {selectedObservation.description}
-            </p>
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${selectedObservation.color} animate-pulse`}></div>
-              관측 데이터 수집 중...
+
+            {/* 관측 개시 버튼 - 네온 캡슐 스타일 */}
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={handleEngage}
+                disabled={isDeploying}
+                className={`px-8 py-4 rounded-full font-bold text-lg tracking-widest transition-all duration-300 border font-serif ${
+                  isDeploying
+                    ? 'bg-slate-800/50 text-slate-500 cursor-not-allowed border-slate-700'
+                    : 'bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] hover:bg-cyan-500/30 transform hover:scale-105'
+                }`}
+              >
+                {isDeploying ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+                    배치 중...
+                  </span>
+                ) : (
+                  '► 관측 개시'
+                )}
+              </button>
             </div>
-          </div>
-        ) : (
-          <div 
-            className="p-4 rounded-xl backdrop-blur-md border text-center"
-            style={{
-              background: 'rgba(15, 23, 42, 0.4)',
-              borderColor: 'rgba(71, 85, 105, 0.3)',
-            }}
-          >
-            <p className="text-sm text-slate-400">
-              🔭 관측할 천체를 선택하세요
-            </p>
           </div>
         )}
       </div>
 
-      {/* 망원경 조절 UI (좌하단) */}
-      <div className="absolute bottom-8 left-8 z-50 hidden md:flex flex-col gap-3 opacity-40 hover:opacity-80 transition-opacity duration-300">
-        <button
-          onClick={handleZoomIn}
-          disabled={zoom >= maxZoom}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-slate-400 cursor-pointer transition-all hover:text-slate-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            background: 'rgba(30, 41, 59, 0.6)',
-            border: '1px solid rgba(71, 85, 105, 0.4)',
-          }}
-        >
-          +
-        </button>
-        <button
-          onClick={handleZoomOut}
-          disabled={zoom <= minZoom}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-slate-400 cursor-pointer transition-all hover:text-slate-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            background: 'rgba(30, 41, 59, 0.6)',
-            border: '1px solid rgba(71, 85, 105, 0.4)',
-          }}
-        >
-          −
-        </button>
-      </div>
-
-      {/* 망원경 정보 (우하단) */}
-      <div className="absolute bottom-8 right-8 z-50 hidden md:block opacity-40 hover:opacity-80 transition-opacity duration-300">
-        <div 
-          className="px-4 py-2 rounded-lg text-xs text-slate-400"
-          style={{
-            background: 'rgba(30, 41, 59, 0.6)',
-            border: '1px solid rgba(71, 85, 105, 0.4)',
-          }}
-        >
-          <p>배율: x{zoom}</p>
-          <p className="mt-1">초점: AUTO</p>
+      {/* 배포 중 전체 오버레이 */}
+      {isDeploying && (
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <div className="w-20 h-20 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto" />
+            <div className="text-2xl font-bold text-cyan-400 tracking-widest">관측 시작</div>
+            <div className="text-sm text-slate-400">전투 시스템 준비 중...</div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
-
-

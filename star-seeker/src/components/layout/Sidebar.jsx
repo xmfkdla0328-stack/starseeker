@@ -46,14 +46,6 @@ export const Sidebar = ({ screen, setScreen }) => {
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent"></div>
       <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-cyan-500/20 to-transparent"></div>
       
-      {/* 상단 장식 - 망원경 렌즈 느낌 (홈 화면에서만) */}
-      {screen === 'HOME' && (
-        <div className="w-10 h-10 lg:w-12 lg:h-12 mb-2 lg:mb-4 rounded-full border-2 border-cyan-500/30 flex items-center justify-center relative group">
-          <div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full border border-cyan-400/40 bg-gradient-to-br from-cyan-500/10 to-blue-600/10"></div>
-          <div className="absolute inset-0 rounded-full bg-cyan-400/5 animate-pulse"></div>
-        </div>
-      )}
-      
       <NavItem id="PARTY" icon={Users} label="편성" />
       <NavItem id="CODEX" icon={Book} label="관리" />
       <NavItem id="GARDEN" icon={Sprout} label="정원" />
@@ -63,8 +55,8 @@ export const Sidebar = ({ screen, setScreen }) => {
       {/* 하단 장식 */}
       <div className="mt-auto pt-4 flex flex-col gap-1 items-center">
         <div className="w-1 h-1 bg-cyan-400/40 rounded-full animate-pulse"></div>
-        <div className="w-1 h-1 bg-cyan-400/30 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-        <div className="w-1 h-1 bg-cyan-400/20 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="w-1 h-1 bg-cyan-400/30 rounded-full animate-pulse" style={{ '--animation-delay': '0.5s' }}></div>
+        <div className="w-1 h-1 bg-cyan-400/20 rounded-full animate-pulse" style={{ '--animation-delay': '1s' }}></div>
       </div>
     </nav>
   );

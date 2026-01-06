@@ -38,8 +38,8 @@ export const CharacterSkillsList = ({ charData, getSkillInfo, ultLevel = 0 }) =>
   
   return (
     <div>
-      <h3 className="text-yellow-100 font-bold mb-3 text-sm flex items-center gap-2">
-        <Sparkles size={14} /> 보유 스킬
+      <h3 className="text-cyan-200 font-bold mb-3 text-sm flex items-center gap-2 drop-shadow-md">
+        <Sparkles size={14} className="text-cyan-400" /> 보유 스킬
       </h3>
       <div className="space-y-4">
         {/* 액티브 스킬 */}
@@ -54,6 +54,7 @@ export const CharacterSkillsList = ({ charData, getSkillInfo, ultLevel = 0 }) =>
               accentClass="text-slate-200"
               level={charData.skillLevels?.normal || 1}
               isAttributeAttack={skillDetails.normal?.isAttributeAttack || false}
+              element={charData.element}
             />
           )}
           {charData.skills?.skill && (
@@ -64,7 +65,10 @@ export const CharacterSkillsList = ({ charData, getSkillInfo, ultLevel = 0 }) =>
               cooldown={getSkillInfo('skill').cooldown}
               colorClass="bg-blue-500 text-blue-300 border-blue-500"
               accentClass="text-blue-200"
-              level={charData.skillLevels?.skill || 1}              isAttributeAttack={skillDetails.skill?.isAttributeAttack || false}            />
+              level={charData.skillLevels?.skill || 1}
+              isAttributeAttack={skillDetails.skill?.isAttributeAttack || false}
+              element={charData.element}
+            />
           )}
           {charData.skills?.ultimate && (
             <SkillBlock
@@ -79,6 +83,7 @@ export const CharacterSkillsList = ({ charData, getSkillInfo, ultLevel = 0 }) =>
               isUltimate={true}
               ultLevel={ultLevel}
               isAttributeAttack={skillDetails.ultimate?.isAttributeAttack || false}
+              element={charData.element}
             />
           )}
         </div>

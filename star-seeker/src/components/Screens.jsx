@@ -8,4 +8,6 @@ export { GardenScreen } from './GardenScreen';
 export { CodexScreen } from './CodexScreen';
 export { InventoryScreen } from './InventoryScreen';
 export { ObservationScreen } from './ObservationScreen';
+export { ExtractionScreen } from './ExtractionScreen';
 export { BattleScreen } from './BattleScreen';
+export { ProfileScreen } from './ProfileScreen';

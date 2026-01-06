@@ -19,17 +19,29 @@ import SoundManager from '../../utils/audio/SoundManager';
  *   handleEnemyAttackResult?: Function,
  * }} props - 전투 데이터 및 콜백
  */
-const PhaserGame = ({ partyData, enemyData, missionType = 'CHAOS', battleTurn = 'PLAYER', activeTurn = null, isPaused = false, handleAttackResult, handleEnemyAttackResult }) => {
+const PhaserGame = ({
+  partyData,
+  enemyData,
+  missionType = 'CHAOS',
+  battleTurn = 'PLAYER',
+  activeTurn = null,
+  isPaused = false,
+  handleAttackResult,
+  handleEnemyAttackResult,
+  resumeTurn,
+}) => {
   const gameRef = useRef(null);
   const containerRef = useRef(null);
   const handlerRef = useRef(handleAttackResult);
   const enemyHandlerRef = useRef(handleEnemyAttackResult);
+  const resumeTurnRef = useRef(resumeTurn);
 
   // 최신 콜백을 유지
   useEffect(() => {
     handlerRef.current = handleAttackResult;
     enemyHandlerRef.current = handleEnemyAttackResult;
-  }, [handleAttackResult, handleEnemyAttackResult]);
+    resumeTurnRef.current = resumeTurn;
+  }, [handleAttackResult, handleEnemyAttackResult, resumeTurn]);
 
   useEffect(() => {
     // 게임 인스턴스가 이미 생성되었으면 정리
@@ -57,17 +69,25 @@ const PhaserGame = ({ partyData, enemyData, missionType = 'CHAOS', battleTurn = 
       type: Phaser.AUTO,
       width: width,
       height: height,
-      parent: 'phaser-game',
+      parent: 'phaser-container',
       transparent: true, // 배경색 투명
       render: {
         pixelArt: false,
         antialias: true,
       },
+      physics: {
+        default: 'arcade',
+        arcade: {
+          gravity: { y: 0 },
+          debug: false
+        }
+      },
       scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.RESIZE,
+        parent: 'phaser-container',
+        width: '100%',
+        height: '100%',
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        fullscreenTarget: 'parent',
-        expandParent: true,
       },
       scene: [Preloader, BattleScene],
     };
@@ -91,19 +111,42 @@ const PhaserGame = ({ partyData, enemyData, missionType = 'CHAOS', battleTurn = 
           enemyHandlerRef.current(data);
         }
       },
+      resumeTurn: () => {
+        if (resumeTurnRef.current) {
+          resumeTurnRef.current();
+        }
+      },
     });
 
-    // 공격 완료 이벤트 리스너 등록
+    // 공격 완료 이벤트 리스너 등록 (기존 리스너 제거 + cleanup)
     const onAttackComplete = (data) => {
       if (handlerRef.current) {
         handlerRef.current(data);
       }
+      // 애니메이션 완료 후 턴 진행 (짧은 딜레이 추가)
+      setTimeout(() => {
+        if (resumeTurnRef.current) {
+          resumeTurnRef.current();
+        }
+      }, 300);
     };
     const onEnemyAttackComplete = (data) => {
       if (enemyHandlerRef.current) {
         enemyHandlerRef.current(data);
       }
+      // 애니메이션 완료 후 턴 진행 (짧은 딜레이 추가)
+      setTimeout(() => {
+        if (resumeTurnRef.current) {
+          resumeTurnRef.current();
+        }
+      }, 300);
     };
+    
+    // 1. 기존 리스너 제거 (안전장치: 중복 방지)
+    game.events.removeAllListeners('attack-complete');
+    game.events.removeAllListeners('enemy-attack-complete');
+
+    // 2. 리스너 등록
     game.events.on('attack-complete', onAttackComplete);
     game.events.on('enemy-attack-complete', onEnemyAttackComplete);
 
@@ -122,6 +165,7 @@ const PhaserGame = ({ partyData, enemyData, missionType = 'CHAOS', battleTurn = 
 
     // 정리 함수
     return () => {
+      // 3. 클린업 (컴포넌트 언마운트 시 리스너 제거)
       if (gameRef.current) {
         gameRef.current.events?.off('attack-complete', onAttackComplete);
         gameRef.current.events?.off('enemy-attack-complete', onEnemyAttackComplete);
@@ -133,7 +177,8 @@ const PhaserGame = ({ partyData, enemyData, missionType = 'CHAOS', battleTurn = 
         gameRef.current = null;
       }
     };
-  }, [partyData, enemyData, missionType]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 빈 배열로 변경하여 한 번만 마운트
 
   // 턴 상태 전달 및 적 턴 트리거
   useEffect(() => {
@@ -205,13 +250,16 @@ const PhaserGame = ({ partyData, enemyData, missionType = 'CHAOS', battleTurn = 
   return (
     <div
       ref={containerRef}
-      id="phaser-game"
+      id="phaser-container"
       style={{
         width: '100%',
         height: '100%',
+        margin: 0,
+        padding: 0,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        overflow: 'hidden',
       }}
     />
   );
@@ -236,6 +284,7 @@ PhaserGame.propTypes = {
   isPaused: PropTypes.bool,
   handleAttackResult: PropTypes.func,
   handleEnemyAttackResult: PropTypes.func,
+  resumeTurn: PropTypes.func,
 };
 
 export default PhaserGame;

@@ -37,7 +37,7 @@ const UltimateGauge = ({ sp = 0, maxSp = 100, isReady = false }) => {
       
       particle.style.setProperty('--tx', `${x}px`);
       particle.style.setProperty('--ty', `${y}px`);
-      particle.style.animationDelay = `${i * 0.05}s`;
+      particle.style.setProperty('--animation-delay', `${i * 0.05}s`);
       
       container.appendChild(particle);
     }

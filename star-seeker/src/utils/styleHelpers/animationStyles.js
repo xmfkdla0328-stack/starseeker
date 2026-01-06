@@ -9,5 +9,5 @@
  * @returns {Object} 스타일 객체
  */
 export const getAnimationDelay = (index, delayPerItem = 0.2) => {
-  return { animationDelay: `${index * delayPerItem}s` };
+  return { '--animation-delay': `${index * delayPerItem}s` };
 };

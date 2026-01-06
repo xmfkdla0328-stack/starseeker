@@ -9,7 +9,7 @@ export const MissionButton = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="group relative px-6 py-3 bg-white/10 border border-cyan-400/30 text-cyan-300 font-mono rounded overflow-hidden hover:border-cyan-400/60 hover:bg-white/15 transition-all duration-300 shadow-[0_0_20px_rgba(34,211,238,0.15)] hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] backdrop-blur-md"
+      className="group relative px-8 py-3 bg-slate-900/80 text-cyan-100 font-mono font-bold tracking-[0.18em] rounded-xl border border-cyan-500/40 overflow-hidden shadow-[0_0_15px_rgba(34,211,238,0.12)] hover:shadow-[0_0_22px_rgba(34,211,238,0.25)] hover:-translate-y-0.5 transition-all duration-300 backdrop-blur-lg"
     >
       {/* 터미널 스캔 라인 */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-400/5 to-transparent animate-scan"></div>

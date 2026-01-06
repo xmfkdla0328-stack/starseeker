@@ -31,10 +31,10 @@ export const LevelCapDisplay = ({ charData, items, onBreakthrough }) => {
   const elementInfo = ELEMENTS[charData.element];
 
   return (
-    <div className={`border rounded-lg p-4 ${
+    <div className={`border rounded-lg p-4 backdrop-blur-sm ${
       isLevelCapped 
-        ? 'bg-gradient-to-r from-orange-500/10 to-red-500/10 border-orange-400/30' 
-        : 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-400/20'
+        ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20 border-orange-400/40' 
+        : 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-400/40'
     }`}>
       <div className="space-y-3">
         {/* 레벨 캡 정보 */}
@@ -49,10 +49,7 @@ export const LevelCapDisplay = ({ charData, items, onBreakthrough }) => {
               {isLevelCapped ? '레벨 한계 도달' : '돌파 가능'}
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400">최대 레벨</span>
-            <span className="text-lg font-bold text-slate-200">{maxLevel}</span>
-          </div>
+          <div className="flex items-center gap-2 text-lg font-bold text-slate-200">(Max {maxLevel})</div>
         </div>
 
         {/* 돌파 단계 표시 */}

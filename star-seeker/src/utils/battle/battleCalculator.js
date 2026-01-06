@@ -19,12 +19,18 @@ export function calculatePlayerAttack(attacker, enemyData, skillType, missionTyp
   };
 
   // 속성 부착/소모 처리 (반응 로직 유지)
+  // 속성 부착력이 있는 경우에만 처리
   if (result.elementalPotency > 0) {
-    if (result.reactionType && result.reactionType !== 'null') {
+    if (result.reactionType && result.reactionType !== null && result.reactionType !== 'null') {
+      // 반응 발생 시: 현재 부착된 속성 소비 (현상 일어남)
       nextEnemy.currentElement = null;
-    } else {
+      console.log(`[속성 반응] ${result.reactionType} 현상 발생 → 적 속성 초기화`);
+    } else if (targetElement === null || targetElement === undefined) {
+      // 반응 미발생 + 적에게 부착된 속성이 없을 때만 새 속성 부여
       nextEnemy.currentElement = attacker.element;
+      console.log(`[속성 부여] ${attacker.element} 속성을 적에게 부여`);
     }
+    // else: 반응 미발생 + 적이 이미 다른 속성을 가진 상태 → 변화 없음
   }
 
   return { result, updatedEnemy: nextEnemy };

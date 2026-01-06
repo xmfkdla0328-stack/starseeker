@@ -1,31 +1,32 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PhaserGame from './battle/PhaserGame';
 import { checkBattleResult, BattleResult } from '../utils/battle/battleUtils';
 import { MISSION_TYPES } from '../constants/battle';
-/** @typedef {import('../constants/battle').MissionType} MissionType */
+import { REACTION_NAMES, BATTLE_TIMING } from '../constants/battleConstants';
 import SoundManager, { AUDIO_KEYS } from '../utils/audio/SoundManager';
+
+// Context
+import { useUI, usePlayer } from '../context/useGameContext';
+
+// UI 컴포넌트
 import TurnOrderPanel from './battle/sub/TurnOrderPanel';
 import ControlDeck from './battle/sub/ControlDeck';
 import MissionBanner from './battle/sub/MissionBanner';
 import EnemyStatusBar from './battle/sub/EnemyStatusBar';
-import { calculateEnergyGain } from '../utils/battle/battleCalculator';
-import { CHARACTER_SKILLS } from '../data/characters/skillData';
+import TurnIndicator from './battle/ui/TurnIndicator';
+import PauseButton from './battle/ui/PauseButton';
+import PauseMenu from './battle/ui/PauseMenu';
+import BattleResultModal from './battle/ui/BattleResultModal';
+
+// 커스텀 훅
+import { useTurnSystem } from '../hooks/useTurnSystem';
+import { useBattleAction } from '../hooks/useBattleAction';
 
 /**
  * 속성 반응 타입을 한글 이름으로 변환
  */
 const getReactionName = (reactionType) => {
-  const reactionNames = {
-    FUSION: '융합',
-    THERMAL_SHOCK: '열충격',
-    PLASMA: '플라즈마',
-    ABSOLUTE_ZERO: '절대영도',
-    OVERLOAD: '과부하',
-    BLACK_HOLE: '블랙홀',
-    PARADOX_TRIGGER: '패러독스 트리거 ⚡',
-    AXIOM_TRIGGER: '공리 트리거 ✨',
-  };
-  return reactionNames[reactionType] || reactionType;
+  return REACTION_NAMES[reactionType] || reactionType;
 };
 
 /**
@@ -35,21 +36,24 @@ const getReactionName = (reactionType) => {
  * @param {{
  *  partyData: any[],
  *  enemyData: object,
- *  setScreen: (screen: string) => void,
+ *  missionType?: any,
  *  handleAttackResult?: Function,
- *  missionType?: MissionType,
+ *  extractionRewards?: Array,
+ *  onVictory?: Function,
  * }} props
  */
-export const BattleScreen = ({ partyData, enemyData, setScreen, handleAttackResult, missionType = MISSION_TYPES.CHAOS }) => {
-  // 턴 큐 시스템
-  const [turnQueue, setTurnQueue] = useState([]); // 항상 turnQueue[0]이 현재 턴
-  const [partyState, setPartyState] = useState(partyData || []); // 전투 중 HP를 반영할 로컬 파티 상태
-  const [lastResolvedTurnId, setLastResolvedTurnId] = useState(null); // 막 행동을 끝낸 턴 식별자
-  
-  // 쿨타임 감소를 위한 턴 추적 ref
-  const lastCooldownDecrementTurnId = useRef(null);
-  
-  // 전투 상태: 미션 게이지, 적 HP, 마지막 반응 타입
+export const BattleScreen = ({ 
+  partyData, 
+  enemyData, 
+  missionType,
+  handleAttackResult,
+  extractionRewards,
+  onVictory,
+}) => {
+  // Context에서 setScreen과 addExp 가져오기
+  const { setScreen } = useUI();
+  const { addExp } = usePlayer();
+  // 전투 상태
   const [battleStatus, setBattleStatus] = useState({
     missionGauge: 0,
     enemyHp: enemyData?.maxHp || 100,
@@ -61,136 +65,119 @@ export const BattleScreen = ({ partyData, enemyData, setScreen, handleAttackResu
     isEnemyAttacking: false,
   });
 
-  const [battleSession, setBattleSession] = useState(0); // Phaser 재마운트 키
-  const [selectedCharacter, setSelectedCharacter] = useState(null); // 현재 턴 캐릭터 자동 선택
+  const [battleSession, setBattleSession] = useState(0);
   const [isPauseOpen, setIsPauseOpen] = useState(false);
   const [showRetreatConfirm, setShowRetreatConfirm] = useState(false);
+  const [showMissionComplete, setShowMissionComplete] = useState(false);
+  const hasLoggedTurnInit = useRef(false);
+  const lastAdvancedTurnId = useRef(null);
+  const missionCompleteShown = useRef(false);
+  const battleStartTimeRef = useRef(null);
 
-  // 턴 큐 생성기: 아군 + 적을 speed 내림차순으로 정렬해 큐를 만든다.
-  const generateTurnQueue = useMemo(() => (party, enemy) => {
-    const participants = [];
-
-    (party || []).forEach((char, index) => {
-      const member = char || {};
-      participants.push({
-        type: 'party',
-        data: member,
-        index,
-        speed: Number(member.baseSpd ?? member.speed ?? 100),
-        name: member.name || `Ally-${index + 1}`,
-        id: member.id || `party-${index}`,
-      });
-    });
-
-    if (enemy) {
-      participants.push({
-        type: 'enemy',
-        data: enemy,
-        speed: Number(enemy.speed ?? enemy.baseSpd ?? 100),
-        name: enemy.name || 'Enemy',
-        id: enemy.id || 'enemy',
-      });
-    }
-
-    participants.sort((a, b) => {
-      if (b.speed !== a.speed) return b.speed - a.speed;
-      if (a.type === 'party' && b.type === 'enemy') return -1;
-      if (a.type === 'enemy' && b.type === 'party') return 1;
-      return 0;
-    });
-
-    return participants;
-  }, []);
-
-  // 전투 시작 시 턴 큐 생성
   useEffect(() => {
-    // 파티 데이터 초기화: SP, 쿨타임 필드 추가
-    const initializedParty = (partyData || []).map(char => {
-      const skillData = CHARACTER_SKILLS[char.id];
-      const skillCooldown = skillData?.skillDetails?.skill?.cooldown || 3;
+    hasLoggedTurnInit.current = false;
+    lastAdvancedTurnId.current = null;
+    missionCompleteShown.current = false;
+    battleStartTimeRef.current = null;
+  }, [battleSession]);
+
+  // 미션 달성 시각 효과
+  useEffect(() => {
+    if (battleStatus.missionGauge >= 100 && !missionCompleteShown.current && battleStatus.result === BattleResult.NONE) {
+      missionCompleteShown.current = true;
+      setShowMissionComplete(true);
+      SoundManager.playSFX(AUDIO_KEYS.SFX_WIN, { volume: 0.6 });
       
-      return {
-        ...char,
-        sp: char.sp ?? 0,
-        maxSp: char.maxSp ?? 100,
-        currentSkillCooldown: 0, // 전투 시작 시 쿨타임 없음
-        skillMaxCooldown: skillCooldown, // 스킬 최대 쿨타임 저장
-      };
-    });
-    setPartyState(initializedParty);
-    
-    const queue = generateTurnQueue(initializedParty, enemyData);
-    setTurnQueue(queue);
-    const expectedLength = (initializedParty.length || 0) + (enemyData ? 1 : 0);
-    console.log('[BattleScreen] 턴 큐 생성:', queue.map(t => `${t.name}(${t.speed})`), '길이:', queue.length, '예상 길이:', expectedLength);
-    if (queue.length !== expectedLength) {
-      console.warn('[BattleScreen] 턴 큐 길이가 예상과 다릅니다. 입력 데이터를 확인하세요.');
+      setTimeout(() => {
+        setShowMissionComplete(false);
+      }, 2500);
     }
-  }, [partyData, enemyData, battleSession]);
+  }, [battleStatus.missionGauge, battleStatus.result]);
 
+
+  // 턴 시스템 훅
+  const {
+    turnQueue,
+    setTurnQueue,
+    partyState,
+    setPartyState,
+    selectedCharacter,
+    activeTurn,
+    activeCharacter,
+    nextTurn,
+    lastResolvedTurnId,
+    setLastResolvedTurnId,
+      isWaitingAnimation,
+      setIsWaitingAnimation,
+      resumeTurn,
+  } = useTurnSystem(partyData, enemyData, battleSession);
+
+  // 전투 액션 훅
+  const {
+    handleAttackComplete: onAttackComplete,
+    handleEnemyAttackResult: onEnemyAttackResult,
+    triggerSkillSelection,
+  } = useBattleAction({
+    setPartyState,
+    setBattleStatus,
+    setTurnQueue,
+    partyDataLength: partyData?.length || 0,
+    enemyMaxHp: enemyData?.maxHp || 100,
+  });
+
+  // BGM 정리
   useEffect(() => {
-    // Clean up BGM when leaving the battle screen
     return () => {
       SoundManager.stopBGM();
     };
   }, []);
 
-  // 턴 헤드 변화에 따라 자동으로 액티브 캐릭터 선택 + 쿨타임 감소
+  // 턴 큐가 생성되었을 때 로그 출력 및 첫 턴 시작 확인
   useEffect(() => {
-    const head = turnQueue[0];
-    if (head && head.type === 'party') {
-      const member = partyState?.[head.index];
-      if (member) {
-        // 턴 시작 시 쿨타임 감소 (같은 턴에서 한 번만 실행)
-        const currentTurnId = `${head.type}-${head.index}-${head.id}`;
-        
-        if (member.currentSkillCooldown > 0 && lastCooldownDecrementTurnId.current !== currentTurnId) {
-          lastCooldownDecrementTurnId.current = currentTurnId;
-          
-          setPartyState((prev) => {
-            const updated = [...prev];
-            const currentMember = prev[head.index];
-            if (!currentMember || currentMember.currentSkillCooldown <= 0) {
-              return prev; // 이미 0이면 업데이트하지 않음
-            }
-            
-            const newCooldown = Math.max(0, currentMember.currentSkillCooldown - 1);
-            updated[head.index] = {
-              ...currentMember,
-              currentSkillCooldown: newCooldown,
-            };
-            
-            console.log(`[BattleScreen] ${currentMember.name} 쿨타임 감소: ${currentMember.currentSkillCooldown} → ${newCooldown}`);
-            
-            // 쿨타임이 0이 되면 효과음 재생
-            if (newCooldown === 0 && currentMember.currentSkillCooldown > 0) {
-              SoundManager.playSFX(AUDIO_KEYS.SFX_UI_CLICK, { volume: 0.5 });
-            }
-            
-            return updated;
-          });
-        }
-        
-        setSelectedCharacter({ ...member, actorIndex: head.index, id: head.id });
-      } else {
-        setSelectedCharacter(null);
+    if (hasLoggedTurnInit.current) return;
+    if (turnQueue.length > 0) {
+      console.log('[BattleScreen] 턴 큐 생성 확인:', turnQueue.map(t => `${t.name}(${t.speed})`), '길이:', turnQueue.length);
+      if (activeTurn) {
+        console.log('[BattleScreen] 첫 번째 턴 시작:', activeTurn.name);
       }
-    } else {
-      setSelectedCharacter(null);
+      hasLoggedTurnInit.current = true;
     }
-  }, [turnQueue]);
+  }, [turnQueue, activeTurn]);
 
-  // selectedCharacter를 최신 partyState로 동기화
+  // 적 턴 자동 실행 감시
   useEffect(() => {
-    const head = turnQueue[0];
-    if (head && head.type === 'party') {
-      const member = partyState?.[head.index];
-      if (member) {
-        setSelectedCharacter({ ...member, actorIndex: head.index, id: head.id });
-      }
-    }
-  }, [partyState, turnQueue]);
+    if (!activeTurn || activeTurn.type !== 'enemy') return undefined;
+    if (battleStatus.result !== BattleResult.NONE) return undefined;
+    if (isPauseOpen) return undefined;
+    if (battleStatus.isEnemyAttacking) return undefined;
+      if (isWaitingAnimation) return undefined;
 
+    const timer = setTimeout(() => {
+        console.log('[BattleScreen] 적 턴 시작 - 애니메이션 대기 잠금 활성화');
+        setIsWaitingAnimation(true);
+      setBattleStatus((prev) => ({ ...prev, isEnemyAttacking: true }));
+      window.dispatchEvent(new CustomEvent('enemy-turn-start'));
+    }, BATTLE_TIMING.ENEMY_TURN_DELAY);
+
+    return () => clearTimeout(timer);
+    }, [activeTurn, battleStatus.result, battleStatus.isEnemyAttacking, isPauseOpen, isWaitingAnimation, setIsWaitingAnimation]);
+
+  // 이미 행동한 턴이 큐 맨 앞에 남아있으면 강제로 넘기기 (중복 호출 방지)
+  useEffect(() => {
+      if (isWaitingAnimation) return;
+    if (!turnQueue?.length) return;
+    const head = turnQueue[0];
+    if (!head) return;
+
+    if (lastResolvedTurnId && head.id === lastResolvedTurnId && head.id !== lastAdvancedTurnId.current) {
+      console.warn(`[BattleScreen] 선두 턴이 이미 행동 완료 → 강제 회전 (${head.name})`);
+      lastAdvancedTurnId.current = head.id;
+      setLastResolvedTurnId(null);
+      nextTurn();
+    }
+    }, [turnQueue, lastResolvedTurnId, nextTurn, isWaitingAnimation]);
+
+  // 전투 결과에 따른 효과음
   useEffect(() => {
     if (battleStatus.result === BattleResult.VICTORY) {
       SoundManager.stopBGM();
@@ -201,6 +188,7 @@ export const BattleScreen = ({ partyData, enemyData, setScreen, handleAttackResu
     }
   }, [battleStatus.result]);
 
+  // 전투 종료 시 일시정지 메뉴 닫기
   useEffect(() => {
     if (battleStatus.result !== BattleResult.NONE) {
       setIsPauseOpen(false);
@@ -208,164 +196,81 @@ export const BattleScreen = ({ partyData, enemyData, setScreen, handleAttackResu
     }
   }, [battleStatus.result]);
 
-  if (!partyData || !enemyData) return null;
+  const isDataReady = partyData && Array.isArray(partyData) && partyData.length > 0 && !!enemyData && partyState && partyState.length > 0;
+
+  // 전투 데이터가 준비되면 시작 시각 기록 (패배 체크 지연용)
+  useEffect(() => {
+    if (!isDataReady) return;
+    if (!battleStartTimeRef.current) {
+      battleStartTimeRef.current = Date.now();
+    }
+  }, [isDataReady]);
+
+  // 아군 전멸 체크: 모든 파티원이 사망하면 즉시 패배 처리 (early return 전에 위치해야 함)
+  useEffect(() => {
+    // battleStatus.result로 직접 체크 (isBattleActive 변수 선언 전이므로)
+    if (battleStatus.result !== BattleResult.NONE) return;
+    if (!Array.isArray(partyState) || partyState.length === 0) return;
+    if (!battleStartTimeRef.current || Date.now() - battleStartTimeRef.current < 800) return;
+
+    const alive = partyState.filter((c) => c && typeof c.hp === 'number' && c.hp > 0).length;
+    const checked = partyState.filter((c) => c && typeof c.hp === 'number').length;
+    if (checked === 0) return; // 아직 HP 세팅 안 됨 → 패스
+    if (alive > 0) return;
+
+    console.warn('[BattleScreen] 아군 전멸 감지 → 패배 처리');
+    setIsWaitingAnimation(false);
+    setBattleStatus((prev) => ({
+      ...prev,
+      result: BattleResult.DEFEAT,
+      turn: 'ENDED',
+      isEnemyAttacking: false,
+    }));
+  }, [partyState, battleStatus.result, setBattleStatus, setIsWaitingAnimation]);
+
+  if (!isDataReady) {
+    return (
+      <div className="flex items-center justify-center w-full h-full text-slate-200 bg-slate-950/70">
+        데이터 로딩 중...
+      </div>
+    );
+  }
 
   const gaugePercent = battleStatus.missionGauge;
-  
-  // 현재 턴 정보
-  const activeTurn = turnQueue[0];
-
-  // 생존 여부 확인
-  const isAlive = (turn) => {
-    if (!turn) return false;
-    if (turn.type === 'party') {
-      const turnHp = typeof turn?.data?.hp === 'number' ? turn.data.hp : null;
-      const member = partyState?.[turn.index];
-      const memberHp = typeof member?.hp === 'number' ? member.hp : null;
-      const hpValue = turnHp ?? memberHp;
-      return typeof hpValue === 'number' ? hpValue > 0 : true;
-    }
-    if (turn.type === 'enemy') {
-      return battleStatus.enemyHp > 0;
-    }
-    return false;
-  };
-
-  // 턴 넘기기: 현재 턴을 뒤로 보내면서 사망자는 제거
-  const advanceTurn = () => {
-    setTurnQueue((prev) => {
-      if (!prev || prev.length === 0) return prev;
-      const [current, ...rest] = prev;
-      const aliveRest = rest.filter((t) => isAlive(t));
-      const nextQueue = isAlive(current) ? [...aliveRest, current] : aliveRest;
-      if (nextQueue.length === 0) {
-        console.log('[BattleScreen] 더 이상 유효한 턴이 없음 (전투 종료)');
-        return nextQueue;
-      }
-
-      console.log('[BattleScreen] 턴 진행:', current?.name, '->', nextQueue[0]?.name);
-      return nextQueue;
-    });
-    setSelectedCharacter(null);
-  };
-
-  // 이미 행동한 턴이 큐 맨 앞에 남아있으면 강제로 넘기기
-  useEffect(() => {
-    if (!turnQueue?.length) return;
-    const head = turnQueue[0];
-    if (!head) return;
-
-    // 직전에 행동을 끝낸 턴이 아직 선두라면 회전
-    if (lastResolvedTurnId && head.id === lastResolvedTurnId) {
-      console.warn('[BattleScreen] 선두 턴이 이미 행동 완료 → 강제 회전');
-      setLastResolvedTurnId(null);
-      advanceTurn();
-    }
-  }, [turnQueue, battleStatus.isEnemyAttacking, battleStatus.turn, lastResolvedTurnId]);
-
-  // 적 턴 자동 실행 감시
-  useEffect(() => {
-    if (!activeTurn || activeTurn.type !== 'enemy') return undefined;
-    if (battleStatus.result !== BattleResult.NONE) return undefined;
-    if (isPauseOpen) return undefined;
-
-    // 이미 적 행동 중이면 중복 트리거 방지
-    if (battleStatus.isEnemyAttacking) return undefined;
-
-    const timer = setTimeout(() => {
-      setBattleStatus((prev) => ({ ...prev, isEnemyAttacking: true }));
-      window.dispatchEvent(new CustomEvent('enemy-turn-start'));
-    }, 400);
-
-    return () => clearTimeout(timer);
-  }, [activeTurn, battleStatus.result, battleStatus.isEnemyAttacking, isPauseOpen]);
-
-  // Phaser에서 발행한 attack-complete 이벤트를 받아서 전투 상태 업데이트
-  const handleAttackComplete = (result) => {
-    // SP 업데이트 및 스킬 쿨타임 설정
-    const attackerIndex = result?.attackerIndex;
-    if (typeof attackerIndex === 'number' && attackerIndex >= 0) {
-      setPartyState((prev) => {
-        const updated = [...prev];
-        const attacker = updated[attackerIndex];
-        if (attacker) {
-          const skillType = result?.skillType || 'normal';
-          
-          // SP 업데이트 (필살기 사용 시 SP 소모, 아니면 획득)
-          const spGain = skillType === 'ultimate' 
-            ? -attacker.maxSp 
-            : calculateEnergyGain(skillType, {
-                isCritical: result?.isCritical,
-                hasReaction: result?.reactionType && result.reactionType !== 'null',
-              });
-          
-          const newSp = Math.min(
-            attacker.maxSp || 100, 
-            Math.max(0, (attacker.sp || 0) + spGain)
-          );
-          
-          // 스킬 쿨타임 설정 (스킬 사용 시에만)
-          let newCooldown = attacker.currentSkillCooldown || 0;
-          if (skillType === 'skill') {
-            newCooldown = attacker.skillMaxCooldown || 3;
-            console.log(`[BattleScreen] ${attacker.name} 스킬 사용 → 쿨타임 ${newCooldown}턴 시작`);
-          }
-          
-          updated[attackerIndex] = {
-            ...attacker,
-            sp: newSp,
-            currentSkillCooldown: newCooldown,
-          };
-          
-          console.log(`[BattleScreen] ${attacker.name} SP: ${attacker.sp} → ${newSp} (${spGain >= 0 ? '+' : ''}${spGain})`);
-        }
-        return updated;
-      });
-    }
-    
-    setBattleStatus((prev) => {
-      const newGauge = Math.min(100, Math.max(0, prev.missionGauge + (result?.gaugeAdded || 0)));
-      const enemyHpAfter = Math.max(0, prev.enemyHp - (result?.damage || 0));
-      const partyAlive = result?.partyAliveCount ?? partyData.length;
-      const battleResult = checkBattleResult({
-        enemyHp: enemyHpAfter,
-        missionGauge: newGauge,
-        partyAliveCount: partyAlive,
-      });
-      
-      return {
-        missionGauge: newGauge,
-        enemyHp: enemyHpAfter,
-        lastReaction: result?.reactionType || null,
-        lastDamage: result?.damage || 0,
-        turn: battleResult === BattleResult.VICTORY ? 'ENDED' : prev.turn,
-        actionPoints: prev.actionPoints,
-        result: battleResult,
-        isEnemyAttacking: battleResult === BattleResult.VICTORY ? false : prev.isEnemyAttacking,
-      };
-    });
-    
-    console.log('[BattleScreen] 공격 결과 처리:', {
-      damage: result?.damage,
-      gaugeAdded: result?.gaugeAdded,
-      reactionType: result?.reactionType,
-    });
-
-    setLastResolvedTurnId(activeTurn?.id || null);
-
-    // 턴 넘기기 (플레이어 행동 후 회전)
-    advanceTurn();
-
-    // 상위 컴포넌트(App.jsx)에 결과 전달
-    if (handleAttackResult) {
-      handleAttackResult(result);
-    }
-  };
-
   const showHud = battleStatus.result === BattleResult.NONE;
+  const isBattleActive = battleStatus.result === BattleResult.NONE;
 
-  const activeCharacter = activeTurn?.type === 'party' ? partyState?.[activeTurn.index] : null;
+  // 액션 트리거 핸들러 (UI 즉시 잠금 및 쿨타임 반영)
+  const handleNormalClick = () => {
+    if (!activeTurn || activeTurn.type !== 'party') return;
+    if (isWaitingAnimation) return; // 이미 대기 중이면 무시
+    console.log('[BattleScreen] 일반 공격 트리거');
+    setIsWaitingAnimation(true);
+    lockPlayerInput();
+    triggerSkillSelection(activeCharacter, 'normal', activeTurn.index);
+  };
 
+  const handleSkillClick = () => {
+    if (!activeTurn || activeTurn.type !== 'party') return;
+    if (isWaitingAnimation) return; // 이미 대기 중이면 무시
+    if ((activeCharacter?.currentSkillCooldown || 0) > 0) return;
+    console.log('[BattleScreen] 스킬 공격 트리거');
+    setIsWaitingAnimation(true);
+    lockPlayerInput();
+    applyInstantSkillCooldown();
+    triggerSkillSelection(activeCharacter, 'skill', activeTurn.index);
+  };
+
+  const handleUltimateClick = () => {
+    if (!activeTurn || activeTurn.type !== 'party') return;
+    if (isWaitingAnimation) return; // 이미 대기 중이면 무시
+    console.log('[BattleScreen] 필살기 트리거');
+    setIsWaitingAnimation(true);
+    lockPlayerInput();
+    triggerSkillSelection(activeCharacter, 'ultimate', activeTurn.index);
+  };
+
+  // 이벤트 핸들러
   const handlePauseOpen = () => {
     SoundManager.playSFX(AUDIO_KEYS.SFX_UI_CLICK);
     setIsPauseOpen(true);
@@ -378,7 +283,7 @@ export const BattleScreen = ({ partyData, enemyData, setScreen, handleAttackResu
     setShowRetreatConfirm(false);
   };
 
-  const handleRetreatPrompt = () => {
+  const handleRetreatClick = () => {
     SoundManager.playSFX(AUDIO_KEYS.SFX_UI_CLICK);
     setShowRetreatConfirm(true);
   };
@@ -396,6 +301,89 @@ export const BattleScreen = ({ partyData, enemyData, setScreen, handleAttackResu
     setScreen('HOME');
   };
 
+  const handleBackToObservation = () => {
+    SoundManager.playSFX(AUDIO_KEYS.SFX_UI_CLICK);
+    if (extractionRewards && onVictory && battleStatus.result === BattleResult.VICTORY) {
+      onVictory(extractionRewards);
+    } else {
+      setScreen('OBSERVATION');
+    }
+  };
+
+  const handleBattleRestart = () => {
+    SoundManager.playSFX(AUDIO_KEYS.SFX_UI_CLICK);
+    setBattleSession((s) => s + 1);
+    setLastResolvedTurnId(null);
+    setBattleStatus({
+      missionGauge: 0,
+      enemyHp: enemyData?.maxHp || 100,
+      lastReaction: null,
+      lastDamage: 0,
+      turn: 'PLAYER',
+      actionPoints: partyData?.length || 4,
+      result: BattleResult.NONE,
+      isEnemyAttacking: false,
+    });
+  };
+
+  // 공격 완료 핸들러 (상위 컴포넌트 결과 전달 포함)
+  const lockPlayerInput = () => {
+    // Phaser 씬 입력 잠금 이벤트
+    window.dispatchEvent(new CustomEvent('player-turn-locked'));
+  };
+
+  // 즉시 쿨타임 반영 도우미 (UI 재노출 방지)
+  const applyInstantSkillCooldown = () => {
+    if (!activeTurn || activeTurn.type !== 'party') return;
+    const idx = activeTurn.index;
+    setPartyState((prev) => {
+      if (!Array.isArray(prev)) return prev;
+      const updated = [...prev];
+      const actor = updated[idx];
+      if (!actor) return prev;
+      const maxCd = actor.skillMaxCooldown || 3;
+      if ((actor.currentSkillCooldown || 0) >= maxCd) return prev;
+      updated[idx] = { ...actor, currentSkillCooldown: maxCd };
+      return updated;
+    });
+
+    setTurnQueue((prevQueue) => {
+      if (!Array.isArray(prevQueue)) return prevQueue;
+      return prevQueue.map((t) => {
+        if (t.type !== 'party' || t.index !== activeTurn.index) return t;
+        const maxCd = t.data?.skillMaxCooldown || 3;
+        return { ...t, data: { ...t.data, currentSkillCooldown: maxCd } };
+      });
+    });
+  };
+
+  const handleAttackCompleteWrapper = (result) => {
+    console.log('[BattleScreen] 플레이어 공격 완료 처리');
+    onAttackComplete(result);
+    setLastResolvedTurnId(activeTurn?.id || null);
+    lastAdvancedTurnId.current = activeTurn?.id || null;
+    
+    if (handleAttackResult) {
+      handleAttackResult(result);
+    }
+  };
+
+  // 적 공격 완료 핸들러
+  const handleEnemyAttackResultWrapper = (data) => {
+    console.log('[BattleScreen] 적 공격 완료 처리');
+    onEnemyAttackResult(data);
+    setLastResolvedTurnId(activeTurn?.id || 'enemy');
+    lastAdvancedTurnId.current = activeTurn?.id || 'enemy';
+  };
+
+  // resumeTurn 래퍼: 턴 진행 + 잠금 해제
+  const resumeTurnWithAdvance = () => {
+    if (battleStatus.result !== BattleResult.NONE) return;
+    console.log('[BattleScreen] resumeTurnWithAdvance: 애니메이션 완료, 턴 진행');
+    resumeTurn(); // 잠금 해제
+    nextTurn(); // 턴 진행
+  };
+
   return (
     <div 
       className="animate-fade-in overflow-hidden" 
@@ -409,106 +397,117 @@ export const BattleScreen = ({ partyData, enemyData, setScreen, handleAttackResu
       {/* Phaser 게임 컨테이너 */}
       <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 1 }}>
         <PhaserGame
-          partyData={partyData}
+          partyData={partyState}
           enemyData={enemyData}
           battleTurn={activeTurn?.type === 'enemy' ? 'ENEMY' : 'PLAYER'}
           activeTurn={activeTurn}
           isPaused={isPauseOpen}
           missionType={missionType}
-          handleAttackResult={handleAttackComplete}
-          handleEnemyAttackResult={(data) => {
-            console.log('[BattleScreen] 적 공격 결과:', data);
-            const resolvedId = activeTurn?.id || 'enemy';
-            
-            // 피격 시 SP 증가
-            if (Array.isArray(data?.partyStatus)) {
-              setPartyState((prev) => {
-                const updated = prev.map((char, idx) => {
-                  const patch = data.partyStatus.find(p => p && p.index === idx);
-                  if (patch) {
-                    // 피격한 캐릭터의 SP 증가
-                    const spGain = calculateEnergyGain('hit');
-                    const newSp = Math.min(
-                      char.maxSp || 100,
-                      Math.max(0, (char.sp || 0) + spGain)
-                    );
-                    console.log(`[BattleScreen] ${char.name} 피격 SP: ${char.sp} → ${newSp} (+${spGain})`);
-                    return { ...char, ...patch, sp: newSp };
-                  }
-                  return char;
-                });
-                
-                // 턴 큐 내 data에도 HP 및 SP 반영
-                setTurnQueue((prevQueue) => prevQueue.map((t) => {
-                  if (t.type !== 'party') return t;
-                  const updatedChar = updated[t.index];
-                  return updatedChar ? { ...t, data: updatedChar } : t;
-                }));
-                
-                return updated;
-              });
-            }
-            
-            setBattleStatus((prev) => {
-              const partyAlive = data?.partyAliveCount ?? partyData.length;
-              const battleResult = checkBattleResult({
-                enemyHp: prev.enemyHp,
-                missionGauge: prev.missionGauge,
-                partyAliveCount: partyAlive,
-              });
-              
-              return {
-                ...prev,
-                turn: battleResult === BattleResult.DEFEAT ? 'ENDED' : 'PLAYER',
-                actionPoints: partyAlive,
-                result: battleResult,
-                isEnemyAttacking: false,
-              };
-            });
-
-            setLastResolvedTurnId(resolvedId);
-
-            // 턴 넘기기 (적 턴 종료 후 회전)
-            advanceTurn();
-          }}
+          handleAttackResult={handleAttackCompleteWrapper}
+          handleEnemyAttackResult={handleEnemyAttackResultWrapper}
+            resumeTurn={resumeTurnWithAdvance}
           key={`battle-${battleSession}`}
         />
       </div>
 
+      {/* 턴 순서 패널 */}
       {showHud && turnQueue.length > 0 && (
         <TurnOrderPanel turnQueue={turnQueue} />
       )}
 
-      {/* ===== [좌측 상단] 현재 턴 정보 ===== */}
-      {showHud && activeTurn && (
-        <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 15, textAlign: 'left' }}>
-          <div className="astro-panel px-4 py-2 rounded-xl text-xs tracking-[0.14em] glow-text font-semibold mb-2" style={{ borderColor: activeTurn.type === 'party' ? 'rgba(107,220,255,0.5)' : 'rgba(211,178,111,0.5)' }}>
-            {activeTurn.type === 'party' ? `${activeTurn.name}의 턴` : '적의 턴'}
+      {/* 현재 턴 표시 */}
+      {showHud && <TurnIndicator activeTurn={activeTurn} />}
+
+      {/* 적 상태 바 */}
+      {showHud && (
+        <EnemyStatusBar 
+          enemyHp={battleStatus.enemyHp} 
+          enemyMaxHp={enemyData.maxHp || 100} 
+        />
+      )}
+
+      {/* 미션 배너 */}
+      {showHud && (
+        <MissionBanner 
+          missionType={missionType} 
+          style={{ top: '100px', left: '20px', transform: 'translateY(0)', zIndex: 15 }} 
+        />
+      )}
+
+      {/* 인과율 게이지 (미션 배너 아래 - 네온 박스 스타일) */}
+      {showHud && (
+        <div 
+          style={{ 
+            position: 'absolute', 
+            top: '145px', 
+            left: '20px', 
+            zIndex: 15, 
+            width: '240px'
+          }}
+        >
+          {/* 네온 박스 컨테이너 */}
+          <div style={{
+            position: 'relative',
+            width: '240px',
+            height: '40px',
+            backgroundColor: 'rgba(10, 16, 32, 0.8)',
+            border: '2px solid rgba(68, 102, 170, 0.8)',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            backdropFilter: 'blur(4px)',
+            boxShadow: '0 0 12px rgba(68, 102, 170, 0.4), inset 0 0 12px rgba(68, 102, 170, 0.2)'
+          }}>
+            {/* 게이지 바 (왼쪽에서 차오름) */}
+            <div style={{
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              height: '100%',
+              width: `${gaugePercent}%`,
+              background: 'linear-gradient(90deg, rgba(0, 255, 255, 0.3) 0%, rgba(0, 255, 255, 0.5) 100%)',
+              transition: 'width 0.3s ease-out'
+            }} />
+            
+            {/* 게이지 하이라이트 (위쪽 테두리 빛남) */}
+            <div style={{
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              height: '100%',
+              width: `${gaugePercent}%`,
+              borderTop: '2px solid rgba(0, 255, 255, 0.8)',
+              boxShadow: '0 0 8px rgba(0, 255, 255, 0.6)',
+              transition: 'width 0.3s ease-out',
+              pointerEvents: 'none'
+            }} />
+            
+            {/* 텍스트 (중앙 정렬) */}
+            <div style={{
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#ffffff',
+              textShadow: '0 0 8px rgba(0, 255, 255, 0.8), 0 0 4px rgba(255, 255, 255, 0.6)',
+              letterSpacing: '1px',
+              pointerEvents: 'none'
+            }}>
+              인과율 {battleStatus.missionGauge}%
+            </div>
           </div>
         </div>
       )}
 
-      {showHud && (
-        <EnemyStatusBar enemyHp={battleStatus.enemyHp} enemyMaxHp={enemyData.maxHp || 100} />
-      )}
+      {/* 일시정지 버튼 */}
+      {showHud && <PauseButton onClick={handlePauseOpen} />}
 
-      {showHud && (
-        <MissionBanner missionType={missionType} style={{ top: '100px', left: '20px', transform: 'translateY(0)', zIndex: 15 }} />
-      )}
-
-      {/* ===== [우측 상단] 일시정지 버튼 ===== */}
-      {showHud && (
-        <button
-          type="button"
-          aria-label="일시정지"
-          className="pause-toggle"
-          onClick={handlePauseOpen}
-          style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 25 }}
-        >
-          <span className="pause-toggle-icon">II</span>
-        </button>
-      )}
-
+      {/* 컨트롤 덱 */}
       {showHud && (
         <ControlDeck
           gaugePercent={gaugePercent}
@@ -516,82 +515,60 @@ export const BattleScreen = ({ partyData, enemyData, setScreen, handleAttackResu
           lastReaction={battleStatus.lastReaction ? getReactionName(battleStatus.lastReaction) : null}
           activeTurn={activeTurn}
           activeCharacter={activeCharacter}
-          onNormal={() => window.dispatchEvent(new CustomEvent('skill-selected', { detail: { character: { ...activeCharacter, actorIndex: activeTurn.index }, skillType: 'normal' } }))}
-          onSkill={() => window.dispatchEvent(new CustomEvent('skill-selected', { detail: { character: { ...activeCharacter, actorIndex: activeTurn.index }, skillType: 'skill' } }))}
-          onUltimate={() => window.dispatchEvent(new CustomEvent('skill-selected', { detail: { character: { ...activeCharacter, actorIndex: activeTurn.index }, skillType: 'ultimate' } }))}
+          onNormal={handleNormalClick}
+          onSkill={handleSkillClick}
+          onUltimate={handleUltimateClick}
+          isLocked={isWaitingAnimation || battleStatus.result !== BattleResult.NONE}
         />
       )}
 
-      {isPauseOpen && (
-        <div className="pause-overlay">
-          <div className="pause-modal">
-            <div className="pause-chip">LIVE OPS</div>
-            {!showRetreatConfirm ? (
-              <>
-                <h2 className="pause-title">작전 일시정지</h2>
-                <p className="pause-subtitle">필요한 선택지를 고르세요.</p>
-                <div className="pause-menu">
-                  <button type="button" className="pause-action primary" onClick={handleResumeBattle}>
-                    계속하기
-                  </button>
-                  <button type="button" className="pause-action warning" onClick={handleRetreatPrompt}>
-                    작전 중단
-                  </button>
-                  <button type="button" className="pause-action secondary" disabled>
-                    환경 설정 (준비 중)
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="pause-confirm">
-                <h2 className="pause-title">작전을 이탈할까요?</h2>
-                <p className="pause-subtitle">"정말 전투를 중단하시겠습니까?"</p>
-                <div className="pause-confirm-actions">
-                  <button type="button" onClick={handleRetreatCancel} className="pause-action secondary">
-                    계속 전투
-                  </button>
-                  <button type="button" onClick={handleRetreatConfirm} className="pause-action warning">
-                    작전 중단
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {/* 일시정지 메뉴 */}
+      <PauseMenu
+        isOpen={isPauseOpen}
+        showRetreatConfirm={showRetreatConfirm}
+        onResume={handleResumeBattle}
+        onRetreatPrompt={handleRetreatClick}
+        onRetreatCancel={handleRetreatCancel}
+        onRetreatConfirm={handleRetreatConfirm}
+      />
 
-      {/* 결과 모달 (최상위 레이어) */}
-      {battleStatus.result && (
-        <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div className="astro-modal p-6 min-w-[320px] text-center">
-            <div className="text-2xl font-cinzel glow-text mb-2">
-              {battleStatus.result === BattleResult.VICTORY ? 'MISSION SUCCESS' : 'MISSION FAILED'}
+      {/* 전투 결과 모달 */}
+      <BattleResultModal
+        result={battleStatus.result}
+        onBack={handleBackToObservation}
+        onRestart={handleBattleRestart}
+      />
+
+      {/* 미션 달성 시각 효과 */}
+      {showMissionComplete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none animate-fade-in">
+          {/* 어두운 배경 */}
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-pulse" />
+          
+          {/* 중앙 텍스트 */}
+          <div className="relative z-10 text-center space-y-6">
+            <h1 className="text-7xl font-black italic bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-400 text-transparent drop-shadow-[0_0_30px_rgba(34,211,238,0.9)] animate-bounce-in tracking-wider font-serif">
+              CAUSAL REVERSAL
+            </h1>
+            <p className="text-2xl text-cyan-200 tracking-[0.3em] font-mono drop-shadow-[0_0_15px_rgba(34,211,238,0.6)] animate-fade-in">
+              인과 역전
+            </p>
+            
+            {/* 파티클 효과 */}
+            <div className="absolute -inset-32 pointer-events-none">
+              {[...Array(12)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-2 h-2 bg-cyan-400 rounded-full animate-particle-burst"
+                  style={{
+                    left: '50%',
+                    top: '50%',
+                    animation: `particle-burst 1.5s ease-out ${i * 0.1}s forwards`,
+                    transform: `rotate(${i * 30}deg) translateY(-80px)`,
+                  }}
+                />
+              ))}
             </div>
-            <div className="text-sm text-slate-200/80 mb-5">
-              {battleStatus.result === BattleResult.VICTORY
-                ? '적을 제압하거나 인과율 게이지를 가득 채웠습니다.'
-                : '아군이 전멸했습니다.'}
-            </div>
-            <button
-              onClick={() => {
-                SoundManager.playSFX(AUDIO_KEYS.SFX_UI_CLICK);
-                setBattleSession((s) => s + 1);
-                setLastResolvedTurnId(null);
-                setBattleStatus({
-                  missionGauge: 0,
-                  enemyHp: enemyData?.maxHp || 100,
-                  lastReaction: null,
-                  lastDamage: 0,
-                  turn: 'PLAYER',
-                  actionPoints: partyData?.length || 4,
-                  result: BattleResult.NONE,
-                  isEnemyAttacking: false,
-                });
-              }}
-              className="ghost-button w-full"
-            >
-              재시작
-            </button>
           </div>
         </div>
       )}

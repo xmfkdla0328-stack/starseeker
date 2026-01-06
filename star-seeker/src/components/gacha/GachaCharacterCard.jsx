@@ -9,7 +9,7 @@ export const GachaCharacterCard = ({ char, idx, isSingle }) => {
   return (
     <div
       className={`animate-fade-in ${isSingle ? 'w-80' : ''}`}
-      style={{ animationDelay: `${idx * 0.2}s` }}
+      style={{ '--animation-delay': `${idx * 0.2}s` }}
     >
       {/* 캐릭터 카드 */}
       <div className={`p-2 rounded-xl border backdrop-blur-sm transition-all relative z-10 ${

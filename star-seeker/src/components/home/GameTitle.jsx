@@ -7,7 +7,7 @@ import { Sparkles } from 'lucide-react';
 export const GameTitle = () => {
   return (
     <div className="w-full text-center md:text-left z-20 pointer-events-none shrink-0 relative">
-      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-blue-200 to-purple-300 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)] relative">
+      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-white to-cyan-200 drop-shadow-[0_0_25px_rgba(34,211,238,0.8)] relative">
         Star Seeker
         {/* 별 장식 */}
         <Sparkles className="inline-block ml-2 text-cyan-300 w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 animate-pulse-slow" />

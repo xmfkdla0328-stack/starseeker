@@ -30,17 +30,33 @@ export const executeSkill = (player, enemy, skillType = 'normal', missionType = 
   // ========== Step 1: 스킬 데이터 가져오기 ==========
   const skillData = CHARACTER_SKILLS[player.id];
   const skillName = skillData?.skills?.[skillType] || '기본 공격';
-  const skillMultiplier = SKILL_MULTIPLIERS[skillType] || 1.0;
-
-  // ========== Step 2: 데미지 계산 ==========
-  const baseAtk = player.baseAtk || player.attack || 10;
-  const baseDamage = Math.floor(baseAtk * skillMultiplier);
-  const isCritical = Math.random() < (player.critRate || 0.1);
-  const critMultiplier = isCritical ? 1.5 : 1;
-  const damage = Math.floor(baseDamage * critMultiplier);
-
-  // ========== Step 3: 속성 부착력 판단 ==========
   const skillInfo = skillData?.skillDetails?.[skillType] || {};
+  const isBuff = skillInfo.isBuff === true;
+  const damageFactor = skillInfo.damageFactor ?? null;
+
+  // ========== Step 2: 데미지 계산 (버프 스킬이거나 데미지 계수가 0이면 데미지 없음) ==========
+  let damage = 0;
+  if (!isBuff && (damageFactor === null || damageFactor === undefined)) {
+    // 기존 로직: damageFactor가 정의되지 않으면 SKILL_MULTIPLIERS 사용
+    const skillMultiplier = SKILL_MULTIPLIERS[skillType] || 1.0;
+    const baseAtk = player.baseAtk || player.attack || 10;
+    const baseDamage = Math.floor(baseAtk * skillMultiplier);
+    const isCritical = Math.random() < (player.critRate || 0.1);
+    const critMultiplier = isCritical ? 1.5 : 1;
+    damage = Math.floor(baseDamage * critMultiplier);
+  } else if (!isBuff && damageFactor > 0) {
+    // 새로운 로직: damageFactor가 명시되면 그것을 사용
+    const baseAtk = player.baseAtk || player.attack || 10;
+    const baseDamage = Math.floor(baseAtk * damageFactor);
+    const isCritical = Math.random() < (player.critRate || 0.1);
+    const critMultiplier = isCritical ? 1.5 : 1;
+    damage = Math.floor(baseDamage * critMultiplier);
+  }
+  // else: isBuff === true 또는 damageFactor === 0 → damage = 0
+
+  const isCritical = damage > 0 && Math.random() < (player.critRate || 0.1);
+
+  // ========== Step 3: 속성 부착력 판단 (버프 스킬은 속성 부착 없음) ==========
   const defaultPotency = skillType === 'normal'
     ? (player.role === ROLES.PATHFINDER ? 1 : 0)
     : skillType === 'skill'
@@ -48,15 +64,14 @@ export const executeSkill = (player, enemy, skillType = 'normal', missionType = 
       : skillType === 'ultimate'
         ? 2
         : 0;
-  const elementalPotency = skillInfo.elementalPotency ?? defaultPotency;
+  const elementalPotency = isBuff ? 0 : (skillInfo.elementalPotency ?? defaultPotency);
 
   const attackerElement = player.element || 'AXIOM';
-  // 현재 부착된 속성이 없으면 null로 처리하여 반응이 발생하지 않도록 함
   const targetElement = enemy.currentElement ?? null;
-  const reactionType = elementalPotency > 0 ? checkReaction(attackerElement, targetElement) : null;
+  const reactionType = !isBuff && elementalPotency > 0 ? checkReaction(attackerElement, targetElement) : null;
 
-  // ========== Step 4: 미션 게이지 점수 계산 (속성 부착력이 있을 때만) ==========
-  const gaugeAdded = elementalPotency > 0
+  // ========== Step 4: 미션 게이지 점수 계산 (버프 스킬 및 속성 부착력이 없을 때는 0) ==========
+  const gaugeAdded = !isBuff && elementalPotency > 0
     ? calculateGaugeScore(attackerElement, targetElement, missionType)
     : 0;
 
@@ -65,8 +80,8 @@ export const executeSkill = (player, enemy, skillType = 'normal', missionType = 
     {
       attacker: player.name,
       skillType,
-      skillMultiplier,
-      baseDamage,
+      isBuff,
+      damageFactor,
       finalDamage: damage,
       isCritical,
       attackerElement,

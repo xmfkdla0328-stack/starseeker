@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * 배경 별 컴포넌트
@@ -42,9 +43,25 @@ export const BackgroundStar = ({
   return (
     <div 
       className={`absolute rounded-full animate-twinkle ${sizeClasses[size]} ${colorStyle.classes} ${withShadow ? colorStyle.glow : ''} ${position}`}
-      style={{ animationDelay }}
+      style={{ '--animation-delay': animationDelay }}
     />
   );
+};
+
+BackgroundStar.propTypes = {
+  size: PropTypes.oneOf(['small', 'medium', 'large']),
+  color: PropTypes.string,
+  position: PropTypes.string,
+  animationDelay: PropTypes.string,
+  withShadow: PropTypes.bool,
+};
+
+BackgroundStar.defaultProps = {
+  size: 'small',
+  color: 'white',
+  position: '',
+  animationDelay: '0s',
+  withShadow: false,
 };
 
 /**
@@ -66,4 +83,16 @@ export const FloatingStar = ({ position = '', animationDelay = '0s', color = 'wh
       style={{ animationDelay }}
     />
   );
+};
+
+FloatingStar.propTypes = {
+  position: PropTypes.string,
+  animationDelay: PropTypes.string,
+  color: PropTypes.string,
+};
+
+FloatingStar.defaultProps = {
+  position: '',
+  animationDelay: '0s',
+  color: 'white/60',
 };

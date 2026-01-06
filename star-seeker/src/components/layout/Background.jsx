@@ -8,7 +8,7 @@ export const Background = () => (
     
     {/* 성운 효과 (nebula) */}
     <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-radial from-purple-900/30 via-indigo-900/20 to-transparent rounded-full blur-3xl animate-pulse-slow"></div>
-    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-radial from-blue-900/20 via-cyan-900/10 to-transparent rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-radial from-blue-900/20 via-cyan-900/10 to-transparent rounded-full blur-3xl animate-pulse-slow" style={{ '--animation-delay': '2s' }}></div>
     
     {/* 우주 먼지 텍스처 */}
     <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] animate-pan-slow"></div>

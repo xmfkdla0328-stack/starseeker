@@ -13,35 +13,35 @@ export const StatCard = ({
 }) => {
   const colorClasses = {
     cyan: {
-      gradient: 'from-cyan-500/10 to-blue-600/10',
-      border: 'border-cyan-300/15 hover:border-cyan-300/25 hover:bg-cyan-500/15',
-      icon: 'text-cyan-300 group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]',
-      value: 'text-cyan-100 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]',
-      label: 'text-cyan-300/60',
-      subtitle: 'text-cyan-300/40',
+      gradient: '',
+      border: 'border-white/10 hover:border-cyan-300/30 hover:bg-cyan-500/15',
+      icon: 'text-cyan-300 group-hover:drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]',
+      value: 'text-cyan-50 font-bold',
+      label: 'text-slate-300',
+      subtitle: 'text-slate-400/80 font-mono',
     },
     red: {
-      gradient: 'from-red-500/10 to-orange-600/10',
-      border: 'border-red-300/15 hover:border-red-300/25 hover:bg-red-500/15',
-      icon: 'text-red-300 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]',
-      value: 'text-red-100 drop-shadow-[0_0_8px_rgba(239,68,68,0.3)]',
-      label: 'text-red-300/60',
-      subtitle: 'text-red-300/40',
+      gradient: '',
+      border: 'border-white/10 hover:border-red-300/30 hover:bg-red-500/15',
+      icon: 'text-red-300 group-hover:drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]',
+      value: 'text-red-50 font-bold',
+      label: 'text-slate-300',
+      subtitle: 'text-slate-400/80 font-mono',
     },
     amber: {
-      gradient: 'from-amber-500/10 to-yellow-600/10',
-      border: 'border-amber-300/15 hover:border-amber-300/25 hover:bg-amber-500/15',
-      icon: 'text-amber-300 group-hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]',
-      value: 'text-amber-100 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]',
-      label: 'text-amber-300/60',
-      subtitle: 'text-amber-300/40',
+      gradient: '',
+      border: 'border-white/10 hover:border-amber-300/30 hover:bg-amber-500/15',
+      icon: 'text-amber-300 group-hover:drop-shadow-[0_0_10px_rgba(251,191,36,0.8)]',
+      value: 'text-amber-50 font-bold',
+      label: 'text-slate-300',
+      subtitle: 'text-slate-400/80 font-mono',
     },
   };
 
   const styles = colorClasses[color];
 
   return (
-    <div className={`bg-gradient-to-br ${styles.gradient} border ${styles.border} rounded-xl p-4 backdrop-blur-md transition-all duration-300 group cursor-default`}>
+    <div className={`bg-white/5 border ${styles.border} rounded-xl p-4 backdrop-blur-md transition-all duration-300 group cursor-default shadow-lg shadow-cyan-500/10`}>
       <div className="flex items-center justify-center mb-2">
         <Icon size={20} className={styles.icon} />
       </div>

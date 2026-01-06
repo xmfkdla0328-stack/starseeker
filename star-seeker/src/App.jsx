@@ -1,38 +1,29 @@
 import React, { useState, useCallback } from 'react';
 import { Sparkles } from 'lucide-react';
-import { useGameLogic } from './hooks/useGameLogic';
 import { MISSION_TYPES } from './constants/battle';
+import { GameContextProvider } from './context/GameContext';
+import { useUI, useInventory, usePlayer } from './context/useGameContext';
 
 /** @typedef {import('./constants/battle').MissionType} MissionType */
 
 // ★ 경로 수정됨: 각각의 파일에서 가져오기
-import { Sidebar } from './components/layout/Sidebar';
 import { StatusBar } from './components/layout/StatusBar';
 import { Background } from './components/layout/Background';
-import { ProfileModal } from './components/ProfileModal';
 
-import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, CodexScreen, InventoryScreen, ObservationScreen, BattleScreen } from './components/Screens';
+import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, CodexScreen, InventoryScreen, ObservationScreen, BattleScreen, ProfileScreen } from './components/Screens';
+import { ExtractionScreen } from './components/ExtractionScreen';
+import { buildEnemyFromDungeon } from './data/dungeonData';
 
-export default function StarSeekerApp() {
-  const {
-    screen, setScreen,
-    inventory, setInventory,
-    party, setParty,
-    mainChar, setMainChar,
-    toast, showToast,
-    handleGacha,
-    playerInfo, setPlayerInfo,
-    playerStats,
-    unlockedAchievements,
-    handleSelectTitle,
-    items, setItems,
-  } = useGameLogic();
+function StarSeekerAppContent() {
+  const { screen, setScreen, toast, showToast } = useUI();
+  const { inventory, setInventory, party, setParty, items, setItems, handleGacha, handleLevelUp, EXP_PER_CHIP } = useInventory();
+  const { playerInfo, playerStats, unlockedAchievements, handleSelectTitle, setPlayerInfo } = usePlayer();
 
-  const [showProfile, setShowProfile] = useState(false);
   // 미션 타입은 'CHAOS' | 'SILENCE' 리터럴 유니언을 명시
   const [missionType, setMissionType] = useState(
     /** @type {MissionType} */ (MISSION_TYPES.CHAOS)
   );
+  const [extractionStage, setExtractionStage] = useState(null);
 
   const handleAttackResult = useCallback((result) => {
     // BattleScreen에서 이미 전투 상태를 관리하므로 여기서는 로그만 출력
@@ -48,18 +39,30 @@ export default function StarSeekerApp() {
     showToast(`전투 시작 - 미션: ${missionType === MISSION_TYPES.CHAOS ? '카오스' : '사일런스'}`);
   };
 
+  const handleStartExtraction = (stage) => {
+    setExtractionStage(stage);
+    showToast(`${stage.name} 시작...`);
+    setTimeout(() => {
+      setScreen('EXTRACTION_BATTLE');
+    }, 800);
+  };
+
   return (
     <div className="app-shell flex h-screen w-screen text-slate-200 overflow-hidden font-sans select-none relative">
       <Background />
-      {screen === 'HOME' && <Sidebar screen={screen} setScreen={setScreen} />}
       
       <main className="flex-1 flex flex-col h-full relative z-10 overflow-hidden">
-        {screen === 'HOME' && <StatusBar gems={items.gems} playerInfo={playerInfo} onProfileClick={() => setShowProfile(true)} />}
+          {screen !== 'PROFILE' && (
+            <StatusBar
+              gems={items.gems}
+              screen={screen}
+            />
+          )}
         <div className="flex-1 overflow-y-auto relative no-scrollbar screen-scroll">
             {screen === 'HOME' && (
               <HomeScreen 
-                showToast={showToast} mainChar={mainChar} setMainChar={setMainChar} 
-                inventory={inventory} setScreen={setScreen}
+                setScreen={setScreen}
+                onProfileClick={() => setScreen('PROFILE')}
               />
             )}
             {screen === 'PARTY' && (
@@ -79,6 +82,39 @@ export default function StarSeekerApp() {
             {screen === 'OBSERVATION' && (
               <ObservationScreen setScreen={setScreen} startBattle={startBattle} party={party} />
             )}
+            {screen === 'EXTRACTION' && (
+              <ExtractionScreen
+                setScreen={setScreen}
+                onStartExtraction={handleStartExtraction}
+                party={party}
+              />
+            )}
+            {screen === 'EXTRACTION_BATTLE' && extractionStage && (
+              <BattleScreen
+                partyData={party.members.filter(c => c !== null)}
+                enemyData={buildEnemyFromDungeon(extractionStage)}
+                missionType={missionType}
+                extractionRewards={extractionStage.rewards}
+                onVictory={(rewards) => {
+                  rewards.forEach((r) => {
+                    if (r.id === 'gold') {
+                      setItems((prev) => ({ ...prev, gold: (prev?.gold || 0) + r.count }));
+                    } else {
+                      setItems((prev) => ({
+                        ...prev,
+                        [r.id]: (prev?.[r.id] || 0) + r.count,
+                      }));
+                    }
+                  });
+                  showToast('자원 추출 성공!');
+                  setTimeout(() => {
+                    setExtractionStage(null);
+                    setScreen('EXTRACTION');
+                  }, 2000);
+                }}
+                handleAttackResult={handleAttackResult}
+              />
+            )}
             {screen === 'BATTLE' && (
               <BattleScreen 
                 partyData={party.members.filter(c => c !== null)} 
@@ -87,13 +123,12 @@ export default function StarSeekerApp() {
                   maxHp: 1500, 
                   attack: 15, 
                   name: '화염룡',
-                  element: 'ENTROPY', // 적의 기본 속성 (변하지 않음)
-                  currentElement: null, // 현재 부착된 속성 (초기값 null, 공격받으면 변경됨)
-                  speed: 110, // 적의 속도 스탯
+                  element: 'ENTROPY',
+                  currentElement: null,
+                  speed: 110,
                 }} 
-                setScreen={setScreen}
-                handleAttackResult={handleAttackResult}
                 missionType={missionType}
+                handleAttackResult={handleAttackResult}
               />
             )}
             {screen === 'CODEX' && (
@@ -102,12 +137,17 @@ export default function StarSeekerApp() {
                 items={items} 
                 setItems={setItems} 
                 setInventory={setInventory} 
+                handleLevelUp={handleLevelUp}
+                expPerChip={EXP_PER_CHIP}
                 showToast={showToast} 
                 setScreen={setScreen}
               />
             )}
             {screen === 'INVENTORY' && (
               <InventoryScreen items={items} setItems={setItems} setPlayerInfo={setPlayerInfo} showToast={showToast} setScreen={setScreen} />
+            )}
+            {screen === 'PROFILE' && (
+              <ProfileScreen />
             )}
         </div>
       </main>
@@ -117,19 +157,14 @@ export default function StarSeekerApp() {
           <Sparkles size={14} className="text-yellow-400"/> {toast}
         </div>
       )}
-
-      {/* 프로필 모달 */}
-      {showProfile && (
-        <ProfileModal
-          playerInfo={playerInfo}
-          playerStats={playerStats}
-          mainChar={mainChar}
-          inventory={inventory}
-          unlockedAchievements={unlockedAchievements}
-          onClose={() => setShowProfile(false)}
-          onSelectTitle={handleSelectTitle}
-        />
-      )}
     </div>
+  );
+}
+
+export default function StarSeekerApp() {
+  return (
+    <GameContextProvider>
+      <StarSeekerAppContent />
+    </GameContextProvider>
   );
 }

@@ -141,7 +141,11 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  animation: particle-burst 1.2s ease-out infinite;
+  animation-name: particle-burst;
+  animation-duration: 1.2s;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+  animation-delay: var(--animation-delay, 0s);
   box-shadow: 0 0 6px rgba(251, 191, 36, 0.8);
 }
 

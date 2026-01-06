@@ -1,4 +1,4 @@
-import { Sparkles, Star, Beaker } from 'lucide-react';
+import { Sparkles, Star, Beaker, Brain, Coins, Sparkle, Zap } from 'lucide-react';
 import { ITEM_TYPES } from './items/itemTypes';
 import { createAllFragmentDefinitions } from './items/fragmentDefinitions';
 export { applyItemEffect } from './items/itemEffects';
@@ -11,18 +11,6 @@ export { ITEM_TYPES } from './items/itemTypes';
  */
 const BASE_ITEMS = {
   // 화폐/재화
-  stardust: {
-    id: 'stardust',
-    name: '별의 먼지',
-    icon: Sparkles,
-    description: '캐릭터의 스킬 레벨을 올리는 데 사용되는 신비로운 가루. 스킬 1레벨 상승 당 10개가 필요합니다.',
-    type: ITEM_TYPES.MATERIAL,
-    rarity: 'rare',
-    color: 'text-yellow-300',
-    bgGradient: 'from-yellow-500/20 to-amber-600/20',
-    borderColor: 'border-yellow-400/30',
-    usable: false,
-  },
   gems: {
     id: 'gems',
     name: '별의 결정',
@@ -35,20 +23,43 @@ const BASE_ITEMS = {
     borderColor: 'border-blue-400/30',
     usable: false,
   },
-  
-  // 소비 아이템
-  boundary_potion: {
-    id: 'boundary_potion',
-    name: '경계의 물약',
-    icon: Beaker,
-    description: '시간의 경계를 넘나드는 신비한 물약. 사용 시 즉시 레벨 50으로 상승합니다. (테스트용 아이템)',
+  exp_chip: {
+    id: 'exp_chip',
+    name: '기억 추출물',
+    icon: Brain,
+    description: '응축된 기억 파편. 사용 시 경험치를 획득합니다.',
     type: ITEM_TYPES.CONSUMABLE,
-    rarity: 'legendary',
+    rarity: 'rare',
+    color: 'text-cyan-200',
+    bgGradient: 'from-cyan-500/20 to-emerald-500/20',
+    borderColor: 'border-cyan-400/30',
+    usable: false,
+  },
+  
+  star_fragment: {
+    id: 'star_fragment',
+    name: '별의 파편',
+    icon: Zap,
+    description: '별의 에너지가 응축된 파편. 캐릭터의 스킬 레벨을 올리는 데 필요합니다.',
+    type: ITEM_TYPES.MATERIAL,
+    rarity: 'rare',
     color: 'text-purple-300',
-    bgGradient: 'from-purple-500/20 to-pink-600/20',
+    bgGradient: 'from-purple-500/20 to-indigo-500/20',
     borderColor: 'border-purple-400/30',
-    usable: true,
-    effect: 'level_50',
+    usable: false,
+  },
+  
+  gold: {
+    id: 'gold',
+    name: '성석',
+    icon: Coins,
+    description: '통화로 사용되는 신비한 금색 돌. 게임의 모든 상점에서 사용됩니다.',
+    type: ITEM_TYPES.CURRENCY,
+    rarity: 'common',
+    color: 'text-amber-300',
+    bgGradient: 'from-amber-500/20 to-yellow-500/15',
+    borderColor: 'border-amber-400/30',
+    usable: false,
   },
 };
 

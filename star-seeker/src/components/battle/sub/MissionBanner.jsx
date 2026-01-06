@@ -4,7 +4,7 @@ import { MISSION_TYPES } from '../../../constants/battle';
 const MissionBanner = ({ missionType, style = {} }) => {
   return (
     <div
-      className={`mission-banner ${missionType === MISSION_TYPES.CHAOS ? 'mission-banner-chaos' : 'mission-banner-silence'}`}
+      className={`mission-banner battle-mission-banner ${missionType === MISSION_TYPES.CHAOS ? 'mission-banner-chaos' : 'mission-banner-silence'}`}
       style={{
         position: 'absolute',
         textAlign: 'left',

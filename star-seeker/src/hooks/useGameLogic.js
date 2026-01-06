@@ -1,99 +1,88 @@
-import { useState, useEffect, useCallback } from 'react';
-import { CHAR_DB } from '../data/characters/index';
-import { DEFAULT_PLAYER_INFO, DEFAULT_PLAYER_STATS } from '../data/playerStats';
-
-// 분리한 하위 훅들 가져오기
-import { useGacha } from './useGacha';
+import { useState } from 'react';
+import { useSceneManager } from './useSceneManager';
+import { usePlayerSystem } from './usePlayerSystem';
+import { useInventorySystem } from './useInventorySystem';
 import { useLevelSync } from './useLevelSync';
 import { useBondSystem } from './useBondSystem';
+import { useBattleSystem } from './useBattleSystem';
+import { useSynergy } from './useSynergy';
 
+// 루트 게임 로직 훅: 도메인별 훅을 조합해 통합 API 제공
 export const useGameLogic = () => {
-  const [screen, setScreen] = useState('HOME');
-  const [inventory, setInventory] = useState([]);
+  // 화면/토스트 관리
+  const { screen, setScreen, toast, showToast } = useSceneManager();
+
+  // 파티 상태는 전역 루트에서 유지 (레벨 동기화/인연도 등에서 필요)
   const [party, setParty] = useState({ members: [null, null, null, null] });
-  const [toast, setToast] = useState(null);
-  const [mainChar, setMainChar] = useState(null);
-  
-  // 플레이어 정보
-  const [playerInfo, setPlayerInfo] = useState(DEFAULT_PLAYER_INFO);
-  const [playerStats, setPlayerStats] = useState(DEFAULT_PLAYER_STATS);
-  const [unlockedAchievements, setUnlockedAchievements] = useState([]);
 
-  // 아이템 인벤토리
-  const [items, setItems] = useState({
-    stardust: 0, // 별의 먼지
-    gems: 1000,  // 가챠용 재화
-    star_fragment_entropy: 0,    // 별의 조각 (엔트로피)
-    star_fragment_stasis: 0,     // 별의 조각 (스테이시스)
-    star_fragment_gravity: 0,    // 별의 조각 (중력)
-    star_fragment_resonance: 0,  // 별의 조각 (공명)
-    star_fragment_paradox: 0,    // 별의 조각 (패러독스)
-    star_fragment_axiom: 0,      // 별의 조각 (공리)
-    boundary_potion: 0,      // 경계의 물약
-  });
+  // 플레이어 시스템
+  const {
+    playerInfo,
+    setPlayerInfo,
+    playerStats,
+    setPlayerStats,
+    unlockedAchievements,
+    setUnlockedAchievements,
+    handleSelectTitle,
+    addExp,
+  } = usePlayerSystem();
 
-  const showToast = useCallback((msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
-  }, []);
+  // 인벤토리/가챠/메인 캐릭터 시스템 (플레이어 레벨을 전달해 가챠 초기 레벨 반영)
+  const {
+    inventory,
+    setInventory,
+    items,
+    setItems,
+    mainChar,
+    setMainChar,
+    handleGacha,
+  } = useInventorySystem({ showToast, playerLevel: playerInfo.level });
 
-  // 1. 가챠 로직
-  const handleGacha = useGacha(items, setItems, inventory, setInventory, showToast, playerInfo.level);
-
-  // 2. 인연도 시스템
-  const { increaseBondFromBattle } = useBondSystem(inventory, setInventory, party, screen);
-
-  // 초기화 및 자동 처리
-  useEffect(() => {
-    if (inventory.length === 0) {
-      const starter = { ...CHAR_DB[0], ultLevel: 0, bondLevel: 0, breakthrough: 0, uid: Date.now(), level: 1 };
-      setInventory([starter]);
-    }
-  }, [inventory.length]);
-
-  useEffect(() => {
-    if (inventory.length > 0 && !mainChar) {
-      setMainChar(inventory[0]);
-    }
-  }, [inventory, inventory.length, mainChar]);
-
-  // 플레이어 레벨 동기화
+  // 플레이어 레벨과 캐릭터 레벨 동기화
   useLevelSync(playerInfo, setPlayerInfo, inventory, setInventory, party, setParty, mainChar, setMainChar, showToast);
 
-  // 타이틀 선택 핸들러
-  const handleSelectTitle = useCallback((titleId) => {
-    setPlayerInfo(prev => ({
-      ...prev,
-      selectedTitle: titleId,
-    }));
-  }, []);
+  // 인연도 시스템 (정원/전투)
+  const { increaseBondFromBattle } = useBondSystem(inventory, setInventory, party, screen);
 
-  // 경험치 추가 함수
-  const addExp = useCallback((expAmount) => {
-    setPlayerInfo(prev => ({
-      ...prev,
-      exp: prev.exp + expAmount,
-    }));
-  }, []);
+  // 향후 확장: 전투/시너지 시스템 자리 표시자
+  const battleSystem = useBattleSystem();
+  const synergy = useSynergy();
 
   return {
-    screen, setScreen,
-    inventory, setInventory,
-    party, setParty,
-    mainChar, setMainChar,
-    toast, showToast,
+    // 화면/토스트
+    screen,
+    setScreen,
+    toast,
+    showToast,
+
+    // 파티
+    party,
+    setParty,
+
+    // 인벤토리/가챠
+    inventory,
+    setInventory,
+    items,
+    setItems,
+    mainChar,
+    setMainChar,
     handleGacha,
-    // 플레이어 정보 추가
-    playerInfo, setPlayerInfo,
-    playerStats, setPlayerStats,
-    unlockedAchievements, setUnlockedAchievements,
-    // 타이틀 선택
+
+    // 플레이어
+    playerInfo,
+    setPlayerInfo,
+    playerStats,
+    setPlayerStats,
+    unlockedAchievements,
+    setUnlockedAchievements,
     handleSelectTitle,
-    // 경험치 추가
     addExp,
-    // 인연도 증가
+
+    // 인연도
     increaseBondFromBattle,
-    // 아이템
-    items, setItems,
+
+    // 확장 포인트
+    battleSystem,
+    synergy,
   };
 };

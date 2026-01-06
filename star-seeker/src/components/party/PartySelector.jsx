@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { X, Lock } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { ELEMENTS } from '../../constants/index';
 import { ElementIcon } from '../common/ElementIcon';
 import { getRoleColor, getRoleLabel } from '../../utils/roleHelpers';
@@ -33,11 +33,11 @@ export const PartySelector = ({ inventory, party, selectedSlot, setSelectedSlot,
           </h3>
           <button 
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedSlot(null); }} 
-            className="p-2 hover:bg-white/10 rounded-full pointer-events-auto" 
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-100 hover:text-white shadow-[0_0_12px_rgba(255,255,255,0.1)] backdrop-blur-md transition-all duration-300 pointer-events-auto" 
             type="button"
             aria-label="닫기"
           >
-            <X size={20} className="text-slate-300"/>
+            X
           </button>
         </div>
         
