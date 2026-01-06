@@ -1,0 +1,29 @@
+/* ObservationConsole - 태블릿 반응형 (768px 이하) */
+
+@media (max-width: 768px) {
+  /* 좌측 패널을 더 넓게 */
+  .observatory-sidebar {
+    width: 40% !important;
+    min-width: 260px !important;
+  }
+  
+  /* 헤더 폰트 크기 조정 */
+  .observatory-header h1 {
+    font-size: 1.25rem !important;
+  }
+  
+  .observatory-header p {
+    font-size: 0.65rem !important;
+  }
+  
+  /* 카드 패딩 감소 */
+  .stage-card {
+    padding: 0.75rem !important;
+  }
+  
+  /* 렌즈 크기 조정 */
+  .viewport-lens {
+    width: min(70vw, 70vh) !important;
+    height: min(70vw, 70vh) !important;
+  }
+}

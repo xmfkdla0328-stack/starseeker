@@ -2,7 +2,17 @@ import React from 'react';
 import { ElementIcon } from '../../common/ElementIcon';
 import { ELEMENTS } from '../../../constants/index';
 import { getRoleLabel, getRoleColor } from '../../../utils/roleHelpers';
-import { getImagePath } from '../../../utils/imageLoader';
+
+/**
+ * 이미지 경로를 처리하는 헬퍼 함수
+ */
+const getImagePath = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http') || path.startsWith('data:')) return path;
+  const publicUrl = process.env.PUBLIC_URL || '';
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${publicUrl}/${cleanPath}`;
+};
 
 /**
  * 캐릭터 헤더 섹션 (초상화, 이름, 레벨, 역할, 속성)

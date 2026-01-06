@@ -1,15 +1,15 @@
 /**
  * BattleScreen 데이터 초기화 및 상태 관리 로직
  */
-import { useBattleState } from '../hooks/useBattleState';
-import { useTurnSystem } from '../hooks/useTurnSystem';
-import { useBattleAction } from '../hooks/useBattleAction';
-import { useBattleHandlers } from '../hooks/useBattleHandlers';
-import { useBattleEffects } from '../hooks/useBattleEffects';
-import { useTurnEffects } from '../hooks/useTurnEffects';
-import { useBattleActionHandlers } from '../hooks/useBattleActionHandlers';
-import { useBattleWrappers } from '../hooks/useBattleWrappers';
-import { useUI } from '../context/useGameContext';
+import { useBattleState } from '../../hooks/useBattleState';
+import { useTurnSystem } from '../../hooks/useTurnSystem';
+import { useBattleAction } from '../../hooks/useBattleAction';
+import { useBattleHandlers } from '../../hooks/useBattleHandlers';
+import { useBattleEffects } from '../../hooks/useBattleEffects';
+import { useTurnEffects } from '../../hooks/useTurnEffects';
+import { useBattleActionHandlers } from '../../hooks/useBattleActionHandlers';
+import { useBattleWrappers } from '../../hooks/useBattleWrappers';
+import { useUI } from '../../context/useGameContext';
 
 /**
  * BattleScreen에서 사용할 모든 상태와 핸들러를 초기화

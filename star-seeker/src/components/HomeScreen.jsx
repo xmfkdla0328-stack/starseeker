@@ -16,12 +16,12 @@ export const HomeScreen = ({ setScreen, onProfileClick }) => {
   );
 
   return (
-    <div className="relative w-full h-full min-h-full overflow-hidden flex flex-col items-center justify-center p-4 md:p-8 animate-fade-in">
+    <div className="relative w-full h-full min-h-screen overflow-hidden flex flex-col items-center justify-center p-4 md:p-8 animate-fade-in">
       {/* 배경 효과 */}
       <FloatingParticles />
 
       {/* 상단 타이틀 - 우아한 천문대 느낌 */}
-      <div className="absolute top-6 md:top-10 left-6 md:left-10 text-left space-y-1">
+      <div className="fixed top-6 md:top-10 left-6 md:left-10 text-left space-y-1 pointer-events-auto z-30">
         <h1 className="text-4xl md:text-5xl font-serif text-white/90 tracking-[0.45em] drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]">
           STAR SEEKER
         </h1>
@@ -33,7 +33,7 @@ export const HomeScreen = ({ setScreen, onProfileClick }) => {
       {/* 메인 관측 렌즈 버튼 */}
       <button
         onClick={() => setScreen('OBSERVATION')}
-        className="relative group w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden backdrop-blur-lg border border-cyan-400/40 shadow-[0_0_25px_rgba(34,211,238,0.25)] hover:shadow-[0_0_32px_rgba(34,211,238,0.35)] transition-all duration-500"
+        className="relative group flex-shrink-0 w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden backdrop-blur-lg border border-cyan-400/40 shadow-[0_0_25px_rgba(34,211,238,0.25)] hover:shadow-[0_0_32px_rgba(34,211,238,0.35)] transition-all duration-500"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(56,189,248,0.25),transparent_35%),radial-gradient(circle_at_70%_60%,rgba(59,130,246,0.3),transparent_40%),radial-gradient(circle_at_40%_70%,rgba(14,165,233,0.2),transparent_45%)] animate-pulse-slow" />
         <div className="absolute inset-0 border border-cyan-300/40 rounded-full animate-spin-slow" style={{ animationDuration: '12s' }}></div>
@@ -46,7 +46,7 @@ export const HomeScreen = ({ setScreen, onProfileClick }) => {
       </button>
 
       {/* 하단 글래스 도크 네비게이션 */}
-      <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-black/30 backdrop-blur-md border border-white/10 rounded-full px-5 py-3 shadow-[0_0_18px_rgba(0,0,0,0.35)]">
+      <div className="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-black/30 backdrop-blur-md border border-white/10 rounded-full px-5 py-3 shadow-[0_0_18px_rgba(0,0,0,0.35)] pointer-events-auto z-50">
         <NavButton icon={User} label="정보" onClick={onProfileClick} />
         <NavButton icon={Users} label="편성" target="PARTY" />
         <NavButton icon={Book} label="관리" target="CODEX" />

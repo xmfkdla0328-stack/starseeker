@@ -1,0 +1,48 @@
+/* ObservationConsole - 커스텀 스크롤바 및 기본 인터랙션 */
+
+/* 커스텀 스크롤바 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--color-slate-900-50);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-cyan-30);
+  border-radius: 3px;
+  transition: background var(--timing-normal);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-cyan-50);
+}
+
+/* 렌즈 호버 효과 */
+.lens-hover {
+  transition: all var(--timing-normal) var(--ease-cubic);
+}
+
+.lens-hover:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+/* 호버 시 상향 이동 */
+.hover-lift {
+  transition: transform var(--timing-fast) ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* 네온 글로우 텍스트 */
+.neon-text {
+  text-shadow: 
+    0 0 10px var(--color-cyan-80),
+    0 0 20px var(--color-cyan-60),
+    0 0 30px var(--color-cyan-40);
+}

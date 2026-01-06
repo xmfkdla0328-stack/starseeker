@@ -10,16 +10,16 @@ import { Lock, AlertTriangle } from 'lucide-react';
  */
 export const ObservationSidebar = ({ observations, selectedStage, onStageSelect }) => {
   return (
-    <div className="relative w-[30%] min-w-[320px] pt-20 z-40 border-r border-white/10 bg-slate-900/30 backdrop-blur-md">
+    <div className="relative w-[30%] min-w-[280px] md:min-w-[320px] z-40 border-r border-white/10 bg-slate-900/30 backdrop-blur-md flex flex-col">
       {/* 패널 헤더 */}
-      <div className="px-4 py-3 border-b border-white/10 bg-gradient-to-r from-slate-900/40 to-transparent relative">
+      <div className="flex-shrink-0 px-4 py-3 border-b border-white/10 bg-gradient-to-r from-slate-900/40 to-transparent relative">
         <h2 className="text-sm font-bold text-cyan-200 tracking-widest">관측 기록</h2>
         <p className="text-xs text-slate-400 mt-1 font-mono">Detected Anomalies</p>
         <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-cyan-400/50 to-transparent"></div>
       </div>
 
-      {/* 스테이지 리스트 */}
-      <div className="overflow-y-auto h-[calc(100vh-140px)] px-4 py-4 space-y-3 custom-scrollbar">
+      {/* 스테이지 리스트 - 스크롤 가능 */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 custom-scrollbar">
         {observations.map((stage, index) => {
           const isSelected = selectedStage?.id === stage.id;
           const isLocked = false; // TODO: 잠금 로직 추가

@@ -1,0 +1,78 @@
+/* ObservationConsole - 애니메이션 정의 */
+
+/* 스캔 라인 애니메이션 */
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-scan {
+  animation: scan var(--timing-extra-slow) linear infinite;
+}
+
+/* 그리드 배경 애니메이션 */
+@keyframes grid-pulse {
+  0%, 100% {
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.1;
+  }
+}
+
+/* 펄스 애니메이션 강화 */
+@keyframes strong-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+.animate-strong-pulse {
+  animation: strong-pulse var(--timing-slow) var(--ease-strong-pulse) infinite;
+}
+
+/* 라인 드로잉 애니메이션 */
+@keyframes line-draw {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.line-draw {
+  stroke-dasharray: 1000;
+  animation: line-draw var(--timing-slow) ease-out forwards;
+}
+
+/* 텍스트 글리치 효과 */
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}

@@ -1,0 +1,25 @@
+/* ObservationConsole - CSS 변수 및 기본 설정 */
+
+:root {
+  /* 색상 */
+  --color-cyan-primary: rgba(34, 211, 238, 1);
+  --color-cyan-80: rgba(34, 211, 238, 0.8);
+  --color-cyan-60: rgba(34, 211, 238, 0.6);
+  --color-cyan-40: rgba(34, 211, 238, 0.4);
+  --color-cyan-30: rgba(34, 211, 238, 0.3);
+  --color-cyan-20: rgba(34, 211, 238, 0.2);
+  --color-cyan-10: rgba(34, 211, 238, 0.1);
+  
+  --color-slate-900: rgba(15, 23, 42, 1);
+  --color-slate-900-50: rgba(15, 23, 42, 0.5);
+  
+  /* 타이밍 */
+  --timing-fast: 0.3s;
+  --timing-normal: 0.5s;
+  --timing-slow: 2s;
+  --timing-extra-slow: 4s;
+  
+  /* 애니메이션 함수 */
+  --ease-cubic: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-strong-pulse: cubic-bezier(0.4, 0, 0.6, 1);
+}

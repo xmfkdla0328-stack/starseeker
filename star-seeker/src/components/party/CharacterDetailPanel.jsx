@@ -1,6 +1,6 @@
 import React from 'react';
-import { CHARACTER_SKILLS } from '../../data/characters/characterSkills';
-import { calculateStatsByLevel } from '../../utils/statCalculator';
+import { CHARACTER_SKILLS } from '../../data/characters/skillData';
+import { calculateStatsByLevel } from '../../data/levelSystem';
 import { EmptyCharacterPanel } from './CharacterDetailPanel/EmptyCharacterPanel';
 import { CharacterHeader } from './CharacterDetailPanel/CharacterHeader';
 import { CharacterStats } from './CharacterDetailPanel/CharacterStats';

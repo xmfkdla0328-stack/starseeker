@@ -1,0 +1,111 @@
+/* ObservationConsole - 소형 높이 화면 반응형 (height < 600px) */
+
+@media (max-height: 600px) {
+  /* 전체 컨테이너를 화면에 꽉 차게 */
+  .min-h-screen {
+    height: 100vh !important;
+    min-height: 100vh !important;
+    overflow: hidden !important;
+  }
+  
+  /* 좌측 패널 패딩 축소 */
+  .w-\[30\%\].min-w-\[320px\] {
+    padding-top: 3.5rem !important;
+  }
+  
+  .w-\[30\%\].min-w-\[320px\] > div:first-of-type {
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  .overflow-y-auto.h-\[calc\(100vh-140px\)\] {
+    height: calc(100vh - 100px) !important;
+    padding: 0.5rem !important;
+  }
+  
+  /* 스테이지 카드 패딩 축소 */
+  .overflow-y-auto.h-\[calc\(100vh-140px\)\] button {
+    padding: 0.5rem !important;
+  }
+  
+  /* 우측 뷰포트 패딩 축소 */
+  .flex-1.relative.pt-20 {
+    padding-top: 3.5rem !important;
+  }
+  
+  /* 행성 크기 70%로 축소 */
+  .planet-visual {
+    width: 90px !important;
+    height: 90px !important;
+    transform: scale(0.7) !important;
+  }
+  
+  /* 하단 정보 패널 컴팩트 */
+  .relative.z-40.px-8.pb-8.pt-6 {
+    padding: 0.75rem 1rem 1rem 1rem !important;
+  }
+  
+  .max-w-6xl.mx-auto.grid {
+    gap: 0.75rem !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  
+  .max-w-6xl.mx-auto.grid > div {
+    padding: 0 !important;
+  }
+  
+  .max-w-6xl.mx-auto.grid h3 {
+    font-size: 0.7rem !important;
+  }
+  
+  .max-w-6xl.mx-auto.grid .text-xs {
+    font-size: 0.65rem !important;
+  }
+  
+  /* ENGAGE 버튼 컴팩트 및 고정 위치 */
+  .mt-6.flex.justify-end button {
+    position: fixed !important;
+    bottom: 1rem !important;
+    right: 1rem !important;
+    padding: 0.5rem 1.5rem !important;
+    font-size: 0.9rem !important;
+    transform: scale(0.9) !important;
+    z-index: 60 !important;
+    margin: 0 !important;
+  }
+  
+  /* 헤더 컴팩트 */
+  .absolute.top-0.left-0.right-0 {
+    padding: 0.5rem 1rem !important;
+  }
+  
+  .absolute.top-0.left-0.right-0 h1 {
+    font-size: 1.25rem !important;
+  }
+  
+  .absolute.top-0.left-0.right-0 p {
+    font-size: 0.65rem !important;
+  }
+}
+
+/* 극단적으로 작은 화면 (height < 500px) */
+@media (max-height: 500px) {
+  /* 행성 더 작게 */
+  .planet-visual {
+    width: 80px !important;
+    height: 80px !important;
+    transform: scale(0.6) !important;
+  }
+  
+  /* 정보 패널을 1열로 변경 */
+  .max-w-6xl.mx-auto.grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+  
+  /* ENGAGE 버튼 더 작게 */
+  .mt-6.flex.justify-end button {
+    padding: 0.4rem 1.2rem !important;
+    font-size: 0.8rem !important;
+    transform: scale(0.85) !important;
+  }
+}

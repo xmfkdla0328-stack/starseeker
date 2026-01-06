@@ -13,11 +13,11 @@ export const ObservationInfoPanel = ({ selectedStage, isDeploying, onEngage }) =
   if (!selectedStage) return null;
 
   return (
-    <div className="relative z-40 px-8 pb-8 pt-6 border-t border-white/10 bg-slate-900/60 backdrop-blur-xl">
+    <div className="relative z-40 px-4 md:px-8 py-6 pb-8 md:pb-12 border-t border-white/10 bg-slate-900/60 backdrop-blur-xl overflow-x-hidden">
       {/* 상단 스캔라인 장식 */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
       
-      <div className="max-w-6xl mx-auto grid grid-cols-3 gap-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         {/* 좌: 위협 정보 */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-cyan-300 mb-2">
@@ -74,11 +74,11 @@ export const ObservationInfoPanel = ({ selectedStage, isDeploying, onEngage }) =
       </div>
 
       {/* 관측 개시 버튼 - 네온 캡슐 스타일 */}
-      <div className="mt-6 flex justify-end">
+      <div className="mt-6 flex justify-center md:justify-end">
         <button
           onClick={onEngage}
           disabled={isDeploying}
-          className={`px-8 py-4 rounded-full font-bold text-lg tracking-widest transition-all duration-300 border font-serif ${
+          className={`px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-base md:text-lg tracking-widest transition-all duration-300 border font-serif ${
             isDeploying
               ? 'bg-slate-800/50 text-slate-500 cursor-not-allowed border-slate-700'
               : 'bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] hover:bg-cyan-500/30 transform hover:scale-105'

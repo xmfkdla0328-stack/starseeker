@@ -1,0 +1,27 @@
+/* ObservationConsole - 모바일 반응형 (480px 이하) */
+
+@media (max-width: 480px) {
+  /* 세로 레이아웃으로 전환 */
+  .observatory-container {
+    flex-direction: column !important;
+  }
+  
+  .observatory-sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-height: 40vh !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--color-cyan-20) !important;
+  }
+  
+  .observatory-viewport {
+    width: 100% !important;
+    padding-top: 1rem !important;
+  }
+  
+  /* 정보 패널 그리드를 1열로 */
+  .info-panel-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
