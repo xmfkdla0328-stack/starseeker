@@ -1,5 +1,4 @@
 import React from 'react';
-import PhaserGame from './battle/PhaserGame';
 import { BattleResult } from '../utils/battle/battleUtils';
 import { REACTION_NAMES } from '../constants/battleConstants';
 
@@ -7,15 +6,11 @@ import { REACTION_NAMES } from '../constants/battleConstants';
 import { useUI } from '../context/useGameContext';
 
 // UI 컴포넌트
-import TurnOrderPanel from './battle/sub/TurnOrderPanel';
 import ControlDeck from './battle/sub/ControlDeck';
-import MissionBanner from './battle/sub/MissionBanner';
 import EnemyStatusBar from './battle/sub/EnemyStatusBar';
-import TurnIndicator from './battle/ui/TurnIndicator';
 import PauseButton from './battle/ui/PauseButton';
 import PauseMenu from './battle/ui/PauseMenu';
 import BattleResultModal from './battle/ui/BattleResultModal';
-import MissionCompleteEffect from './battle/ui/MissionCompleteEffect';
 import CausalityGauge from './battle/ui/CausalityGauge';
 
 // 커스텀 훅
@@ -42,7 +37,7 @@ const getReactionName = (reactionType) => {
  * @param {{
  *  partyData: any[],
  *  enemyData: object,
- *  missionType?: any,
+ *
  *  handleAttackResult?: Function,
  *  extractionRewards?: Array,
  *  onVictory?: Function,
@@ -51,7 +46,7 @@ const getReactionName = (reactionType) => {
 export const BattleScreen = ({ 
   partyData, 
   enemyData, 
-  missionType,
+  // missionType,
   handleAttackResult,
   extractionRewards,
   onVictory,
@@ -65,23 +60,16 @@ export const BattleScreen = ({
     battleSession,
     isPauseOpen,
     showRetreatConfirm,
-    showMissionComplete,
-    hasLoggedTurnInit,
-    lastAdvancedTurnId,
     missionCompleteShown,
-    battleStartTimeRef,
     setBattleStatus,
     setIsPauseOpen,
     setShowRetreatConfirm,
-    setShowMissionComplete,
     resetBattle,
   } = useBattleState(partyData, enemyData);
 
 
   // 턴 시스템 훅
   const {
-    turnQueue,
-    setTurnQueue,
     partyState,
     setPartyState,
     activeTurn,
@@ -102,7 +90,7 @@ export const BattleScreen = ({
   } = useBattleAction({
     setPartyState,
     setBattleStatus,
-    setTurnQueue,
+    // setTurnQueue,
     partyDataLength: partyData?.length || 0,
     enemyMaxHp: enemyData?.maxHp || 100,
   });
@@ -111,7 +99,6 @@ export const BattleScreen = ({
   useBattleEffects({
     battleStatus,
     missionCompleteShown,
-    setShowMissionComplete,
     setIsPauseOpen,
     setShowRetreatConfirm,
   });
@@ -142,15 +129,10 @@ export const BattleScreen = ({
 
   // 턴 관련 이펙트 훅
   useTurnEffects({
-    turnQueue,
-    activeTurn,
     battleStatus,
     isPauseOpen,
     isWaitingAnimation,
     partyState,
-    hasLoggedTurnInit,
-    lastAdvancedTurnId,
-    battleStartTimeRef,
     lastResolvedTurnId,
     setBattleStatus,
     setIsWaitingAnimation,
@@ -165,12 +147,10 @@ export const BattleScreen = ({
     handleSkillClick,
     handleUltimateClick,
   } = useBattleActionHandlers({
-    activeTurn,
     activeCharacter,
     isWaitingAnimation,
     setIsWaitingAnimation,
     setPartyState,
-    setTurnQueue,
     triggerSkillSelection,
   });
 
@@ -180,9 +160,7 @@ export const BattleScreen = ({
     handleEnemyAttackResultWrapper,
     resumeTurnWithAdvance,
   } = useBattleWrappers({
-    activeTurn,
     battleStatus,
-    lastAdvancedTurnId,
     onAttackComplete,
     onEnemyAttackResult,
     setLastResolvedTurnId,
@@ -200,7 +178,6 @@ export const BattleScreen = ({
     );
   }
 
-  const gaugePercent = battleStatus.missionGauge;
   const showHud = battleStatus.result === BattleResult.NONE;
 
   return (
@@ -213,30 +190,6 @@ export const BattleScreen = ({
         background: 'radial-gradient(circle at 50% 20%, rgba(107,220,255,0.08), transparent 45%), radial-gradient(circle at 80% 70%, rgba(211,178,111,0.12), transparent 50%)'
       }}
     >
-      {/* Phaser 게임 컨테이너 */}
-      <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 1 }}>
-        <PhaserGame
-          partyData={partyState}
-          enemyData={enemyData}
-          battleTurn={activeTurn?.type === 'enemy' ? 'ENEMY' : 'PLAYER'}
-          activeTurn={activeTurn}
-          isPaused={isPauseOpen}
-          missionType={missionType}
-          handleAttackResult={handleAttackCompleteWrapper}
-          handleEnemyAttackResult={handleEnemyAttackResultWrapper}
-            resumeTurn={resumeTurnWithAdvance}
-          key={`battle-${battleSession}`}
-        />
-      </div>
-
-      {/* 턴 순서 패널 */}
-      {showHud && turnQueue.length > 0 && (
-        <TurnOrderPanel turnQueue={turnQueue} />
-      )}
-
-      {/* 현재 턴 표시 */}
-      {showHud && <TurnIndicator activeTurn={activeTurn} />}
-
       {/* 적 상태 바 */}
       {showHud && (
         <EnemyStatusBar 
@@ -245,21 +198,7 @@ export const BattleScreen = ({
         />
       )}
 
-      {/* 미션 배너 */}
-      {showHud && (
-        <MissionBanner 
-          missionType={missionType} 
-          style={{ top: '100px', left: '20px', transform: 'translateY(0)', zIndex: 15 }} 
-        />
-      )}
-
-      {/* 인과율 게이지 */}
-      {showHud && (
-        <CausalityGauge 
-          gaugePercent={gaugePercent}
-          missionGauge={battleStatus.missionGauge}
-        />
-      )}
+      {/* ...인과율 게이지 UI 삭제... */}
 
       {/* 일시정지 버튼 */}
       {showHud && <PauseButton onClick={handlePauseOpen} />}
@@ -267,8 +206,6 @@ export const BattleScreen = ({
       {/* 컨트롤 덱 */}
       {showHud && (
         <ControlDeck
-          gaugePercent={gaugePercent}
-          missionGauge={battleStatus.missionGauge}
           lastReaction={battleStatus.lastReaction ? getReactionName(battleStatus.lastReaction) : null}
           activeTurn={activeTurn}
           activeCharacter={activeCharacter}
@@ -295,9 +232,6 @@ export const BattleScreen = ({
         onBack={handleBackToObservation}
         onRestart={handleBattleRestart}
       />
-
-      {/* 미션 완료 시각 효과 */}
-      <MissionCompleteEffect show={showMissionComplete} />
     </div>
   );
 };
