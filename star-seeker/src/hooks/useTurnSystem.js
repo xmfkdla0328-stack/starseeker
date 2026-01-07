@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { CHARACTER_SKILLS } from '../data/characters/skillData';
 import { reduceCooldown } from '../utils/battleLogic';
+import { initializeBattleAllies, initializeBoss } from '../utils/battle/battleInitializer';
 
 /**
  * 턴 시스템 관리 커스텀 훅
@@ -35,8 +36,9 @@ export function useTurnSystem(partyData, enemyData, battleSession) {
     console.log('🔒 턴 시스템 최초 1회 초기화 수행');
     console.log('[useTurnSystem] 턴 큐 생성 시작 - partyData:', partyData.length, 'enemyData:', enemyData.name);
 
-    // 2단계: 파티 데이터 초기화
-      const initializedParty = (partyData || []).map(char => {
+    // 2단계: 파티 데이터 초기화 (거리 기반 초기값 및 CP 추가)
+    const preInitializedParty = initializeBattleAllies(partyData || []);
+      const initializedParty = (preInitializedParty || []).map(char => {
         const skillData = CHARACTER_SKILLS[char.id];
         const skillCooldown = skillData?.skillDetails?.skill?.cooldown || 3;
         const maxHp = char.maxHp ?? char.hp ?? 100;
@@ -70,14 +72,15 @@ export function useTurnSystem(partyData, enemyData, battleSession) {
       }
     });
 
-    // 적군 추가
+    // 적군 추가 (거리 초기화 적용)
     if (enemyData) {
+      const initializedEnemy = initializeBoss(enemyData);
       participants.push({
         type: 'enemy',
-        data: enemyData,
-        speed: Number(enemyData.speed ?? enemyData.baseSpd ?? 100),
-        name: enemyData.name || 'Enemy',
-        id: enemyData.id || 'enemy',
+        data: initializedEnemy,
+        speed: Number(initializedEnemy.speed ?? initializedEnemy.baseSpd ?? 100),
+        name: initializedEnemy.name || 'Enemy',
+        id: initializedEnemy.id || 'enemy',
       });
     }
 

@@ -3,7 +3,7 @@ import { Telescope, Star, Sparkles } from 'lucide-react';
 import { GachaResultModal } from './GachaResultModal';
 import { BackButton } from './common/BackButton';
 
-export const GachaScreen = ({ handleGacha, setScreen }) => {
+const GachaScreen = ({ handleGacha, setScreen }) => {
   const [gachaResults, setGachaResults] = useState(null);
 
   const handleGachaClick = (count) => {
@@ -66,3 +66,5 @@ export const GachaScreen = ({ handleGacha, setScreen }) => {
     </>
   );
 };
+
+export default GachaScreen;

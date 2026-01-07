@@ -6,7 +6,7 @@ import { InventoryEmptyState } from './inventory/InventoryEmptyState';
 import { BackButton } from './common/BackButton';
 import { ITEM_DEFINITIONS, applyItemEffect } from '../data/itemDefinitions';
 
-export const InventoryScreen = ({ items = {}, setItems, setPlayerInfo, showToast, setScreen }) => {
+const InventoryScreen = ({ items = {}, setItems, setPlayerInfo, showToast, setScreen }) => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   // 아이템 사용 핸들러
@@ -85,3 +85,5 @@ export const InventoryScreen = ({ items = {}, setItems, setPlayerInfo, showToast
     </div>
   );
 };
+
+export default InventoryScreen;

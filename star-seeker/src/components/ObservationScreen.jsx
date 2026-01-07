@@ -12,7 +12,7 @@ import './ObservationConsole.css';
  * 관측 콘솔 (Observatory Console)
  * Master-Detail View: 좌측 스테이지 리스트 + 우측 뷰포트
  */
-export const ObservationScreen = ({ setScreen, startBattle, party }) => {
+const ObservationScreen = ({ setScreen, startBattle, party }) => {
   // 관측 상태 훅
   const {
     selectedStage,
@@ -108,3 +108,5 @@ export const ObservationScreen = ({ setScreen, startBattle, party }) => {
     </div>
   );
 };
+
+export default ObservationScreen;

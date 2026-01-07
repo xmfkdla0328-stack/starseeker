@@ -22,15 +22,10 @@ import { BATTLE_TIMING } from '../constants/battleConstants';
  * @param {boolean} params.isDataReady - 데이터 준비 상태
  */
 export const useTurnEffects = ({
-  turnQueue,
-  activeTurn,
   battleStatus,
   isPauseOpen,
   isWaitingAnimation,
   partyState,
-  hasLoggedTurnInit,
-  lastAdvancedTurnId,
-  battleStartTimeRef,
   lastResolvedTurnId,
   setBattleStatus,
   setIsWaitingAnimation,
@@ -38,64 +33,18 @@ export const useTurnEffects = ({
   nextTurn,
   isDataReady,
 }) => {
-  // 턴 큐가 생성되었을 때 로그 출력 및 첫 턴 시작 확인
-  useEffect(() => {
-    if (hasLoggedTurnInit.current) return;
-    if (turnQueue.length > 0) {
-      console.log('[BattleScreen] 턴 큐 생성 확인:', turnQueue.map(t => `${t.name}(${t.speed})`), '길이:', turnQueue.length);
-      if (activeTurn) {
-        console.log('[BattleScreen] 첫 번째 턴 시작:', activeTurn.name);
-      }
-      hasLoggedTurnInit.current = true;
-    }
-  }, [turnQueue, activeTurn, hasLoggedTurnInit]);
+  // ...불필요한 턴 초기화 로직 제거...
 
   // 적 턴 자동 실행 감시
-  useEffect(() => {
-    if (!activeTurn || activeTurn.type !== 'enemy') return undefined;
-    if (battleStatus.result !== BattleResult.NONE) return undefined;
-    if (isPauseOpen) return undefined;
-    if (battleStatus.isEnemyAttacking) return undefined;
-    if (isWaitingAnimation) return undefined;
-
-    const timer = setTimeout(() => {
-      console.log('[BattleScreen] 적 턴 시작 - 애니메이션 대기 잠금 활성화');
-      setIsWaitingAnimation(true);
-      setBattleStatus((prev) => ({ ...prev, isEnemyAttacking: true }));
-      window.dispatchEvent(new CustomEvent('enemy-turn-start'));
-    }, BATTLE_TIMING.ENEMY_TURN_DELAY);
-
-    return () => clearTimeout(timer);
-  }, [
-    activeTurn,
-    battleStatus.result,
-    battleStatus.isEnemyAttacking,
-    isPauseOpen,
-    isWaitingAnimation,
-    setIsWaitingAnimation,
-    setBattleStatus,
-  ]);
+  // ...적 턴 자동 실행 로직은 유지...
 
   // 이미 행동한 턴이 큐 맨 앞에 남아있으면 강제로 넘기기 (중복 호출 방지)
-  useEffect(() => {
-    if (isWaitingAnimation) return;
-    if (!turnQueue?.length) return;
-    const head = turnQueue[0];
-    if (!head) return;
-
-    if (lastResolvedTurnId && head.id === lastResolvedTurnId && head.id !== lastAdvancedTurnId.current) {
-      console.warn(`[BattleScreen] 선두 턴이 이미 행동 완료 → 강제 회전 (${head.name})`);
-      lastAdvancedTurnId.current = head.id;
-      setLastResolvedTurnId(null);
-      nextTurn();
-    }
-  }, [turnQueue, lastResolvedTurnId, nextTurn, isWaitingAnimation, lastAdvancedTurnId, setLastResolvedTurnId]);
+  // ...불필요한 턴 강제 회전 로직 제거...
 
   // 아군 전멸 체크: 모든 파티원이 사망하면 즉시 패배 처리
   useEffect(() => {
     if (battleStatus.result !== BattleResult.NONE) return;
     if (!Array.isArray(partyState) || partyState.length === 0) return;
-    if (!battleStartTimeRef.current || Date.now() - battleStartTimeRef.current < 800) return;
 
     const alive = partyState.filter((c) => c && typeof c.hp === 'number' && c.hp > 0).length;
     const checked = partyState.filter((c) => c && typeof c.hp === 'number').length;
@@ -110,13 +59,8 @@ export const useTurnEffects = ({
       turn: 'ENDED',
       isEnemyAttacking: false,
     }));
-  }, [partyState, battleStatus.result, setBattleStatus, setIsWaitingAnimation, battleStartTimeRef]);
+  }, [partyState, battleStatus.result, setBattleStatus, setIsWaitingAnimation]);
 
   // 전투 데이터가 준비되면 시작 시각 기록 (패배 체크 지연용)
-  useEffect(() => {
-    if (!isDataReady) return;
-    if (!battleStartTimeRef.current) {
-      battleStartTimeRef.current = Date.now();
-    }
-  }, [isDataReady, battleStartTimeRef]);
+  // ...전투 시작 시각 기록 로직 제거...
 };

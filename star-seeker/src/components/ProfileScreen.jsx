@@ -9,7 +9,7 @@ import { StatsGrid } from './profile/StatsGrid';
 import { FeaturedAlly } from './profile/FeaturedAlly';
 import { AccountInfo } from './profile/AccountInfo';
 
-export const ProfileScreen = () => {
+const ProfileScreen = () => {
   const { setScreen } = useUI();
   const { inventory, mainChar } = useInventory();
   const { playerInfo, playerStats, unlockedAchievements, handleSelectTitle } = usePlayer();
@@ -71,3 +71,5 @@ export const ProfileScreen = () => {
     </div>
   );
 };
+
+export default ProfileScreen;

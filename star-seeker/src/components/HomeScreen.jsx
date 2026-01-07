@@ -2,7 +2,7 @@ import React from 'react';
 import { FloatingParticles } from './home/FloatingParticles';
 import { User, Book, Package, Sprout, Sparkles, Users } from 'lucide-react';
 
-export const HomeScreen = ({ setScreen, onProfileClick }) => {
+const HomeScreen = ({ setScreen, onProfileClick }) => {
   const NavButton = ({ icon: Icon, label, target, onClick }) => (
     <button
       onClick={onClick || (() => setScreen(target))}
@@ -57,3 +57,5 @@ export const HomeScreen = ({ setScreen, onProfileClick }) => {
     </div>
   );
 };
+
+export default HomeScreen;

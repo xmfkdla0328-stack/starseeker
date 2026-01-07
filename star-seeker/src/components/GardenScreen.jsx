@@ -20,7 +20,7 @@ const BENCH_CONFIG = {
   bottom: 'bottom-8',
 };
 
-export const GardenScreen = ({ inventory, showToast, setScreen }) => {
+const GardenScreen = ({ inventory, showToast, setScreen }) => {
   const [gardenChars, setGardenChars] = useState([]);
   
   useEffect(() => {
@@ -83,3 +83,5 @@ export const GardenScreen = ({ inventory, showToast, setScreen }) => {
     </div>
   );
 };
+
+export default GardenScreen;

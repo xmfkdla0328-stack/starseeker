@@ -14,7 +14,7 @@ const rewardLabel = {
   star_fragment: '별의 파편',
 };
 
-export const ExtractionScreen = ({ setScreen, onStartExtraction, party }) => {
+const ExtractionScreen = ({ setScreen, onStartExtraction, party }) => {
   const [category, setCategory] = useState(DUNGEON_TYPES.MEMORY);
   const stages = useMemo(() => DUNGEONS[category] || [], [category]);
   const [selectedStage, setSelectedStage] = useState(() => stages[0] || null);
@@ -150,3 +150,5 @@ export const ExtractionScreen = ({ setScreen, onStartExtraction, party }) => {
     </div>
   );
 };
+
+export default ExtractionScreen;

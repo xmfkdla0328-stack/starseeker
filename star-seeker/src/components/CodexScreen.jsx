@@ -9,7 +9,7 @@ import { CodexContentPanel } from './codex/CodexContentPanel';
 import { getCharacterData, getSkillInfo } from './codex/codexUtils';
 import { performBreakthrough, getNextBreakthroughRequiredLevel } from '../data/breakthroughItems';
 
-export const CodexScreen = ({ inventory, items, setItems, setInventory, handleLevelUp, expPerChip, showToast, setScreen }) => {
+const CodexScreen = ({ inventory, items, setItems, setInventory, handleLevelUp, expPerChip, showToast, setScreen }) => {
   const [selectedCharId, setSelectedCharId] = useState(CHAR_DB[0].id);
   const [tab, setTab] = useState('INFO'); 
 
@@ -93,3 +93,5 @@ export const CodexScreen = ({ inventory, items, setItems, setInventory, handleLe
     </div>
   );
 };
+
+export default CodexScreen;

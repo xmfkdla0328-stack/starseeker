@@ -11,7 +11,7 @@ import { usePartyState } from '../hooks/usePartyState';
 import { usePartyHandlers } from '../hooks/usePartyHandlers';
 import { MISSION_TYPES } from '../utils/battle/gaugeLogic';
 
-export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, missionType, setMissionType }) => {
+const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, missionType, setMissionType }) => {
   // 상태 관리
   const { selectedCharacter, setSelectedCharacter, showGuide, setShowGuide } = usePartyState();
   
@@ -143,3 +143,5 @@ export const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, 
     </div>
   );
 };
+
+export default PartyScreen;
