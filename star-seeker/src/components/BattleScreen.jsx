@@ -3,13 +3,23 @@ import { Timeline } from './battle/Timeline'; // 아까 만든 Timeline 컴포�
 import { AllyCard } from './battle/AllyCard';
 import { BattleControls } from './battle/BattleControls';
 
-export const BattleScreen = ({ battleSystem, addExp, setScreen }) => {
+export const BattleScreen = ({ battleSystem, partyData, enemyData, missionType, addExp, setScreen }) => {
+  // battleSystem이 주어지지 않으면 간단한 파티/적 데이터로 폴백하여 렌더링
+  const derivedBattleSystem = battleSystem || (partyData && enemyData ? {
+    enemy: { ...enemyData, image: enemyData.image || enemyData.face || '/assets/boss_placeholder.png', distance: enemyData.distance ?? 10000, maxDistance: enemyData.maxDistance ?? 10000 },
+    allies: (partyData || []).map(p => ({ ...p, image: p.image || p.face, distance: p.distance ?? 10000, maxDistance: p.maxDistance ?? 10000, isDead: p.isDead || false })),
+    battleState: 'FIGHTING',
+    processTurn: () => {},
+    isAuto: false,
+    setIsAuto: () => {},
+  } : null);
+
   // battleSystem이 아직 준비되지 않았으면 로딩 표시
-  if (!battleSystem || !battleSystem.enemy || !battleSystem.allies) {
+  if (!derivedBattleSystem || !derivedBattleSystem.enemy || !derivedBattleSystem.allies) {
     return <div className="text-white text-center mt-20">전투 데이터 로딩 중...</div>;
   }
 
-  const { enemy, allies, battleState, processTurn, isAuto, setIsAuto } = battleSystem;
+  const { enemy, allies, battleState, processTurn, isAuto, setIsAuto } = derivedBattleSystem;
 
   return (
     <div className="h-full w-full flex flex-col relative bg-slate-950 overflow-hidden">
