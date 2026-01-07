@@ -7,10 +7,7 @@
 // - 원본 배열의 순서와 길이를 유지한 updatedUnits 배열과 nextActor 객체를 반환
 
 // === 타임라인 엔진 ===
-export const resetUnitDistance = (unit) => {
-  unit.distance = 10000;
-  return unit;
-};
+import { executeEnemyTurn } from './enemyAI';
 
 export const calculateNextState = (allUnits = []) => {
   // 1. 살아있는 유닛만 필터링
@@ -44,8 +41,39 @@ export const calculateNextState = (allUnits = []) => {
 };
 
 // 유닛의 거리를 초기값(10000)으로 리셋
-// 기존와 호환되는 이름의 기본 리셋 함수
 export function resetUnitDistance(unit) {
   if (!unit || typeof unit !== 'object') return unit;
   return { ...unit, distance: 10000 };
 }
+
+// === 단순한 행동 실행 유틸 (기본 구현) ===
+export const executeAllyAction = (actor, allies, enemy) => {
+  const atk = actor.atk || actor.attack || 10;
+  const damage = Math.max(1, Math.floor(atk * (0.9 + Math.random() * 0.3)));
+  const newEnemy = { ...enemy, hp: Math.max(0, (enemy.hp || enemy.maxHp || 0) - damage) };
+  const logs = [`${actor.name}이(가) ${enemy.name}에게 ${damage} 피해를 입혔습니다.`];
+  const isVictory = newEnemy.hp <= 0;
+  return { newEnemy, newAllies: allies, logs, isVictory };
+};
+
+export const executeBossAction = (enemyUnit, alliesArray = [], reviveCount = 0) => {
+  // 간단한 AI 실행: enemyAI.executeEnemyTurn을 사용
+  const aiResult = executeEnemyTurn(enemyUnit, alliesArray);
+  const logs = [];
+  const newAllies = alliesArray.map((a) => ({ ...a }));
+
+  if (aiResult && Array.isArray(aiResult.damage)) {
+    aiResult.damage.forEach(d => {
+      const idx = d.index;
+      const dmg = d.damage;
+      if (typeof idx === 'number' && newAllies[idx]) {
+        newAllies[idx].hp = Math.max(0, (newAllies[idx].hp || newAllies[idx].maxHp || 0) - dmg);
+        if (newAllies[idx].hp <= 0) newAllies[idx].isDead = true;
+        logs.push(`${enemyUnit.name}이(가) ${newAllies[idx].name}에게 ${dmg} 피해를 입혔습니다.`);
+      }
+    });
+  }
+
+  const isDefeat = newAllies.every(a => a.isDead || (a.hp || 0) <= 0);
+  return { newAllies, logs, isDefeat };
+};
