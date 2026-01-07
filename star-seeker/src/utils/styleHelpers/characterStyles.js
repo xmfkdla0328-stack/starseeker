@@ -13,6 +13,8 @@ export const getRoleLabel = (role) => {
     EXECUTOR: '엑시큐터',
     STABILIZER: '스테빌라이저',
     PATHFINDER: '패스파인더',
+    KEEPER: '키퍼',
+    SUSTAINER: '서스테이너',
   };
   return roleMap[role] || role;
 };

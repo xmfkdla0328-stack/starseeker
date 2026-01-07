@@ -30,7 +30,9 @@ export const CharacterHeader = ({ charData }) => {
         >
           {/* 배경 - 역할 글자 크게 */}
           <div className="absolute inset-0 flex items-center justify-center opacity-10 text-7xl font-bold text-white pointer-events-none">
-            {getRoleLabel(charData.role)[0]}
+            {typeof getRoleLabel(charData.role) === 'string' && getRoleLabel(charData.role).length > 0
+              ? getRoleLabel(charData.role)[0]
+              : '?'}
           </div>
 
           {charData.portrait ? (

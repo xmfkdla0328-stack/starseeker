@@ -31,4 +31,6 @@ export const ROLES = {
   EXECUTOR: 'EXECUTOR',         // 화력 투사
   STABILIZER: 'STABILIZER',     // 상태 안정화
   PATHFINDER: 'PATHFINDER',     // 변수 창출
+  KEEPER: 'KEEPER',             // 방어/보급
+  SUSTAINER: 'SUSTAINER',       // 회복/지속
 };
