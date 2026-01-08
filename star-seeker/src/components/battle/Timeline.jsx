@@ -1,62 +1,112 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
-export const Timeline = ({ allies, enemy, maxDistance = 10000 }) => {
-  // 전체 유닛 리스트 합치기 (적 + 아군)
-  const allUnits = [
-    { ...enemy, isEnemy: true, id: 'boss' },
-    ...allies.map(a => ({ ...a, isEnemy: false }))
-  ].filter(u => !u.isDead);
+export const Timeline = ({ allies = [], enemy, maxDistance = 10000 }) => {
+  // 1. 유닛 리스트 통합 (생존자만)
+  const allUnits = useMemo(() => {
+    const list = [];
+    if (enemy && !enemy.isDead) list.push({ ...enemy, isEnemy: true, id: 'boss' });
+    if (allies) list.push(...allies.filter(a => !a.isDead).map(a => ({ ...a, isEnemy: false })));
+    return list;
+  }, [allies, enemy]);
+
+  // 2. 별자리 경로 좌표 정의 (0% ~ 100%)
+  // 지그재그 형태: (우측 Start -> 좌측 End)
+  const pathPoints = [
+    { x: 95, y: 50 }, // Start (10000)
+    { x: 75, y: 20 },
+    { x: 50, y: 80 },
+    { x: 25, y: 30 },
+    { x: 5, y: 50 }   // End (0)
+  ];
+
+  // 3. 거리(distance)를 좌표(x, y)로 변환하는 함수
+  const getPositionOnPath = (dist) => {
+    const totalSegments = pathPoints.length - 1;
+    const normalizedDist = Math.max(0, Math.min(maxDistance, dist)); // 0 ~ 10000
+    const progress = normalizedDist / maxDistance; // 1(Start) ~ 0(End)
+    
+    // progress 1 -> Index 0, progress 0 -> Index 4
+    const pathProgress = (1 - progress) * totalSegments;
+    
+    const currentIndex = Math.floor(pathProgress);
+    const nextIndex = Math.min(totalSegments, currentIndex + 1);
+    const segmentRatio = pathProgress - currentIndex;
+
+    const p1 = pathPoints[currentIndex] || pathPoints[totalSegments];
+    const p2 = pathPoints[nextIndex] || pathPoints[totalSegments];
+
+    // 선형 보간
+    const x = p1.x + (p2.x - p1.x) * segmentRatio;
+    const y = p1.y + (p2.y - p1.y) * segmentRatio;
+
+    return { x, y };
+  };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900/50 rounded-lg p-4 border border-blue-500/30 relative overflow-hidden">
-      {/* 트랙 배경 */}
-      <div className="w-full h-2 bg-slate-700 rounded-full relative overflow-visible">
-        <div className="absolute top-1/2 -translate-y-1/2 w-full h-0.5 bg-blue-500/50"></div>
-        
-        {/* 거리 마커 (0, 5000, 10000) */}
-        <div className="absolute left-0 -top-6 text-xs text-blue-300 font-mono">ACT</div>
-        <div className="absolute left-1/2 -top-6 text-xs text-slate-500 font-mono">5000</div>
-        <div className="absolute right-0 -top-6 text-xs text-slate-500 font-mono">START</div>
+    <div className="w-full h-full relative bg-slate-900/40 rounded-xl overflow-hidden border border-blue-500/20">
+      {/* 배경 장식 (Star Field) */}
+      <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
 
-        {/* 유닛 아이콘 배치 */}
-        {allUnits.map((unit, idx) => {
-          // 거리 비율 계산 (10000일 때 100%, 0일 때 0%)
-          const percent = Math.min(100, Math.max(0, (unit.distance / maxDistance) * 100));
-          
-          return (
-            <div 
-              key={unit.uid || unit.id || idx}
-              className={`absolute top-1/2 -translate-y-1/2 transition-all duration-300 ease-linear z-10 flex flex-col items-center group`}
-              style={{ left: `${percent}%` }}
-            >
-              {/* 아이콘 */}
-              <div className={`
-                w-8 h-8 rounded-full border-2 shadow-lg backdrop-blur-sm relative
-                ${unit.isEnemy ? 'border-red-500 bg-red-900/80' : 'border-blue-400 bg-blue-900/80'}
-                group-hover:scale-125 transition-transform
-              `}>
-                <img 
+      {/* SVG 별자리 선 그리기 */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none drop-shadow-[0_0_5px_rgba(100,200,255,0.6)]"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+      >
+        <polyline
+          points={pathPoints.map(p => `${p.x},${p.y}`).join(' ')}
+          fill="none"
+          stroke="rgba(100, 200, 255, 0.3)"
+          strokeWidth="2"
+          strokeDasharray="4 4"
+        />
+        {/* 주요 포인트(별) 표시 */}
+        {pathPoints.map((p, i) => (
+          <circle key={i} cx={p.x} cy={p.y} r={1.5} fill="#60a5fa" className="animate-pulse" />
+        ))}
+      </svg>
+
+      {/* 유닛 아이콘 배치 */}
+      {allUnits.map((unit) => {
+        const { x, y } = getPositionOnPath(unit.distance);
+        const isReady = unit.distance <= 0;
+        
+        return (
+          <div 
+            key={unit.uid || unit.id}
+            className={`absolute flex flex-col items-center justify-center transition-all duration-500 ease-out will-change-transform z-10 hover:z-50 hover:scale-110`}
+            style={{ 
+              left: `${x}%`, 
+              top: `${y}%`, 
+              transform: 'translate(-50%, -50%)' 
+            }}
+          >
+            {/* 아이콘 */}
+            <div className={`
+              w-10 h-10 md:w-12 md:h-12 rounded-full border-2 shadow-[0_0_15px_rgba(0,0,0,0.5)]
+              ${unit.isEnemy ? 'border-red-500 shadow-red-500/30' : 'border-blue-400 shadow-blue-500/30'}
+              ${isReady ? 'ring-4 ring-yellow-400 animate-bounce' : ''}
+              bg-slate-900 relative
+            `}>
+               <img 
                   src={unit.face || unit.image} 
                   alt={unit.name} 
-                  className="w-full h-full object-cover rounded-full opacity-90" 
-                  onError={(e) => e.target.style.display = 'none'}
-                />
-                {/* 겹침 방지용 투명도 */}
-                <div className="absolute inset-0 rounded-full bg-black/10"></div>
-              </div>
-
-              {/* 거리 텍스트 (호버 시 표시) */}
-              <div className="opacity-0 group-hover:opacity-100 absolute -bottom-6 text-[10px] bg-black/80 px-1 rounded text-white whitespace-nowrap pointer-events-none">
-                {Math.floor(unit.distance)}m
-              </div>
+                  className="w-full h-full object-cover rounded-full"
+                  onError={(e) => e.target.style.display = 'none'} 
+               />
             </div>
-          );
-        })}
-      </div>
-      
-      <div className="absolute bottom-2 right-4 text-xs text-slate-500">
-        Time Dilation: 1.0x
-      </div>
+
+            {/* 거리 정보 (Hover시) */}
+            <div className="absolute -bottom-6 bg-black/80 text-[10px] text-white px-2 py-0.5 rounded opacity-0 hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity">
+               {Math.floor(unit.distance)}m
+            </div>
+          </div>
+        );
+      })}
+
+      {/* 라벨 */}
+      <div className="absolute top-2 right-4 text-xs font-mono text-slate-500">FUTURE (Start)</div>
+      <div className="absolute bottom-2 left-4 text-xs font-mono text-blue-400">PRESENT (Act)</div>
     </div>
   );
 };

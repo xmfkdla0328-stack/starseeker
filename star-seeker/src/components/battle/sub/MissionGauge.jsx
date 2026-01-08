@@ -98,8 +98,7 @@ const MissionGauge = ({ missionGauge = 0, style = {} }) => {
                 background: 'rgba(182, 255, 255, 0.9)',
                 boxShadow: '0 0 8px rgba(107, 220, 255, 0.8)',
                 borderRadius: '50%',
-                animation: 'pulse 1s ease-in-out infinite',
-                animationDelay: `${i * 0.2}s`,
+                animation: `pulse 1s ease-in-out ${i * 0.2}s infinite`,
               }}
             />
           ))}

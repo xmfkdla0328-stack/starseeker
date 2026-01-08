@@ -27,8 +27,7 @@ export const StarField = ({ count = 50, variant = 'inside' }) => {
               left: left + '%',
               top: top + '%',
               opacity: baseOpacity,
-              animation: `twinkle ${animationDuration}s infinite ease-in-out`,
-              animationDelay,
+              animation: `twinkle ${animationDuration}s ease-in-out ${animationDelay || '0s'} infinite`,
               boxShadow,
             }}
           />

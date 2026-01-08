@@ -19,7 +19,7 @@ export const FloatingParticles = ({ count = 3 }) => {
             left: i === 0 ? '25%' : i === 1 ? 'auto' : '50%',
             right: i === 1 ? '33%' : 'auto',
             bottom: i === 2 ? '33%' : 'auto',
-            animationDelay: delays[i % delays.length],
+            '--animation-delay': delays[i % delays.length],
           }}
         />
       ))}

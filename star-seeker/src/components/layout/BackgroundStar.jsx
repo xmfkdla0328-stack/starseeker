@@ -80,7 +80,7 @@ export const FloatingStar = ({ position = '', animationDelay = '0s', color = 'wh
   return (
     <div 
       className={`absolute ${position} w-px h-px rounded-full animate-float ${bgClass}`}
-      style={{ animationDelay }}
+      style={{ '--animation-delay': animationDelay }}
     />
   );
 };

@@ -25,12 +25,12 @@ export const useBattleController = ({
     const { nextActor, updatedUnits, passedTime } = calculateNextState(allUnits);
 
     if (!nextActor) {
-      console.error("No actor found!");
+      console.error('No actor found!');
       setIsProcessing(false);
       return;
     }
 
-    const newEnemyState = updatedUnits.find(u => u.uid === currentEnemy.uid || u.id === currentEnemy.id);
+    const newEnemyState = updatedUnits.find(u => (u.uid && u.uid === currentEnemy.uid) || (u.id && u.id === currentEnemy.id));
     if (newEnemyState) setEnemy(prev => ({ ...prev, ...newEnemyState }));
 
     const newAlliesState = updatedUnits.filter(u => !u.isEnemy);
@@ -49,6 +49,7 @@ export const useBattleController = ({
 
       if (res.isDefeat) {
          setBattleState('DEFEAT');
+         if (typeof onBattleEnd === 'function') onBattleEnd(false);
       } else {
          setIsProcessing(false);
          setTimeout(() => processTurn(), 500);
@@ -59,10 +60,10 @@ export const useBattleController = ({
       setIsProcessing(false);
     }
 
-  }, [battleState, isProcessing, allies, enemy, setEnemy, setAllies, setLogs, setBattleState, setTurnCount]);
+  }, [battleState, isProcessing, allies, enemy, setEnemy, setAllies, setLogs, setBattleState, setTurnCount, onBattleEnd]);
 
   const stepTurn = useCallback(async (actionType, targetId) => {
-     const activeAllyIndex = allies.findIndex(a => a.distance <= 0.1 && !a.isDead);
+     const activeAllyIndex = allies.findIndex(a => (typeof a.distance === 'number' ? a.distance <= 0.1 : false) && !a.isDead);
      if (activeAllyIndex === -1) {
         processTurn();
         return;
@@ -77,7 +78,7 @@ export const useBattleController = ({
 
      if (res.isVictory) {
         setBattleState('VICTORY');
-        onBattleEnd(true);
+        if (typeof onBattleEnd === 'function') onBattleEnd(true);
      } else {
         const resetAllies = res.newAllies.map((a, i) => 
            i === activeAllyIndex ? resetUnitDistance(a) : a
@@ -91,12 +92,12 @@ export const useBattleController = ({
 
   useEffect(() => {
     if (battleState === 'BATTLE' && !isProcessing) {
-       const someoneReady = [...allies, enemy].some(u => u.distance <= 0.1);
+       const someoneReady = [...allies, enemy].some(u => (typeof u.distance === 'number' ? u.distance <= 0.1 : false));
        if (!someoneReady) {
           processTurn();
        }
     }
-  }, [battleState]);
+  }, [battleState, allies, enemy, isProcessing, processTurn]);
 
   return { processTurn, stepTurn };
 };
