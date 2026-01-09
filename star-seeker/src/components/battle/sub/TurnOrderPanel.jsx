@@ -11,9 +11,6 @@ const TurnOrderPanel = ({ turnQueue = [] }) => {
   ];
 
   return null;
-};
-
-export default TurnOrderPanel;
-};
+}
 
 export default TurnOrderPanel;
