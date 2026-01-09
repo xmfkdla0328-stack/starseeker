@@ -93,28 +93,7 @@ const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, mission
           {/* 4개 슬롯 + 연결선 */}
           <PartySlotGrid members={party.members} onSlotClick={handleSlotClick} />
 
-          {/* 미션 타입 선택 */}
-          <div className="flex items-center gap-4 flex-nowrap">
-            <span className="text-sm text-slate-400 font-semibold whitespace-nowrap flex-shrink-0">인과 연산:</span>
-            <div className="flex gap-2">
-              {[MISSION_TYPES.CHAOS, MISSION_TYPES.SILENCE].map((type) => {
-                const isActive = missionType === type;
-                return (
-                  <button
-                    key={type}
-                    onClick={() => setMissionType(type)}
-                    className={`px-6 py-2 rounded-lg font-bold text-sm border-2 transition-all ${
-                      isActive
-                        ? 'border-cyan-400 bg-cyan-500/20 text-cyan-100 shadow-lg shadow-cyan-500/30'
-                        : 'border-slate-600 bg-slate-800/40 text-slate-300 hover:border-cyan-400/60'
-                    }`}
-                  >
-                    {type === MISSION_TYPES.CHAOS ? '혼돈 (CHAOS)' : '침묵 (SILENCE)'}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          {/* 미션 타입 선택 영역 삭제됨 */}
         </div>
 
         {/* [우측] 상세 정보 (Analysis) */}
