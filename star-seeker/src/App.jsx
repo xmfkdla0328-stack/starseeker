@@ -161,10 +161,16 @@ function StarSeekerAppContent() {
 }
 
 export default function StarSeekerApp() {
-  // [디버깅] App 최상단에서 Provider 구조 확인
+  // [디버깅] App 최상단에서 Provider 구조 및 데이터 전달 확인
   console.log('[App][FLOW] GameContextProvider 렌더링됨');
-
-  // partyData, enemyData를 실제 데이터 파일에서 import하여 전달
+  console.log('[App][CHECK] partyData:', partyData);
+  console.log('[App][CHECK] enemyData:', enemyData);
+  if (!partyData || !Array.isArray(partyData) || partyData.length === 0) {
+    console.warn('[App][WARN] partyData가 올바르지 않습니다:', partyData);
+  }
+  if (!enemyData || !Array.isArray(enemyData) || enemyData.length === 0) {
+    console.warn('[App][WARN] enemyData가 올바르지 않습니다:', enemyData);
+  }
   return (
     <GameContextProvider partyData={partyData} enemyData={enemyData}>
       <StarSeekerAppContent />

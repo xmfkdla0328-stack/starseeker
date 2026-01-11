@@ -12,6 +12,24 @@ import { buildContextValues } from './buildContextValues';
  * - 3개의 Context를 중첩하여 제공 (UI, Player, Inventory)
  */
 export const GameContextProvider = ({ children, partyData, enemyData }) => {
+  // [디버깅] GameContextProvider에서 데이터 전달 확인
+  console.log('[GameContextProvider][CHECK] partyData:', partyData);
+  console.log('[GameContextProvider][CHECK] enemyData:', enemyData);
+  const isValidParty = partyData && Array.isArray(partyData) && partyData.length > 0 && partyData.every(x => x);
+  const isValidEnemy = enemyData && Array.isArray(enemyData) && enemyData.length > 0 && enemyData.every(x => x);
+  if (!isValidParty) {
+    console.warn('[GameContextProvider][WARN] partyData가 올바르지 않습니다:', partyData);
+  }
+  if (!isValidEnemy) {
+    console.warn('[GameContextProvider][WARN] enemyData가 올바르지 않습니다:', enemyData);
+  }
+
+  // 데이터가 유효할 때만 useGameState 호출
+  if (!isValidParty || !isValidEnemy) {
+    // 로딩 중 또는 더미 데이터 fallback (children만 반환)
+    return <div style={{color:'#f00',padding:'2rem'}}>전투 데이터 로딩 중 또는 데이터 오류</div>;
+  }
+
   // 모든 게임 상태 초기화 (partyData, enemyData 전달)
   const gameState = useGameState(partyData, enemyData);
 

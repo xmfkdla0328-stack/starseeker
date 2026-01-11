@@ -9,19 +9,25 @@ import { calculateTurnsPerCycle } from '../utils/battle/turnLogic';
  * - interventionMode: 개입 모드 활성화 여부 (부모에서 상태 관리)
  * - onToggleIntervention: 타임라인 클릭 시 개입 모드 토글 함수
  */
+
 export default function TimelineArea({ interventionMode, onToggleIntervention }) {
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const [cpLackSkillKey, setCpLackSkillKey] = useState(null); // CP 부족 시각 피드백용
 
-  // 실제 전투 데이터 연동 준비: useBattleContext로 allies/enemy/battleState 받아오기
-  let battleAllies = null, battleEnemy = null, battleState = null;
+  // 실제 전투 데이터 연동 준비: useBattleContext로 allies/enemy/battleState/battleCp 받아오기
+  let battleAllies = null, battleEnemy = null, battleState = null, battleCp = 0, setBattleCp = null;
+  let setLogs = null;
   try {
     const ctx = useBattleContext();
     battleAllies = ctx.battleAllies;
     battleEnemy = ctx.battleEnemy;
     battleState = ctx.battleState;
+    battleCp = ctx.battleCp ?? 0;
+    setBattleCp = ctx.setBattleCp;
+    setLogs = ctx.setLogs;
     // 실제 데이터가 정상적으로 들어오는지 콘솔로만 확인(렌더링 영향 X)
     // eslint-disable-next-line no-console
-    console.log('[TimelineArea] battleAllies:', battleAllies, 'battleEnemy:', battleEnemy, 'battleState:', battleState);
+    console.log('[TimelineArea] battleAllies:', battleAllies, 'battleEnemy:', battleEnemy, 'battleState:', battleState, 'battleCp:', battleCp);
   } catch (e) {
     // Provider 외부에서 호출 시 에러 방지(더미 데이터만 사용)
   }
@@ -54,13 +60,11 @@ export default function TimelineArea({ interventionMode, onToggleIntervention })
     return { x, y };
   }
 
-  // 실제 데이터 기반 렌더링: battleAllies가 있으면 실제 데이터, 없으면 기존 더미
+  // 실제 데이터 기반 렌더링: battleAllies가 없으면 아무것도 렌더링하지 않음(더미 제거)
   const renderUnits = () => {
-    // 도착(턴 획득) 유닛: position <= 0
-    const arrivedIds = (battleAllies && Array.isArray(battleAllies))
-      ? battleAllies.filter(u => (u.position ?? 10000) <= 0).map(u => u.id)
-      : [];
     if (battleAllies && Array.isArray(battleAllies) && battleAllies.length > 0) {
+      // 도착(턴 획득) 유닛: position <= 0
+      const arrivedIds = battleAllies.filter(u => (u.position ?? 10000) <= 0).map(u => u.id);
       // 다음 행동 유닛(예지): position이 0에 가장 가까운(가장 작은) 유닛
       const nextUnitIdx = battleAllies.reduce((minIdx, u, idx, arr) => {
         if (arr[minIdx] === undefined) return idx;
@@ -107,32 +111,8 @@ export default function TimelineArea({ interventionMode, onToggleIntervention })
           </g>
         );
       });
-    } else {
-      // 기존 더미 데이터 fallback
-      return [
-        {x:100,y:40,color:'#38bdf8'},{x:260,y:40,color:'#f87171'},{x:420,y:40,color:'#a3e635'}
-      ].map((u, idx) => (
-        <g key={idx}>
-          <circle cx={u.x-30} cy={u.y} r="10" fill={u.color} opacity="0.2" />
-          <circle
-            cx={u.x}
-            cy={u.y}
-            r="14"
-            fill={u.color}
-            stroke={interventionMode ? '#ffe066' : '#fff'}
-            strokeWidth={interventionMode ? 5 : 3}
-            filter={interventionMode ? 'url(#glow)' : undefined}
-          />
-          {idx === 0 && (
-            <g>
-              <circle cx={u.x} cy={u.y-22} r="10" fill="#fff" stroke="#60a5fa" strokeWidth="2" />
-              <text x={u.x} y={u.y-17} textAnchor="middle" fontSize="14" fill="#2563eb" fontWeight="bold">👁️</text>
-            </g>
-          )}
-          <text x={u.x} y={u.y+5} textAnchor="middle" fontSize="14" fill="#222" fontWeight="bold">U{idx+1}</text>
-        </g>
-      ));
     }
+    return null;
   };
 
   // [2-10-3-3] 싸이클 내 노드(꼭짓점) 동적 생성 로직
@@ -208,13 +188,13 @@ export default function TimelineArea({ interventionMode, onToggleIntervention })
             {[...Array(10)].map((_, i) => (
               <div
                 key={i}
-                className={`w-4 h-7 mx-0.5 rounded-md border-2 ${i < 4 ? 'bg-yellow-300 border-yellow-500' : 'bg-gray-700 border-gray-500'}`}
+                className={`w-4 h-7 mx-0.5 rounded-md border-2 ${i < Math.floor((battleCp ?? 0) / 10) ? 'bg-yellow-300 border-yellow-500' : 'bg-gray-700 border-gray-500'}`}
                 style={{ transition: 'background 0.2s' }}
                 title={`CP ${(i+1)*10}`}
               />
             ))}
             <span className="ml-2 text-yellow-200 font-bold text-xs">CP</span>
-            <span className="ml-1 text-yellow-100 text-xs font-mono">40 / 100</span>
+            <span className="ml-1 text-yellow-100 text-xs font-mono">{battleCp} / 100</span>
           </div>
           {/* 개입 스킬 선택 UI (개입 모드일 때만) */}
           {interventionMode && (
@@ -223,10 +203,30 @@ export default function TimelineArea({ interventionMode, onToggleIntervention })
                 <button
                   key={skill.key}
                   className={`flex flex-col items-center px-2 py-1 rounded-lg transition-all duration-150 font-semibold text-xs focus:outline-none
-                    ${selectedSkill === skill.key ? 'bg-yellow-400 text-gray-900 scale-110 shadow-xl border-2 border-yellow-600' : 'bg-gray-800 text-yellow-200 hover:bg-yellow-300 hover:text-gray-900'}`}
+                    ${selectedSkill === skill.key ? 'bg-yellow-400 text-gray-900 scale-110 shadow-xl border-2 border-yellow-600' : 'bg-gray-800 text-yellow-200 hover:bg-yellow-300 hover:text-gray-900'}
+                    ${cpLackSkillKey === skill.key ? 'animate-pulse border-2 border-red-500 bg-red-200 text-red-900' : ''}`}
                   onClick={e => {
                     e.stopPropagation();
                     setSelectedSkill(skill.key);
+                    // [트리거] 개입 스킬 사용 시 CP 소모 및 UI/로그 동기화 예시
+                    if (setBattleCp && typeof battleCp === 'number') {
+                      if (battleCp < skill.cpCost) {
+                        setCpLackSkillKey(skill.key); // 버튼에 CP 부족 피드백
+                        setTimeout(() => setCpLackSkillKey(null), 1200); // 1.2초 후 해제
+                        if (setLogs) {
+                          setLogs(prev => [...(prev || []), `[개입] ${skill.name} 사용 실패: CP 부족! (필요: ${skill.cpCost}, 보유: ${battleCp})`]);
+                        } else {
+                          window.alert('CP가 부족합니다!');
+                        }
+                        return;
+                      }
+                      setBattleCp(battleCp - skill.cpCost);
+                      if (setLogs) {
+                        setLogs(prev => [...(prev || []), `[개입] ${skill.name} 사용, CP ${skill.cpCost} 소모! (잔여: ${battleCp - skill.cpCost})`]);
+                      } else {
+                        window.alert(`[개입] ${skill.name} 사용, CP ${skill.cpCost} 소모!`);
+                      }
+                    }
                   }}
                   title={skill.name}
                   type="button"
@@ -234,6 +234,9 @@ export default function TimelineArea({ interventionMode, onToggleIntervention })
                   <span className="text-lg mb-1">{skill.icon}</span>
                   <span>{skill.name}</span>
                   <span className="text-[10px] text-yellow-300 font-bold mt-0.5">CP {skill.cpCost}</span>
+                  {cpLackSkillKey === skill.key && (
+                    <span className="text-xs text-red-600 font-bold mt-1 animate-bounce">CP 부족!</span>
+                  )}
                 </button>
               ))}
             </div>

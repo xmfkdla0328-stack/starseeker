@@ -58,9 +58,21 @@ export const useGameState = (partyData, enemyData) => {
   // 인연도 시스템 (정원/전투)
   const { increaseBondFromBattle } = useBondSystem(inventory, setInventory, party, screen);
 
-  // 향후 확장: 전투/시너지 시스템
-  // partyData, enemyData를 useBattleSystem에 전달
-  const battleSystem = useBattleSystem(partyData, enemyData);
+  // partyData, enemyData가 항상 유효하도록 보장
+  const safePartyData = Array.isArray(partyData) && partyData.length > 0 ? partyData : null;
+  const safeEnemyData = Array.isArray(enemyData) && enemyData.length > 0 ? enemyData : null;
+  // 데이터가 준비되지 않았으면 battleSystem도 null 반환
+  const battleSystem = (safePartyData && safeEnemyData)
+    ? useBattleSystem(safePartyData, safeEnemyData)
+    : {
+        allies: [],
+        enemy: null,
+        battleState: 'INIT',
+        turnCount: 0,
+        logs: [],
+        battleCp: 100,
+        setBattleCp: () => {},
+      };
   const synergy = useSynergy();
   const { handleLevelUp, EXP_PER_CHIP } = useLevelSystem({
     inventory,
@@ -109,8 +121,8 @@ export const useGameState = (partyData, enemyData) => {
     // 전투 시스템 (세부 데이터 분리)
     battleSystem,
     battleAllies: Array.isArray(battleSystem.allies) ? battleSystem.allies : [],
-    battleEnemy: battleSystem.enemy || {},
-    battleState: battleSystem.battleState || 'INIT',
+    battleEnemy: battleSystem.enemy ?? null,
+    battleState: battleSystem.battleState ?? 'INIT',
     battleTurnCount: typeof battleSystem.turnCount === 'number' ? battleSystem.turnCount : 0,
     battleLogs: Array.isArray(battleSystem.logs) ? battleSystem.logs : [],
     // 기타 시스템
