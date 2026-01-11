@@ -24,7 +24,7 @@ export const initializeBattleAllies = (
       spd: c.baseSpd,
       distance: 10000, // 거리 시스템 적용
       maxDistance: 10000,
-      cp: 0, // 인과력 초기화
+      // ...existing code...
       isDead: false,
       buffs: [],
     });
@@ -44,7 +44,7 @@ export const initializeBattleAllies = (
       spd: c.baseSpd,
       distance: 10000, // 거리 시스템 적용
       maxDistance: 10000,
-      cp: 0,
+      // ...existing code...
       isDead: false,
       buffs: [],
     });

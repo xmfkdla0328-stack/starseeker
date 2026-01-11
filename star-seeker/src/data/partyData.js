@@ -6,10 +6,10 @@ export const partyData = [
     position: 'FRONT',
     baseHp: 100,
     baseEp: 50,
-    baseCp: 0,
+    // ...existing code...
     maxHp: 100,
     maxEp: 50,
-    maxCp: 100,
+    // ...existing code...
     speed: 90,
     element: 'ENTROPY',
     job: '딜러',
@@ -23,10 +23,10 @@ export const partyData = [
     position: 'BACK',
     baseHp: 120,
     baseEp: 40,
-    baseCp: 0,
+    // ...existing code...
     maxHp: 120,
     maxEp: 40,
-    maxCp: 100,
+    // ...existing code...
     speed: 80,
     element: 'GRAVITY',
     job: '탱커',
@@ -40,10 +40,10 @@ export const partyData = [
     position: 'FRONT',
     baseHp: 90,
     baseEp: 60,
-    baseCp: 0,
+    // ...existing code...
     maxHp: 90,
     maxEp: 60,
-    maxCp: 100,
+    // ...existing code...
     speed: 100,
     element: 'RESONANCE',
     job: '힐러',
@@ -57,10 +57,10 @@ export const partyData = [
     position: 'BACK',
     baseHp: 110,
     baseEp: 55,
-    baseCp: 0,
+    // ...existing code...
     maxHp: 110,
     maxEp: 55,
-    maxCp: 100,
+    // ...existing code...
     speed: 85,
     element: 'ENTROPY',
     job: '패스파인더',

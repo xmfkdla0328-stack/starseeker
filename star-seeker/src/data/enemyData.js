@@ -5,8 +5,8 @@ export const enemyData = [
     name: '화염룡',
     baseHp: 1500,
     maxHp: 1500,
-    baseCp: 0,
-    maxCp: 100,
+    // ...existing code...
+    // ...existing code...
     attack: 15,
     speed: 110,
     element: 'ENTROPY',
@@ -19,8 +19,8 @@ export const enemyData = [
     name: '얼음골렘',
     baseHp: 1800,
     maxHp: 1800,
-    baseCp: 0,
-    maxCp: 100,
+    // ...existing code...
+    // ...existing code...
     attack: 10,
     speed: 70,
     element: 'GRAVITY',

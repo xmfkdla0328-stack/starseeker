@@ -5,10 +5,10 @@ export const unitInstanceTemplate = {
   position: '',
   currentHp: 0,
   currentEp: 0,
-  currentCp: 0,
+  // ...existing code...
   maxHp: 0,
   maxEp: 0,
-  maxCp: 0,
+  // ...existing code...
   speed: 0,
   element: '',
   job: '',

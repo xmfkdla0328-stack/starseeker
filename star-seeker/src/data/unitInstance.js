@@ -22,7 +22,7 @@ export class UnitInstance {
     // 전투 중 변동값
     this.currentHp = baseData.baseHp;
     this.currentEp = 0; // 필살기 게이지
-    this.currentCp = 0; // 인과력 게이지 (유닛별 수급량은 직업/스킬/장비로 결정)
+    // ...existing code...
     this.position = options.position || 10000; // 타임라인 거리 (기본: 미래)
     this.isAlly = options.isAlly ?? true; // 아군/적군 구분
     this.statusEffects = []; // 상태이상 목록
@@ -32,7 +32,7 @@ export class UnitInstance {
     this.isDead = false;
   }
 
-  // HP/EP/CP 등 실시간 변동 메서드 예시
+  // HP/EP 등 실시간 변동 메서드 예시
   takeDamage(amount) {
     this.currentHp = Math.max(0, this.currentHp - amount);
     if (this.currentHp === 0) this.isDead = true;
@@ -57,9 +57,7 @@ export class UnitInstance {
     }
   }
 
-  gainCp(amount) {
-    this.currentCp = Math.min(1000, this.currentCp + amount);
-  }
+  // ...existing code...
 
   // 기타 상태이상, 장비, 스킬 등은 추후 확장
 }

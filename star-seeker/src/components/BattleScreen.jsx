@@ -45,7 +45,7 @@ export const BattleScreen = ({ partyData, enemyData: enemyDataProp, missionType 
                 )}
               </div>
               <span className={`text-sm mt-2 font-semibold ${battleEnemy.isDead ? 'text-gray-400' : ''}`}>{battleEnemy.name}</span>
-              {/* HP/CP/상태이상/사망/부활 등 실시간 반영 */}
+              {/* HP/상태이상/사망/부활 등 실시간 반영 */}
               <div className="w-20 h-4 bg-gray-800 rounded mt-2 flex items-center">
                 <div
                   className="h-4 rounded bg-red-500"
@@ -53,7 +53,7 @@ export const BattleScreen = ({ partyData, enemyData: enemyDataProp, missionType 
                 />
               </div>
               <span className="text-xs text-red-300">HP: {battleEnemy.hp} / {battleEnemy.maxHp}</span>
-              <span className="text-xs text-yellow-300">CP: {battleEnemy.cp ?? 0}</span>
+              {/* ...existing code... */}
               {/* 상태이상 표시 예시 */}
               {battleEnemy.statusEffects && battleEnemy.statusEffects.length > 0 && (
                 <div className="flex flex-row gap-1 mt-1">
