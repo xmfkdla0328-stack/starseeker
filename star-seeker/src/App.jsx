@@ -1,4 +1,6 @@
 import React, { useState, useCallback } from 'react';
+import { partyData } from './data/partyData';
+import { enemyData } from './data/enemyData';
 import { Sparkles } from 'lucide-react';
 import { MISSION_TYPES } from './constants/battle';
 import { GameContextProvider } from './context/GameContext';
@@ -11,7 +13,7 @@ import { StatusBar } from './components/layout/StatusBar';
 import { Background } from './components/layout/Background';
 
 import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, CodexScreen, InventoryScreen, ObservationScreen, BattleScreen, ProfileScreen } from './components/Screens';
-import { ExtractionScreen } from './components/ExtractionScreen';
+import { ExtractionScreen } from './components/Screens';
 import { buildEnemyFromDungeon } from './data/dungeonData';
 
 function StarSeekerAppContent() {
@@ -19,7 +21,10 @@ function StarSeekerAppContent() {
   const { inventory, setInventory, party, setParty, items, setItems, handleGacha, handleLevelUp, EXP_PER_CHIP } = useInventory();
   const { playerInfo, playerStats, unlockedAchievements, handleSelectTitle, setPlayerInfo } = usePlayer();
 
-  // 미션 타입은 'CHAOS' | 'SILENCE' 리터럴 유니언을 명시
+  // party가 undefined일 경우 기본값 설정
+  const safeParty = party ?? { members: [] };
+
+  // 미션 타입은 'CHAOS' | 'SILENCE' 리턴 유니언을 명시
   const [missionType, setMissionType] = useState(
     /** @type {MissionType} */ (MISSION_TYPES.CHAOS)
   );
@@ -67,7 +72,9 @@ function StarSeekerAppContent() {
             )}
             {screen === 'PARTY' && (
               <PartyScreen 
-                party={party} setParty={setParty} inventory={inventory} 
+                party={Array.isArray(party) ? party : []} 
+                setParty={setParty} 
+                inventory={Array.isArray(inventory) ? inventory : partyData} 
                 showToast={showToast} setScreen={setScreen}
                 missionType={missionType}
                 setMissionType={setMissionType}
@@ -80,19 +87,19 @@ function StarSeekerAppContent() {
               <GardenScreen inventory={inventory} showToast={showToast} setScreen={setScreen} />
             )}
             {screen === 'OBSERVATION' && (
-              <ObservationScreen setScreen={setScreen} startBattle={startBattle} party={party} />
+              <ObservationScreen setScreen={setScreen} startBattle={startBattle} party={Array.isArray(party) ? party : []} />
             )}
             {screen === 'EXTRACTION' && (
               <ExtractionScreen
                 setScreen={setScreen}
                 onStartExtraction={handleStartExtraction}
-                party={party}
+                party={Array.isArray(party) ? party : []}
               />
             )}
             {screen === 'EXTRACTION_BATTLE' && extractionStage && (
               <BattleScreen
-                partyData={party.members.filter(c => c !== null)}
-                enemyData={buildEnemyFromDungeon(extractionStage)}
+                partyData={Array.isArray(party) ? party : []}
+                enemyData={enemyData}
                 missionType={missionType}
                 extractionRewards={extractionStage.rewards}
                 onVictory={(rewards) => {
@@ -117,16 +124,8 @@ function StarSeekerAppContent() {
             )}
             {screen === 'BATTLE' && (
               <BattleScreen 
-                partyData={party.members.filter(c => c !== null)} 
-                enemyData={{ 
-                  hp: 1500, 
-                  maxHp: 1500, 
-                  attack: 15, 
-                  name: '화염룡',
-                  element: 'ENTROPY',
-                  currentElement: null,
-                  speed: 110,
-                }} 
+                partyData={Array.isArray(party) ? party : []}
+                enemyData={enemyData}
                 missionType={missionType}
                 handleAttackResult={handleAttackResult}
               />
@@ -162,8 +161,12 @@ function StarSeekerAppContent() {
 }
 
 export default function StarSeekerApp() {
+  // [디버깅] App 최상단에서 Provider 구조 확인
+  console.log('[App][FLOW] GameContextProvider 렌더링됨');
+
+  // partyData, enemyData를 실제 데이터 파일에서 import하여 전달
   return (
-    <GameContextProvider>
+    <GameContextProvider partyData={partyData} enemyData={enemyData}>
       <StarSeekerAppContent />
     </GameContextProvider>
   );

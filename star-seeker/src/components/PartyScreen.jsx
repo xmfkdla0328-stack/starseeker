@@ -1,4 +1,5 @@
 import React from 'react';
+import partyData from '../data/partyData';
 import { Users, Zap, ChevronRight, HelpCircle } from 'lucide-react';
 import { BackButton } from './common/BackButton';
 import { TacticalGuideModal } from './common/TacticalGuideModal';
@@ -11,7 +12,12 @@ import { usePartyState } from '../hooks/usePartyState';
 import { usePartyHandlers } from '../hooks/usePartyHandlers';
 import { MISSION_TYPES } from '../utils/battle/gaugeLogic';
 
-const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, missionType, setMissionType }) => {
+const PartyScreen = (props) => {
+  let { party, setParty, inventory, showToast, setScreen, missionType, setMissionType } = props;
+  party = Array.isArray(party) ? [...party] : [];
+  while (party.length < 4) party.push(null);
+  party = party.slice(0, 4);
+  inventory = Array.isArray(inventory) ? inventory : [];
   // 상태 관리
   const { selectedCharacter, setSelectedCharacter, showGuide, setShowGuide } = usePartyState();
   
@@ -30,7 +36,7 @@ const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, mission
     removeChar,
   });
 
-  const isPartyFull = party.members.filter(p => p).length === 4;
+  const isPartyFull = party.filter(Boolean).length === 4;
 
   return (
     <div className="flex flex-col h-full relative" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
@@ -71,11 +77,11 @@ const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, mission
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-2">
-            {inventory.map((char) => (
+            {inventory.filter(Boolean).map((char) => (
               <PartyRosterCard
                 key={char.uid}
                 char={char}
-                isDeployed={party.members.some(p => p && p.id === char.id)}
+                isDeployed={party.filter(Boolean).some(p => p.id === char.id)}
                 isSelected={selectedCharacter?.id === char.id}
                 onClick={() => handleCharacterClick(char)}
               />
@@ -91,7 +97,7 @@ const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, mission
           </div>
 
           {/* 4개 슬롯 + 연결선 */}
-          <PartySlotGrid members={party.members} onSlotClick={handleSlotClick} />
+          <PartySlotGrid members={party} onSlotClick={handleSlotClick} />
 
           {/* 미션 타입 선택 영역 삭제됨 */}
         </div>
@@ -112,7 +118,7 @@ const PartyScreen = ({ party, setParty, inventory, showToast, setScreen, mission
           }`}
         >
           <Zap size={24} className={isPartyFull ? 'text-yellow-300' : 'text-slate-600'} />
-          {isPartyFull ? '관측 개시' : `${4 - party.members.filter(p => p).length}명 더 선택`}
+          {isPartyFull ? '관측 개시' : `${4 - party.filter(p => p).length}명 더 선택`}
           {isPartyFull && <ChevronRight size={24} />}
         </button>
       </div>

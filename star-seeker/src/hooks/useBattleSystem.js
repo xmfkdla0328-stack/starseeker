@@ -10,11 +10,20 @@ export const useBattleSystem = (partyData, stageData) => {
   const [turnCount, setTurnCount] = useState(0);
   const [logs, setLogs] = useState([]);
 
+  // [디버깅] 파라미터 및 상태 추적
+  console.log('[useBattleSystem][PARAM] partyData:', partyData);
+  console.log('[useBattleSystem][PARAM] stageData:', stageData);
+  console.log('[useBattleSystem][STATE] allies:', allies);
+  console.log('[useBattleSystem][STATE] enemy:', enemy);
+  console.log('[useBattleSystem][STATE] battleState:', battleState);
+
   // 2. 전투 초기화 (데이터 로딩)
   useEffect(() => {
     if (partyData && partyData.length > 0 && stageData) {
-      console.log("Battle Initializing...");
-      
+      console.log('[useBattleSystem][INIT] Battle Initializing...');
+      console.log('[useBattleSystem][INIT] partyData:', partyData);
+      console.log('[useBattleSystem][INIT] stageData:', stageData);
+
       // 아군 및 적군 데이터 초기화 (거리 10000 설정 등)
       const initAllies = initializeBattleAllies(
         partyData.filter(c => c.position === 'FRONT'), // 전열
@@ -22,12 +31,16 @@ export const useBattleSystem = (partyData, stageData) => {
       );
       const initBoss = initializeBoss(stageData);
 
+      console.log('[useBattleSystem][INIT] setAllies:', initAllies);
+      console.log('[useBattleSystem][INIT] setEnemy:', initBoss);
+
       setAllies(initAllies);
       setEnemy(initBoss);
-      
+
       // 데이터 준비가 끝나면 전투 시작 상태로 전환
       setTimeout(() => {
         setBattleState('BATTLE');
+        console.log('[useBattleSystem][INIT] battleState set to BATTLE');
       }, 500);
     }
   }, [partyData, stageData]);

@@ -12,18 +12,18 @@ export const usePartyHandlers = ({
 }) => {
   // 캐릭터 클릭: 파티에 추가 또는 상세 정보 보기
   const handleCharacterClick = useCallback((char) => {
-    const isDeployed = party.members.some(p => p && p.id === char.id);
-    if (!isDeployed && party.members.filter(p => p).length < 4) {
+    const isDeployed = party.some(p => p && p.id === char.id);
+    if (!isDeployed && party.filter(p => p).length < 4) {
       // 빈 슬롯에 추가
-      const emptyIndex = party.members.findIndex(p => !p);
+      const emptyIndex = party.findIndex(p => !p);
       handleAssign(char, false, true, { line: 'members', index: emptyIndex });
     }
     setSelectedCharacter(char);
-  }, [party.members, handleAssign, setSelectedCharacter]);
+  }, [party, handleAssign, setSelectedCharacter]);
 
   // 슬롯 클릭: 캐릭터 제거
   const handleSlotClick = useCallback((idx, event) => {
-    const char = party.members[idx];
+    const char = party[idx];
     // 빈 슬롯이면 무시
     if (!char) return;
     
@@ -34,7 +34,7 @@ export const usePartyHandlers = ({
     if (selectedCharacter?.id === char.id) {
       setSelectedCharacter(null);
     }
-  }, [party.members, removeChar, selectedCharacter, setSelectedCharacter]);
+  }, [party, removeChar, selectedCharacter, setSelectedCharacter]);
 
   return {
     handleCharacterClick,

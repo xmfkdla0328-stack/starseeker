@@ -11,19 +11,32 @@ import { buildContextValues } from './buildContextValues';
  * - buildContextValues: Context별 값 객체 생성
  * - 3개의 Context를 중첩하여 제공 (UI, Player, Inventory)
  */
-export const GameContextProvider = ({ children }) => {
-  // 모든 게임 상태 초기화
-  const gameState = useGameState();
+export const GameContextProvider = ({ children, partyData, enemyData }) => {
+  // 모든 게임 상태 초기화 (partyData, enemyData 전달)
+  const gameState = useGameState(partyData, enemyData);
 
   // Context 값 객체 생성
-  const { playerContextValue, inventoryContextValue, uiContextValue } =
-    buildContextValues(gameState);
+  const {
+    playerContextValue,
+    inventoryContextValue,
+    uiContextValue,
+    battleContextValue,
+  } = buildContextValues(gameState);
+
+  // [디버깅] Provider에서 battleContextValue 내부 값 추적
+  if (!battleContextValue || !battleContextValue.battleAllies || !battleContextValue.battleEnemy) {
+    console.warn('[GameContextProvider][WARN] battleContextValue에 실제 데이터가 없습니다:', battleContextValue);
+  } else {
+    console.log('[GameContextProvider][FLOW] battleContextValue:', battleContextValue);
+  }
 
   return (
     <UIContext.Provider value={uiContextValue}>
       <PlayerContext.Provider value={playerContextValue}>
         <InventoryContext.Provider value={inventoryContextValue}>
-          {children}
+          <BattleContext.Provider value={battleContextValue}>
+            {children}
+          </BattleContext.Provider>
         </InventoryContext.Provider>
       </PlayerContext.Provider>
     </UIContext.Provider>

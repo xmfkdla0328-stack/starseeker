@@ -72,3 +72,26 @@ export const executeBossAction = (enemyUnit, alliesArray = [], reviveCount = 0) 
   const isDefeat = newAllies.every(a => a.isDead || (a.hp || 0) <= 0);
   return { newAllies, logs, isDefeat };
 };
+
+/**
+ * [2-10-3-3] 한 싸이클 내 유닛별 턴 획득 빈도(속도 기반) 계산
+ * - cycleTime: 싸이클 기준 시간(아군 전체가 1회 행동하는 데 걸리는 시간)
+ * - units: { id, spd, distance } 등 포함된 유닛 배열
+ * 반환: [{ id, turnsInCycle, spd, ... }]
+ */
+export function calculateTurnsPerCycle(units = [], cycleTime = 0) {
+  if (!Array.isArray(units) || units.length === 0) return [];
+  // 싸이클 기준 시간: 가장 느린 유닛이 1턴 획득하는 데 걸리는 시간
+  // (예: 모든 유닛 distance=10000, spd=각자 속도)
+  let minSpd = Math.min(...units.map(u => typeof u.spd === 'number' ? u.spd : 0));
+  if (!cycleTime || cycleTime <= 0) {
+    cycleTime = 10000 / (minSpd || 1);
+  }
+  return units.map(u => {
+    const spd = typeof u.spd === 'number' ? u.spd : 0;
+    // 해당 유닛이 싸이클 내 획득하는 턴 수: 싸이클 시간 동안 distance가 0 이하가 되는 횟수
+    // 즉, 싸이클 시간 동안 얼마나 많이 도착하는지
+    const turnsInCycle = spd > 0 ? Math.floor((spd * cycleTime) / 10000) : 0;
+    return { ...u, turnsInCycle, spd };
+  });
+}

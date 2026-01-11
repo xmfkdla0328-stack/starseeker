@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+export const BattleContext = createContext(null);
 
 /**
  * 플레이어 정보 Context

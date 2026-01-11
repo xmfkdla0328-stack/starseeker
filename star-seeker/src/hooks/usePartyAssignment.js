@@ -12,14 +12,14 @@ export const usePartyAssignment = (party, setParty, showToast) => {
       return;
     }
 
-    const newParty = { ...party };
-    newParty.members[selectedSlot.index] = char;
+    const newParty = [...party];
+    newParty[selectedSlot.index] = char;
     setParty(newParty);
   }, [party, setParty, showToast]);
 
   const removeChar = useCallback((line, index) => {
-    const newParty = { ...party };
-    newParty.members[index] = null;
+    const newParty = [...party];
+    newParty[index] = null;
     setParty(newParty);
   }, [party, setParty]);
 

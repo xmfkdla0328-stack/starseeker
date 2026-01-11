@@ -26,7 +26,7 @@ export const useAutoParty = (inventory, showToast, setParty) => {
       newMembers[idx++] = char;
     }
 
-    setParty({ members: newMembers });
+    setParty(newMembers);
     showToast('파티가 자동 편성되었습니다.');
   }, [inventory, showToast, setParty]);
 };

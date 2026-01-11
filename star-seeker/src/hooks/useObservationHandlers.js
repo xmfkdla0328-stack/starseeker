@@ -40,7 +40,7 @@ export const useObservationHandlers = ({
     if (!selectedStage || isDeploying) return;
     
     // 파티 체크 - 최소 1명 이상 필요
-    const partyChars = party.members.filter((c) => c !== null);
+    const partyChars = Array.isArray(party) ? party.filter((c) => c !== null) : [];
     if (partyChars.length === 0) {
       alert('최소 1명의 캐릭터가 필요합니다.');
       return;

@@ -31,6 +31,12 @@ export const buildContextValues = (gameState) => {
     increaseBondFromBattle,
     handleLevelUp,
     EXP_PER_CHIP,
+    battleSystem,
+    battleAllies,
+    battleEnemy,
+    battleState,
+    battleTurnCount,
+    battleLogs,
   } = gameState;
 
   // PlayerContext 값
@@ -69,9 +75,27 @@ export const buildContextValues = (gameState) => {
     showToast,
   };
 
+  // BattleContext 값 (기본값 보장)
+  const battleContextValue = {
+    battleSystem,
+    battleAllies: Array.isArray(battleAllies) ? battleAllies : [],
+    battleEnemy: battleEnemy || {},
+    battleState: battleState || 'INIT',
+    battleTurnCount: typeof battleTurnCount === 'number' ? battleTurnCount : 0,
+    battleLogs: Array.isArray(battleLogs) ? battleLogs : [],
+  };
+
+  // [디버깅] battleContextValue 생성 시 값 확인
+  if (!battleContextValue.battleAllies.length || !battleContextValue.battleEnemy) {
+    console.warn('[buildContextValues][WARN] battleContextValue에 실제 데이터가 없습니다:', battleContextValue);
+  } else {
+    console.log('[buildContextValues][FLOW] battleContextValue:', battleContextValue);
+  }
+
   return {
     playerContextValue,
     inventoryContextValue,
     uiContextValue,
+    battleContextValue,
   };
 };

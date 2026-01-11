@@ -12,7 +12,7 @@ import { useLevelSystem } from '../hooks/useLevelSystem';
  * 게임 전체 상태를 관리하는 커스텀 훅
  * 모든 하위 시스템 훅을 초기화하고 조합
  */
-export const useGameState = () => {
+export const useGameState = (partyData, enemyData) => {
   // 화면/토스트 관리
   const { screen, setScreen, toast, showToast } = useSceneManager();
 
@@ -59,7 +59,8 @@ export const useGameState = () => {
   const { increaseBondFromBattle } = useBondSystem(inventory, setInventory, party, screen);
 
   // 향후 확장: 전투/시너지 시스템
-  const battleSystem = useBattleSystem();
+  // partyData, enemyData를 useBattleSystem에 전달
+  const battleSystem = useBattleSystem(partyData, enemyData);
   const synergy = useSynergy();
   const { handleLevelUp, EXP_PER_CHIP } = useLevelSystem({
     inventory,
@@ -70,6 +71,12 @@ export const useGameState = () => {
     setParty,
     showToast,
   });
+
+  // [디버깅] 전투 데이터 흐름 추적
+  console.log('[useGameState][FLOW] battleSystem:', battleSystem);
+  console.log('[useGameState][FLOW] battleAllies:', battleSystem.allies);
+  console.log('[useGameState][FLOW] battleEnemy:', battleSystem.enemy);
+  console.log('[useGameState][FLOW] battleState:', battleSystem.battleState);
 
   return {
     // UI 시스템
@@ -99,8 +106,14 @@ export const useGameState = () => {
     increaseBondFromBattle,
     handleLevelUp,
     EXP_PER_CHIP,
-    // 미사용 (향후 확장)
+    // 전투 시스템 (세부 데이터 분리)
     battleSystem,
+    battleAllies: Array.isArray(battleSystem.allies) ? battleSystem.allies : [],
+    battleEnemy: battleSystem.enemy || {},
+    battleState: battleSystem.battleState || 'INIT',
+    battleTurnCount: typeof battleSystem.turnCount === 'number' ? battleSystem.turnCount : 0,
+    battleLogs: Array.isArray(battleSystem.logs) ? battleSystem.logs : [],
+    // 기타 시스템
     synergy,
   };
 };

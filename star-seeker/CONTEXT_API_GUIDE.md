@@ -12,7 +12,8 @@ src/context/
 └── useGameContext.js     # 3가지 Context를 소비하는 커스텀 훅
 ```
 
-## 3가지 Context
+
+## 4가지 Context
 
 ### 1. PlayerContext
 플레이어 정보, 통계, 업적, 타이틀 관리
@@ -60,6 +61,67 @@ src/context/
 }
 ```
 
+### 4. BattleContext (전투 상태 통합)
+전투 상태(battleSystem, allies, enemy, battleState, turnCount, logs 등)를 Context API로 통합 관리
+
+```jsx
+{
+  battleSystem,      // 전투 시스템 전체 객체
+  battleAllies,      // 아군 유닛 배열
+  battleEnemy,       // 적 유닛 객체
+  battleState,       // 전투 상태('INIT', 'BATTLE', 'VICTORY', 'DEFEAT')
+  battleTurnCount,   // 현재 턴 카운트
+  battleLogs,        // 전투 로그 배열
+}
+```
+
+### 1. PlayerContext
+플레이어 정보, 통계, 업적, 타이틀 관리
+
+```jsx
+{
+  playerInfo,              // { nickname, level, exp, selectedTitle, ... }
+  setPlayerInfo,           // 상태 업데이트 함수
+  playerStats,             // { totalBattles, totalWins, ... }
+  setPlayerStats,          // 상태 업데이트 함수
+  unlockedAchievements,    // 해금된 업적 배열
+  setUnlockedAchievements, // 상태 업데이트 함수
+  handleSelectTitle,       // (titleId) => void
+  addExp,                  // (expAmount) => void
+}
+```
+
+### 2. InventoryContext
+캐릭터 인벤토리, 메인 캐릭터, 재화, 가챠, 파티, 인연도
+
+```jsx
+{
+  inventory,               // 캐릭터 배열
+  setInventory,            // 상태 업데이트 함수
+  items,                   // { gems, stardust, star_fragment_*, ... }
+  setItems,                // 상태 업데이트 함수
+  mainChar,                // 현재 메인 캐릭터
+  setMainChar,             // 상태 업데이트 함수
+  handleGacha,             // (count) => gachaResults
+  party,                   // { members: [null, null, null, null] }
+  setParty,                // 상태 업데이트 함수
+  increaseBondFromBattle,  // () => void
+}
+```
+
+### 3. UIContext
+화면 전환, 토스트 메시지
+
+```jsx
+{
+  screen,      // 현재 화면 ('HOME', 'PARTY', 'BATTLE', 'PROFILE', ...)
+  setScreen,   // (screenName) => void
+  toast,       // 현재 토스트 메시지 문자열 또는 null
+  showToast,   // (message) => void - 3초 자동 해제
+}
+```
+
+
 ## 사용 방법
 
 ### 1. App.jsx에서 Provider로 감싸기
@@ -78,19 +140,23 @@ export default function StarSeekerApp() {
 
 ### 2. 컴포넌트에서 Context 소비하기
 
+
 #### 전체 데이터가 필요한 경우
 ```jsx
 import { usePlayer, useInventory, useUI } from '../context/useGameContext';
+import { useBattleContext } from '../context/useBattleContext';
 
 export const MyComponent = () => {
   const { playerInfo, addExp } = usePlayer();
   const { inventory, mainChar } = useInventory();
   const { screen, setScreen, showToast } = useUI();
+  const { battleAllies, battleEnemy, battleState } = useBattleContext();
 
   // 이제 props로 전달받을 필요가 없다!
   return (
     <div>
       <p>Level: {playerInfo.level}</p>
+      <p>Battle State: {battleState}</p>
       <button onClick={() => addExp(100)}>Gain Exp</button>
       <button onClick={() => setScreen('HOME')}>Go Home</button>
     </div>
@@ -159,6 +225,7 @@ export const BattleScreen = ({ partyData, enemyData, missionType }) => {
 };
 ```
 
+
 ## 호출 흐름
 
 ```
@@ -169,14 +236,17 @@ GameContextProvider
 │   └── useGacha() (내부)
 ├── useLevelSync() (의존성: playerInfo, inventory, party)
 ├── useBondSystem() (의존성: inventory, party, screen)
-├── useBattleSystem() (향후 확장)
+├── useBattleSystem() → BattleContext
 └── useSynergy() (향후 확장)
 ```
+
 
 ## 주의사항
 
 1. **반드시 GameContextProvider 내부에서 사용**
-   - Provider 외부에서 Context 훅을 호출하면 에러 발생
+  - Provider 외부에서 Context 훅을 호출하면 에러 발생
+2. **BattleContext는 반드시 GameContextProvider 하위에서만 사용**
+  - useBattleContext()는 BattleContext.Provider 하위에서만 호출해야 함
 
 2. **의존성 관계**
    - useLevelSync는 playerInfo와 inventory 모두 필요하므로, 두 Context를 모두 포함하는 곳에서 관리
