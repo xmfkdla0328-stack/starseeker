@@ -3,10 +3,8 @@
  * 분할된 모듈들을 re-export하는 중앙 파일
  */
 
-// 레벨 시스템 re-export
+// 레벨 시스템 re-export (StatCalculator.js로 이동된 함수 제외)
 export {
-  calculateStatsByLevel,
-  applyCharacterLevel,
   LEVEL_EXP_TABLE,
   getExpProgress,
   getLevelFromExp,
@@ -15,11 +13,6 @@ export {
 // 경험치 테이블 re-export (직접 접근용)
 export { LEVEL_EXP_TABLE as EXP_TABLE } from './expTable';
 
-// 스킬 업그레이드 시스템 re-export
-export {
-  upgradeSkillLevel,
-  getStardustCostForSkill,
-} from './skillUpgrade';
 
 // 칭호 시스템 re-export
 export {

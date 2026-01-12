@@ -5,5 +5,5 @@
 
 export * from './rarityStyles';
 export * from './characterStyles';
-export * from './battleStyles';
+// battleStyles 관련 legacy 코드 제거됨
 export * from './animationStyles';

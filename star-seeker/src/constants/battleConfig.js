@@ -1,0 +1,8 @@
+// 전투 상수 분리
+export const BATTLE_CONSTANTS = {
+  MAX_DISTANCE: 10000,
+  ACTION_DISTANCE: 0,
+  MAX_CP: 1000,
+  CP_PER_SLOT: 250,
+  TICK_RATE: 50,
+};

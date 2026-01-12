@@ -6,7 +6,7 @@ import { ObservationViewport } from './observation/ObservationViewport';
 import { ObservationInfoPanel } from './observation/ObservationInfoPanel';
 import { useObservationState } from '../hooks/useObservationState';
 import { useObservationHandlers } from '../hooks/useObservationHandlers';
-import './ObservationConsole.css';
+import './ObservationConsole/ObservationConsole.css';
 
 /**
  * 관측 콘솔 (Observatory Console)

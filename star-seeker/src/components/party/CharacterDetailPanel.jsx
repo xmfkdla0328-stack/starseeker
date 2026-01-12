@@ -1,6 +1,6 @@
 import React from 'react';
 import { CHARACTER_SKILLS } from '../../data/characters/skillData';
-import { calculateStatsByLevel } from '../../data/levelSystem';
+import { calculateFinalStats } from '../../utils/StatCalculator';
 import { EmptyCharacterPanel } from './CharacterDetailPanel/EmptyCharacterPanel';
 import { CharacterHeader } from './CharacterDetailPanel/CharacterHeader';
 import { CharacterStats } from './CharacterDetailPanel/CharacterStats';
@@ -16,13 +16,7 @@ export const CharacterDetailPanel = ({ selectedCharacter }) => {
   }
 
   // 레벨에 따른 실제 스탯 계산
-  const actualStats = calculateStatsByLevel(
-    selectedCharacter.baseAtk || 0,
-    selectedCharacter.baseHp || 0,
-    selectedCharacter.level || 1,
-    selectedCharacter.breakthrough || 0,
-    selectedCharacter.baseDef || selectedCharacter.currentDef || 30
-  );
+  const actualStats = calculateFinalStats(selectedCharacter);
 
   // 캐릭터 스킬 정보 가져오기
   const skillData = CHARACTER_SKILLS[selectedCharacter.id];

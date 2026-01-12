@@ -6,6 +6,8 @@ export const partyData = [
     position: 'FRONT',
     baseHp: 100,
     baseEp: 50,
+    level: 1,
+    breakthrough: 0,
     // ...existing code...
     maxHp: 100,
     maxEp: 50,
@@ -23,6 +25,8 @@ export const partyData = [
     position: 'BACK',
     baseHp: 120,
     baseEp: 40,
+    level: 1,
+    breakthrough: 0,
     // ...existing code...
     maxHp: 120,
     maxEp: 40,
@@ -40,6 +44,8 @@ export const partyData = [
     position: 'FRONT',
     baseHp: 90,
     baseEp: 60,
+    level: 1,
+    breakthrough: 0,
     // ...existing code...
     maxHp: 90,
     maxEp: 60,
@@ -57,6 +63,8 @@ export const partyData = [
     position: 'BACK',
     baseHp: 110,
     baseEp: 55,
+    level: 1,
+    breakthrough: 0,
     // ...existing code...
     maxHp: 110,
     maxEp: 55,

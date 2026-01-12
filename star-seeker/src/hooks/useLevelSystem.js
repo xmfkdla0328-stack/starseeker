@@ -1,4 +1,5 @@
-import { getLevelFromExp, LEVEL_EXP_TABLE, calculateStatsByLevel } from '../data/levelSystem';
+import { getLevelFromExp, LEVEL_EXP_TABLE } from '../data/levelSystem';
+import { calculateFinalStats } from '../utils/StatCalculator';
 import { getMaxLevelByBreakthrough } from '../data/breakthroughItems';
 
 const EXP_PER_CHIP = 200; // 기억 추출물 1개당 제공 경험치
@@ -38,13 +39,11 @@ export const useLevelSystem = ({ inventory, setInventory, items, setItems, party
         const gainedExp = chipsToUse * EXP_PER_CHIP;
         const cappedExp = Math.min(baseExp + gainedExp, LEVEL_EXP_TABLE[maxLevel] || baseExp + gainedExp);
         const { level: newLevel, currentExp } = getLevelFromExp(cappedExp);
-        const stats = calculateStatsByLevel(
-          c.baseAtk || c.currentAtk || 100,
-          c.baseHp || c.currentHp || 1000,
-          newLevel,
+        const stats = calculateFinalStats({
+          ...c,
+          level: newLevel,
           breakthrough,
-          c.baseDef || c.currentDef || 30
-        );
+        });
 
         updatedCharacter = {
           ...c,

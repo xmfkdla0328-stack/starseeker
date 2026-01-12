@@ -4,62 +4,7 @@
  */
 
 import { LEVEL_EXP_TABLE } from './expTable';
-import { BREAKTHROUGH_STAGES } from './breakthroughItems';
-
-/**
- * 캐릭터 레벨에 따른 스탯 계산
- * 기본 스탯에 일정 비율을 곱하여 반영
- * @param {number} baseAtk 기본 공격력
- * @param {number} baseHp 기본 체력
- * @param {number} baseDef 기본 방어력
- * @param {number} level 캐릭터 레벨
- * @param {number} breakthrough 돌파 단계 (0~3)
- * @returns {Object} { hp, atk, def } 레벨에 따른 스탯
- */
-export const calculateStatsByLevel = (baseAtk, baseHp, level, breakthrough = 0, baseDef = 30) => {
-  // 레벨당 2%씩 증가 (레벨 1 = 1.0배, 레벨 60 = 2.18배)
-  const levelMultiplier = 1 + (level - 1) * 0.02;
-  const baseDefValue = typeof baseDef === 'number' ? baseDef : 30;
-  
-  // 돌파 보너스 계산
-  let breakthroughBonus = { atk: 0, hp: 0, def: 0 };
-  for (let stage = 1; stage <= breakthrough; stage++) {
-    if (BREAKTHROUGH_STAGES[stage]) {
-      breakthroughBonus.atk += BREAKTHROUGH_STAGES[stage].statBonus.atk;
-      breakthroughBonus.hp += BREAKTHROUGH_STAGES[stage].statBonus.hp;
-      breakthroughBonus.def += BREAKTHROUGH_STAGES[stage].statBonus.def;
-    }
-  }
-  
-  return {
-    atk: Math.floor(baseAtk * levelMultiplier) + breakthroughBonus.atk,
-    hp: Math.floor(baseHp * levelMultiplier) + breakthroughBonus.hp,
-    def: Math.floor(baseDefValue * levelMultiplier) + breakthroughBonus.def, // 기본 방어력 (레벨에 따라 증가)
-  };
-};
-
-/**
- * 캐릭터 객체에 레벨 스탯 적용
- * @param {Object} character 캐릭터 객체
- * @returns {Object} 레벨이 적용된 캐릭터 객체
- */
-export const applyCharacterLevel = (character) => {
-  const level = character.level || 1;
-  const breakthrough = character.breakthrough || 0;
-  const stats = calculateStatsByLevel(
-    character.baseAtk,
-    character.baseHp,
-    level,
-    breakthrough,
-    character.baseDef
-  );
-  return {
-    ...character,
-    currentAtk: stats.atk,
-    currentHp: stats.hp,
-    currentDef: stats.def,
-  };
-};
+// calculateStatsByLevel, applyCharacterLevel는 StatCalculator.js로 이동
 
 // LEVEL_EXP_TABLE은 expTable.js에서 import하여 재사용
 

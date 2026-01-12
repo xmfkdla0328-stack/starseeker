@@ -1,4 +1,4 @@
-import { CLASS_ROLES } from '../data/tactics/classRoles';
+import { CLASS_ROLES } from '../components/party/tacticguide/tacticsData';
 /**
  * 역할에 따른 아이콘 반환
  * @param {string} role - 역할

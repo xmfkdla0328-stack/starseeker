@@ -3,7 +3,8 @@ import { CharacterStatsGrid } from './CharacterStatsGrid';
 import { BreakthroughDisplay } from './BreakthroughDisplay';
 import { LevelCapDisplay } from './LevelCapDisplay';
 import { CharacterSkillsList } from './CharacterSkillsList';
-import { getLevelFromExp, calculateStatsByLevel, LEVEL_EXP_TABLE } from '../../data/levelSystem';
+import { getLevelFromExp, LEVEL_EXP_TABLE } from '../../data/levelSystem';
+import { calculateFinalStats } from '../../utils/StatCalculator';
 import { getMaxLevelByBreakthrough } from '../../data/breakthroughItems';
 
 /**
@@ -23,13 +24,10 @@ export const CharacterInfoTab = ({ charData, getSkillInfo, items, expPerChip = 2
     const totalGain = Math.max(0, chipsToUse) * expPerChip;
     const cappedExp = Math.min(baseExp + totalGain, LEVEL_EXP_TABLE[levelCap] || baseExp + totalGain);
     const { level: nextLevel } = getLevelFromExp(cappedExp);
-    const stats = calculateStatsByLevel(
-      charData.baseAtk || charData.currentAtk || 100,
-      charData.baseHp || charData.currentHp || 1000,
-      nextLevel,
-      charData.breakthrough || 0,
-      charData.baseDef || charData.currentDef || 30
-    );
+    const stats = calculateFinalStats({
+      ...charData,
+      level: nextLevel,
+    });
     return { nextLevel, nextAtk: stats.atk, nextHp: stats.hp, nextDef: stats.def, expAfter: cappedExp };
   }, [chipsToUse, expPerChip, baseExp, levelCap, charData]);
 

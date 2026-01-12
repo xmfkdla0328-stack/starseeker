@@ -1,15 +1,9 @@
 import React from 'react';
 import { Sword, Shield, Wind } from 'lucide-react';
-import { calculateStatsByLevel } from '../../data/playerStats';
+import { calculateFinalStats } from '../../utils/StatCalculator';
 
 export const CharacterStatsGrid = ({ charData }) => {
-  const actualStats = calculateStatsByLevel(
-    charData.baseAtk, 
-    charData.baseHp, 
-    charData.level || 1, 
-    charData.breakthrough || 0,
-    charData.baseDef || charData.currentDef || 30
-  );
+  const actualStats = calculateFinalStats(charData);
 
   // 공통 카드 스타일 (유리 질감)
   const cardStyle = "bg-slate-900/40 backdrop-blur-sm p-3 rounded-lg border border-white/10 flex flex-col gap-1 hover:border-cyan-400/30 transition-colors";

@@ -2,7 +2,7 @@ import React from 'react';
 import partyData from '../data/partyData';
 import { Users, Zap, ChevronRight, HelpCircle } from 'lucide-react';
 import { BackButton } from './common/BackButton';
-import { TacticalGuideModal } from './common/TacticalGuideModal';
+import { TacticalGuideModal } from './party/tacticguide/TacticalGuideModal';
 import { PartyRosterCard } from './party/PartyRosterCard';
 import { PartySlotGrid } from './party/PartySlotGrid';
 import { CharacterDetailPanel } from './party/CharacterDetailPanel';
@@ -10,14 +10,17 @@ import { useAutoParty } from '../hooks/useAutoParty';
 import { usePartyAssignment } from '../hooks/usePartyAssignment';
 import { usePartyState } from '../hooks/usePartyState';
 import { usePartyHandlers } from '../hooks/usePartyHandlers';
-import { MISSION_TYPES } from '../utils/battle/gaugeLogic';
+// gaugeLogic 관련 코드 제거됨
 
 const PartyScreen = (props) => {
-  let { party, setParty, inventory, showToast, setScreen, missionType, setMissionType } = props;
-  party = Array.isArray(party) ? [...party] : [];
-  while (party.length < 4) party.push(null);
-  party = party.slice(0, 4);
-  inventory = Array.isArray(inventory) ? inventory : [];
+  // party: 출전 멤버 배열(최대 4명, null 허용)
+  // inventory: 전체 보유 캐릭터 배열(창고)
+  // party는 반드시 props로만 받고, 변경은 setParty로만 수행
+  const { party, setParty, inventory, showToast, setScreen, missionType, setMissionType } = props;
+  const normalizedParty = Array.isArray(party) ? [...party] : [];
+  while (normalizedParty.length < 4) normalizedParty.push(null);
+  const displayParty = normalizedParty.slice(0, 4);
+  const displayInventory = Array.isArray(inventory) ? inventory : [];
   // 상태 관리
   const { selectedCharacter, setSelectedCharacter, showGuide, setShowGuide } = usePartyState();
   
@@ -77,11 +80,11 @@ const PartyScreen = (props) => {
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-2">
-            {inventory.filter(Boolean).map((char) => (
+            {displayInventory.filter(Boolean).map((char) => (
               <PartyRosterCard
                 key={char.uid}
                 char={char}
-                isDeployed={party.filter(Boolean).some(p => p.id === char.id)}
+                isDeployed={displayParty.filter(Boolean).some(p => p.id === char.id)}
                 isSelected={selectedCharacter?.id === char.id}
                 onClick={() => handleCharacterClick(char)}
               />
@@ -97,7 +100,7 @@ const PartyScreen = (props) => {
           </div>
 
           {/* 4개 슬롯 + 연결선 */}
-          <PartySlotGrid members={party} onSlotClick={handleSlotClick} />
+          <PartySlotGrid members={displayParty} onSlotClick={handleSlotClick} />
 
           {/* 미션 타입 선택 영역 삭제됨 */}
         </div>
@@ -109,7 +112,14 @@ const PartyScreen = (props) => {
       {/* [하단] 액션 바 */}
       <div className="p-4 bg-slate-950/80 backdrop-blur-sm border-t border-cyan-500/30">
         <button
-          onClick={() => setScreen('OBSERVATION')}
+          onClick={() => {
+            // 관측/전투 진입 시 party 유효성 체크
+            if (!isPartyFull) {
+              window.alert('파티가 4명 모두 채워져야 전투에 진입할 수 있습니다.');
+              return;
+            }
+            setScreen('OBSERVATION');
+          }}
           disabled={!isPartyFull}
           className={`w-full py-4 rounded-xl font-bold text-lg uppercase tracking-widest transition-all flex items-center justify-center gap-3 ${
             isPartyFull
@@ -118,7 +128,7 @@ const PartyScreen = (props) => {
           }`}
         >
           <Zap size={24} className={isPartyFull ? 'text-yellow-300' : 'text-slate-600'} />
-          {isPartyFull ? '관측 개시' : `${4 - party.filter(p => p).length}명 더 선택`}
+          {isPartyFull ? '관측 개시' : `${4 - displayParty.filter(p => p).length}명 더 선택`}
           {isPartyFull && <ChevronRight size={24} />}
         </button>
       </div>

@@ -4,8 +4,7 @@ import { usePlayerSystem } from '../hooks/usePlayerSystem';
 import { useInventorySystem } from '../hooks/useInventorySystem';
 import { useLevelSync } from '../hooks/useLevelSync';
 import { useBondSystem } from '../hooks/useBondSystem';
-import { useBattleSystem } from '../hooks/useBattleSystem';
-import { useSynergy } from '../hooks/useSynergy';
+// useBattleSystem 관련 코드 제거됨
 import { useState } from 'react';
 import { useLevelSystem } from '../hooks/useLevelSystem';
 
@@ -70,8 +69,7 @@ export const GameContextProvider = ({ children }) => {
   const { increaseBondFromBattle } = useBondSystem(inventory, setInventory, party, screen);
 
   // 향후 확장: 전투/시너지 시스템
-  const battleSystem = useBattleSystem();
-  const synergy = useSynergy();
+  // battleSystem 관련 legacy 코드 제거됨
   const { handleLevelUp, EXP_PER_CHIP } = useLevelSystem({
     inventory,
     setInventory,

@@ -76,17 +76,18 @@ export const buildContextValues = (gameState) => {
   };
 
   // BattleContext 값 (기본값 보장)
+  // battleAllies, battleEnemy, battleState가 모두 유효할 때만 값 전달
   const battleContextValue = {
     battleSystem,
-    battleAllies: battleAllies,
-    battleEnemy: battleEnemy,
-    battleState: battleState || 'INIT',
+    battleAllies: (Array.isArray(battleAllies) && battleAllies.length > 0) ? battleAllies : undefined,
+    battleEnemy: battleEnemy ? battleEnemy : undefined,
+    battleState: battleState ? battleState : undefined,
     battleTurnCount: typeof battleTurnCount === 'number' ? battleTurnCount : 0,
     battleLogs: Array.isArray(battleLogs) ? battleLogs : [],
     battleCp: battleSystem?.battleCp ?? 0,
     setBattleCp: battleSystem?.setBattleCp,
   };
-  // 데이터가 준비되지 않았으면 빈 값으로 유지 (throw 제거)
+  console.log('[buildContextValues][FLOW] battleAllies:', battleContextValue.battleAllies, 'battleEnemy:', battleContextValue.battleEnemy, 'battleState:', battleContextValue.battleState);
 
   return {
     playerContextValue,
