@@ -41,7 +41,7 @@ const ObservationScreen = ({ setScreen, startBattle, party }) => {
   });
 
   return (
-    <div className="h-screen w-screen bg-transparent text-white flex relative overflow-hidden flex-col">
+    <div className="w-full h-[100dvh] bg-transparent text-white flex flex-col md:flex-row relative">
       {/* 배경: 암흑 우주 (투명) */}
       <div className="absolute inset-0 bg-gradient-radial from-slate-950/30 via-transparent to-transparent z-0" />
       <div className="absolute inset-0 opacity-30 pointer-events-none z-0">
@@ -60,38 +60,37 @@ const ObservationScreen = ({ setScreen, startBattle, party }) => {
         </svg>
       </div>
 
-      {/* 상단 헤더 */}
-      <div className="relative z-20">
-        <ObservationHeader onBackClick={() => setScreen('HOME')} />
+
+      {/* 좌측: 헤더 + 사이드바 (세로 배치, 독립 스크롤) */}
+      <div className="flex flex-col w-full md:w-[380px] min-w-[260px] max-w-[420px] h-[40vh] md:h-[100dvh] bg-transparent z-10 border-r border-cyan-900/30">
+        <div className="relative z-20" style={{ flexShrink: 0 }}>
+          <ObservationHeader onBackClick={() => setScreen('HOME')} />
+        </div>
+        <div className="flex-1 overflow-y-auto overflow-x-visible">
+          <ObservationSidebar
+            observations={observations}
+            selectedStage={selectedStage}
+            onStageSelect={handleStageSelect}
+          />
+        </div>
       </div>
 
-      {/* 좌측/우측 콘텐츠 영역 */}
-      <div className="flex-1 flex relative overflow-hidden z-10">
-        {/* 좌측: 관측 로그 (Stage List) */}
-        <ObservationSidebar
-          observations={observations}
-          selectedStage={selectedStage}
-          onStageSelect={handleStageSelect}
-        />
-
-        {/* 우측: 뷰포트 + 정보 패널 (스크롤 가능) */}
-        <div className="flex-1 relative flex flex-col overflow-y-auto overflow-x-hidden">
-          {/* 망원경 렌즈 영역 */}
-          <div className="flex-1 flex items-center justify-center min-h-0">
-            <ObservationViewport
-              selectedStage={selectedStage}
-              isTransitioning={isTransitioning}
-            />
-          </div>
-
-          {/* 하단 정보 패널 */}
-          <div className="flex-shrink-0">
-            <ObservationInfoPanel
-              selectedStage={selectedStage}
-              isDeploying={isDeploying}
-              onEngage={handleEngage}
-            />
-          </div>
+      {/* 우측: 메인(뷰포트+정보) (독립 스크롤) */}
+      <div className="flex-1 min-w-0 flex flex-col relative z-10 h-[100dvh]">
+        {/* 망원경 렌즈 영역 */}
+        <div className="flex-1 flex items-center justify-center">
+          <ObservationViewport
+            selectedStage={selectedStage}
+            isTransitioning={isTransitioning}
+          />
+        </div>
+        {/* 하단 정보 패널 (모바일/데스크탑 모두 static) */}
+        <div className="flex-shrink-0 w-full bg-black/60 md:bg-transparent z-30 md:z-auto px-2 md:px-0 py-2 md:py-0 border-t border-cyan-900/30 md:border-none backdrop-blur-md md:backdrop-blur-0">
+          <ObservationInfoPanel
+            selectedStage={selectedStage}
+            isDeploying={isDeploying}
+            onEngage={handleEngage}
+          />
         </div>
       </div>
 

@@ -1,6 +1,8 @@
 // 전투 로직 분리: useBattleEngine
 import { useState } from 'react';
 import { BATTLE_CONSTANTS } from '../constants/battleConfig';
+import { CHARACTER_SKILLS } from '../data/characters/skills';
+import { applySkillEffect } from '../utils/battle/skillProcessor';
 
 const useBattleEngine = (initialAllies, initialEnemies) => {
   const [units, setUnits] = useState([...initialAllies, ...initialEnemies]);
@@ -68,6 +70,36 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
   const handlePlayerAction = (type, targetId) => {
     const activeUnit = units.find(u => u.id === activeUnitId);
     if (!activeUnit) return;
+    // 서주목(캐릭터 id 1)이 skill 커맨드를 사용할 때 실제 스킬 효과 적용
+    if (type === 'skill' && activeUnit.id === 1) {
+      // 아군 전체
+      const allies = units.filter(u => u.type === 'ally' && u.hp > 0);
+      // battleContext 임시 생성 (실제 battleLog 연동)
+      const battleContext = {
+        allies,
+        timeline: {
+          startDistance: BATTLE_CONSTANTS.MAX_DISTANCE,
+          goalDistance: 0,
+        },
+        addLog: addLog,
+      };
+      // 서주목 스킬 데이터
+      const skillDetail = CHARACTER_SKILLS[1].skillDetails.skill;
+      applySkillEffect({
+        caster: activeUnit,
+        targets: allies,
+        skillDetail,
+        battleContext,
+      });
+      setUnits(prev => prev.map(u => {
+        // 버프/게이지 등은 이미 effect에서 처리됨, 거리/버프 등 변경된 값 반영
+        const updated = allies.find(a => a.id === u.id);
+        return updated ? { ...u, ...updated } : u;
+      }));
+      setActiveUnitId(null);
+      return;
+    }
+    // ...기존 공격/스킬/필살기 처리...
     let cpGain = 0;
     let epGain = 0;
     let dmg = 0;

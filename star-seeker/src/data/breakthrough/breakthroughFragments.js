@@ -24,7 +24,7 @@ export const BREAKTHROUGH_ITEM_DATA = {
   },
   [BREAKTHROUGH_ITEMS.STASIS]: {
     id: BREAKTHROUGH_ITEMS.STASIS,
-    name: '별의 조각 (스테이시스)',
+    name: '별의 조각 (정체)',
     element: 'STASIS',
     description: '시간을 멈춘 듯 푸른 빛을 내는 정적의 결정',
     rarity: 'rare',
@@ -48,7 +48,7 @@ export const BREAKTHROUGH_ITEM_DATA = {
   },
   [BREAKTHROUGH_ITEMS.PARADOX]: {
     id: BREAKTHROUGH_ITEMS.PARADOX,
-    name: '별의 조각 (패러독스)',
+    name: '별의 조각 (역설)',
     element: 'PARADOX',
     description: '모순된 힘이 얽힌 검은 슬레이트 파편',
     rarity: 'rare',

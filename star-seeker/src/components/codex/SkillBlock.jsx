@@ -18,8 +18,9 @@ export const SkillBlock = ({
   isUltimate = false,
   ultLevel = 0,
   descWithBonus = null, // 한계 돌파 보너스가 포함된 설명
-  isAttributeAttack = false, // 속성 공격 여부
-  element = null // 캐릭터 속성
+  isAttributeAttack = false, // 속성 공격 여부 (더 이상 사용하지 않음)
+  element = null, // 캐릭터 속성 (더 이상 사용하지 않음)
+  onLevelUp = null // 레벨업 버튼 클릭 핸들러
 }) => {
   // 한계 돌파 보너스 계산: 1: 20%, 2: 30%, 3: 40%, 4: 50%, 5: 70%
   const bonusLevels = [20, 30, 40, 50, 70];
@@ -40,15 +41,7 @@ export const SkillBlock = ({
         <div className={`text-sm font-bold flex items-center gap-2 flex-wrap ${accentClass || 'text-slate-200'}`}>
           {name}
           <span className="text-[11px] px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-slate-300">Lv.{level}</span>
-          {isAttributeAttack && element && (
-            <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border" style={{
-              backgroundColor: ELEMENTS[element]?.bg?.replace('bg-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.15)',
-              borderColor: ELEMENTS[element]?.border?.replace('border-', '').replace('/', 'rgba(') || 'rgba(251, 191, 36, 0.4)',
-            }}>
-              <ElementIcon element={element} size={12} />
-              <span className={ELEMENTS[element]?.color || 'text-amber-300'}>속성</span>
-            </span>
-          )}
+          {/* 속성 부여 여부 UI 완전 제거 */}
           {breakthroughBadge && (
             <span className="text-[11px] px-1.5 py-0.5 rounded bg-purple-500/20 border border-purple-500/40 text-purple-300 font-semibold">
               {breakthroughBadge}
@@ -57,6 +50,13 @@ export const SkillBlock = ({
           {cooldown !== undefined && (
             <span className="text-[11px] px-1.5 py-0.5 rounded bg-slate-800/60 border border-white/10 text-slate-300">CT {cooldown}T</span>
           )}
+          <button
+            className="ml-2 px-4 py-2 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-100 hover:bg-cyan-500/30 transition text-xs font-semibold disabled:bg-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed"
+            onClick={onLevelUp}
+            type="button"
+          >
+            레벨업
+          </button>
         </div>
         <div className="text-xs text-slate-500">
           {descWithBonus || desc}

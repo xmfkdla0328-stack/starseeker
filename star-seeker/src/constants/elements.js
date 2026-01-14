@@ -11,7 +11,7 @@ export const ELEMENTS = {
     border: 'border-red-400/40',
   },
   STASIS: {
-    name: '스테이시스',
+    name: '정체',
     color: 'text-sky-300',
     bg: 'bg-sky-600/15',
     border: 'border-sky-400/40',
@@ -29,7 +29,7 @@ export const ELEMENTS = {
     border: 'border-amber-300/40',
   },
   PARADOX: {
-    name: '패러독스',
+    name: '역설',
     color: 'text-slate-200',
     bg: 'bg-slate-800/40',
     border: 'border-slate-400/50',

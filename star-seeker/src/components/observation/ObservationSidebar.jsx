@@ -10,7 +10,7 @@ import { Lock, AlertTriangle } from 'lucide-react';
  */
 export const ObservationSidebar = ({ observations, selectedStage, onStageSelect }) => {
   return (
-    <div className="relative w-[30%] min-w-[280px] md:min-w-[320px] z-40 border-r border-white/10 bg-slate-900/30 backdrop-blur-md flex flex-col">
+    <div className="relative w-full min-w-[260px] max-w-[420px] md:w-[380px] z-40 border-r border-white/10 bg-slate-900/30 backdrop-blur-md flex flex-col">
       {/* 패널 헤더 */}
       <div className="flex-shrink-0 px-4 py-3 border-b border-white/10 bg-gradient-to-r from-slate-900/40 to-transparent relative">
         <h2 className="text-sm font-bold text-cyan-200 tracking-widest">관측 기록</h2>

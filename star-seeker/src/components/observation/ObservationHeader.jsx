@@ -17,13 +17,11 @@ export const ObservationHeader = ({ onBackClick }) => {
       </button>
       <div className="flex-1 min-w-0">
         <h1 className="text-lg md:text-2xl font-serif font-bold bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 text-transparent tracking-wider truncate">
-          우주 망원경 제어실
+          관측 제어실
         </h1>
-        <p className="text-xs text-slate-400 mt-0.5 tracking-widest font-mono">DEEP SPACE OBSERVATION SYSTEM</p>
+        <p className="text-xs text-slate-400 mt-0.5 tracking-widest font-mono">심우주 관측 시스템</p>
       </div>
       <div className="text-right flex-shrink-0">
-        <div className="text-xs text-cyan-400/60 tracking-wider font-mono">STATUS</div>
-        <div className="text-sm text-green-400 font-bold font-mono">● OPERATIONAL</div>
       </div>
     </div>
   );

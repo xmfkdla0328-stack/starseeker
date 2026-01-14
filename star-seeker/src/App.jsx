@@ -1,16 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { partyData } from './data/partyData';
 import { Sparkles } from 'lucide-react';
-import { useUI, useInventory, usePlayer } from './context/useGameContext';
-
-/** @typedef {import('./constants/battle').MissionType} MissionType */
-
-// ★ 경로 수정됨: 각각의 파일에서 가져오기
+import { useUI, useInventory } from './context/useGameContext';
 import { StatusBar } from './components/layout/StatusBar';
 import { Background } from './components/layout/Background';
-
-import { HomeScreen, PartyScreen, GachaScreen, GardenScreen, CodexScreen, InventoryScreen, ObservationScreen, ExtractionScreen, BattleScreen, ProfileScreen } from './components/Screens';
-import { buildEnemyFromDungeon } from './data/dungeonData';
+import { HomeScreen, PartyScreen, GachaScreen, CodexScreen, InventoryScreen, ObservationScreen, ExtractionScreen, BattleScreen, ProfileScreen } from './components/Screens';
 
 
 function StarSeekerAppContent() {
@@ -18,10 +12,6 @@ function StarSeekerAppContent() {
   const [party, setParty] = React.useState([null, null, null, null]);
   const { screen, setScreen, toast, showToast } = useUI();
   const { inventory, setInventory, items, setItems, handleGacha, handleLevelUp, EXP_PER_CHIP } = useInventory();
-
-  // 필요시 추가 핸들러 정의
-  // const handleAttackResult = useCallback((result) => { ... });
-  // const handleStartExtraction = ...
 
   return (
     <div className="flex flex-col min-h-screen">

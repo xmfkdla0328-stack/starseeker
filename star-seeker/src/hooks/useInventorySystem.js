@@ -6,13 +6,13 @@ const DEFAULT_ITEMS = {
   gems: 1000,
   exp_chip: 10,
   star_fragment: 0,
+  star_fragment_entropy: 10,
+  star_fragment_stasis: 10,
+  star_fragment_gravity: 10,
+  star_fragment_resonance: 10,
+  star_fragment_paradox: 10,
+  star_fragment_axiom: 10,
   gold: 0,
-  star_fragment_entropy: 0,
-  star_fragment_stasis: 0,
-  star_fragment_gravity: 0,
-  star_fragment_resonance: 0,
-  star_fragment_paradox: 0,
-  star_fragment_axiom: 0,
 };
 
 // 인벤토리, 메인 캐릭터, 재화, 가챠 로직을 관리하는 훅

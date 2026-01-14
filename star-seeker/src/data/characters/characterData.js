@@ -19,13 +19,13 @@ export const CHARACTER_BASE_DATA = [
     baseDef: 88,
       effectHitRate: 15, // 기본 효과 명중력(%)
       effectResist: 10, // 기본 효과 저항력(%)
-    desc: '도리천 함대를 지휘하는 공명 사령관',
-    tags: ['남성', 'GP-A1', '도리천'],
+    desc: '삶의 증명을 위하여 싸우는 남겨진 자',
+    tags: ['전술', '전략', 'GP-A1', '도리천'],
   },
   {
     id: 2,
-    name: '루나',
-    rarity: 4,
+    name: '아다드',
+    rarity: 5,
     element: 'GRAVITY',
     role: ROLES.STABILIZER,
     portrait: null,
@@ -35,12 +35,12 @@ export const CHARACTER_BASE_DATA = [
     baseDef: 95,
       effectHitRate: 20,
       effectResist: 15,
-    desc: '중력의 선율로 상처를 봉합하는 음유 안정가',
-    tags: ['회복', '재생', '중력'],
+    desc: '풍요는 존재의 증명이 될 수 있는가?',
+    tags: ['회복', '재생', '암네시아', '동맹'],
   },
   {
     id: 3,
-    name: '이그니스',
+    name: '시에',
     rarity: 5,
     element: 'ENTROPY',
     role: ROLES.EXECUTOR,
@@ -51,12 +51,12 @@ export const CHARACTER_BASE_DATA = [
     baseDef: 82,
       effectHitRate: 10,
       effectResist: 20,
-    desc: '엔트로피의 검으로 전장을 가르는 선봉 집행자',
-    tags: ['화상', '돌진', '근접'],
+    desc: '죽음을 등진 이방인',
+    tags: ['공격', '치명타', '신강']
   },
   {
     id: 4,
-    name: '아쿠아',
+    name: '성시하',
     rarity: 4,
     element: 'STASIS',
     role: ROLES.STABILIZER,
@@ -67,7 +67,7 @@ export const CHARACTER_BASE_DATA = [
     baseDef: 92,
       effectHitRate: 5,
       effectResist: 25,
-    desc: '정적의 물결로 전선을 안정시키는 정화자',
+    desc: '바라보는 것은 동경의 면',
     tags: ['정화', '방어', '치유'],
   },
   {

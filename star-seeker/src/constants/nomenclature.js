@@ -329,7 +329,7 @@ export const SILENCE_MISSION = {
  * 속성 (Element / Attribute)
  * - 캐릭터와 적이 가지는 5가지 속성
  * - 속성 간 상성 관계가 존재하여 전투에 영향을 미침
- * - 속성: 혼돈(CHAOS), 정체(STASIS), 중력(GRAVITY), 공명(RESONANCE), 역설(PARADOX), 공리(AXIOM)
+* - 속성: 혼돈(CHAOS), 정체(STASIS), 중력(GRAVITY), 공명(RESONANCE), 역설(PARADOX), 공리(AXIOM)
  */
 export const ELEMENT_MECHANIC = {
   name: '속성',

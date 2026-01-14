@@ -4,6 +4,8 @@
  */
 
 export const GAME_CONST = {
+  // 스킬 관련
+  MAX_SKILL_LEVEL: 10,           // 모든 스킬의 최대 레벨
   // 가챠 관련
   GACHA_COST_PER_PULL: 100,          // 1회 가챠 비용
   GACHA_PAYBACK_AMOUNT: 20,          // 만렙 중복 시 페이백
