@@ -5,6 +5,7 @@ import useBattleEngine from './hooks/useBattleEngine';
 import { BATTLE_CONSTANTS } from './constants/battleConfig';
 import Timeline from './components/battle/Timeline';
 import EnemyZone from './components/battle/EnemyZone';
+import BattleLog from './components/battle/BattleLog';
 import AllyStatusPanel from './components/battle/AllyStatusPanel';
 import ControlPanel from './components/battle/ControlPanel';
 import InterventionPanel from './components/battle/InterventionPanel';
@@ -68,12 +69,21 @@ const StarSeekerBattle = ({ party }) => {
     };
     return (
         <div className="w-full h-screen bg-slate-900 text-white flex flex-col font-sans overflow-hidden select-none">
-            <EnemyZone 
-                units={units} 
-                activeUnitId={activeUnitId} 
-                onUnitClick={onUnitClick} 
-                interventionMode={interventionMode} 
-            />
+            <div className="flex flex-row w-full relative" style={{height: '32vh', minHeight: 180}}>
+                <div style={{flex: 1, minWidth: 0, display: 'flex', alignItems: 'stretch', position: 'relative'}}>
+                    <EnemyZone 
+                        units={units} 
+                        activeUnitId={activeUnitId} 
+                        onUnitClick={onUnitClick} 
+                        interventionMode={interventionMode} 
+                        style={{flex: 1, minWidth: 0}}
+                    />
+                    {/* BattleLog를 EnemyZone 우측 상단에만 배치 */}
+                    <div className="absolute right-4 top-4 z-50 pointer-events-auto">
+                        <BattleLog battleLog={battleLog} />
+                    </div>
+                </div>
+            </div>
             <Timeline 
                 units={units} 
                 activeUnitId={activeUnitId} 
@@ -81,25 +91,28 @@ const StarSeekerBattle = ({ party }) => {
                 interventionMode={interventionMode} 
             />
             <div className="flex-1 bg-slate-900 p-4 flex gap-4">
-                <AllyStatusPanel 
-                    units={units} 
-                    activeUnitId={activeUnitId} 
-                    onUnitClick={onUnitClick} 
-                    interventionMode={interventionMode} 
-                />
+                <div style={{flex: 1, minWidth: 0, maxWidth: '50%'}}>
+                    <AllyStatusPanel 
+                        units={units} 
+                        activeUnitId={activeUnitId} 
+                        onUnitClick={onUnitClick} 
+                        interventionMode={interventionMode} 
+                    />
+                </div>
                 <ControlPanel 
                     activeUnit={units.find(u => u.id === activeUnitId)} 
                     gameStatus={gameStatus} 
-                    battleLog={battleLog} 
                     onCommand={handleCommandClick} 
                 />
-                <InterventionPanel 
-                    cp={cp} 
-                    maxCp={BATTLE_CONSTANTS.MAX_CP} 
-                    mode={interventionMode} 
-                    onSelectMode={toggleInterventionMode} 
-                    onUseBlackhole={() => handleIntervention('blackhole')} 
-                />
+                <div style={{flex: 1, minWidth: 0, maxWidth: '50%'}}>
+                    <InterventionPanel 
+                        cp={cp} 
+                        maxCp={BATTLE_CONSTANTS.MAX_CP} 
+                        mode={interventionMode} 
+                        onSelectMode={toggleInterventionMode} 
+                        onUseBlackhole={() => handleIntervention('blackhole')} 
+                    />
+                </div>
             </div>
         </div>
     );

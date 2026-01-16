@@ -12,6 +12,7 @@ const AllyStatusPanel = ({ units, activeUnitId, onUnitClick, interventionMode })
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '12px',
+                position: 'relative',
             }}
         >
             <div style={{

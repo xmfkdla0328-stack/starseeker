@@ -1,12 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 const ControlPanel = ({ activeUnit, gameStatus, battleLog, onCommand }) => {
-    const logRef = useRef(null);
-    useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, [battleLog]);
     return (
         <div className="flex-1 flex flex-col gap-2">
-            <div ref={logRef} className="h-24 bg-black/80 rounded border border-slate-700 p-2 text-xs font-mono text-green-400 overflow-y-auto whitespace-pre-wrap">
-                {battleLog.map((log, i) => <div key={i}>{log}</div>)}
-            </div>
             <div className="flex-1">
                 {activeUnit ? (
                     <div className="flex-1 bg-slate-800 rounded-lg p-2 border border-blue-500/50 flex flex-col justify-center gap-2 h-full animate-in fade-in">
