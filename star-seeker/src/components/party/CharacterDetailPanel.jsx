@@ -24,11 +24,11 @@ export const CharacterDetailPanel = ({ selectedCharacter }) => {
   const skillNames = skillData?.skills || {};
 
   return (
-    <div className="col-span-3 flex flex-col bg-slate-900/40 backdrop-blur-md rounded-xl border border-cyan-500/20 overflow-hidden">
+    <div className="col-span-3 flex flex-col bg-slate-900/40 backdrop-blur-md rounded-xl border border-cyan-500/20 overflow-hidden min-h-0 max-h-full">
       <div className="px-4 py-3 bg-cyan-950/30 border-b border-cyan-500/30">
         <h2 className="text-sm font-bold text-cyan-300 uppercase tracking-wider">상세 정보</h2>
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 min-h-0 max-h-full overflow-y-auto h-full">
         <div className="space-y-0 flex flex-col">
           {/* 캐릭터 헤더 */}
           <CharacterHeader selectedCharacter={selectedCharacter} />

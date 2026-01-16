@@ -76,7 +76,7 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
       const allies = units.filter(u => u.type === 'ally' && u.hp > 0);
       // battleContext 임시 생성 (실제 battleLog 연동)
       const battleContext = {
-        allies,
+        allies: allies.map(a => ({ ...a })), // 깊은 복사로 전달
         timeline: {
           startDistance: BATTLE_CONSTANTS.MAX_DISTANCE,
           goalDistance: 0,
@@ -87,32 +87,69 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
       const skillDetail = CHARACTER_SKILLS[1].skillDetails.skill;
       applySkillEffect({
         caster: activeUnit,
-        targets: allies,
+        targets: battleContext.allies,
         skillDetail,
         battleContext,
       });
+      // buffs가 반영된 allies를 units에 반영
       setUnits(prev => prev.map(u => {
-        // 버프/게이지 등은 이미 effect에서 처리됨, 거리/버프 등 변경된 값 반영
-        const updated = allies.find(a => a.id === u.id);
-        return updated ? { ...u, ...updated } : u;
+        if (u.type === 'ally' && u.hp > 0) {
+          const updated = battleContext.allies.find(a => a.id === u.id);
+          let next = updated ? { ...u, ...updated } : u;
+          if (u.id === activeUnitId) {
+            next.distance = BATTLE_CONSTANTS.MAX_DISTANCE;
+          }
+          return next;
+        }
+        return u;
       }));
       setActiveUnitId(null);
       return;
     }
-    // ...기존 공격/스킬/필살기 처리...
+    // 데이터 기반 일반 공격/스킬/필살기 처리
     let cpGain = 0;
     let epGain = 0;
     let dmg = 0;
+    // 공격력 버프 적용
+    let atkBuff = 0;
+    if (activeUnit.buffs) {
+      activeUnit.buffs.forEach(buff => {
+        if (buff.type === 'ATK_UP') atkBuff += buff.value;
+      });
+    }
+    // 스킬 데이터 참조
+    const skillDetails = CHARACTER_SKILLS[activeUnit.id]?.skillDetails;
+    const normalSkill = skillDetails?.normal;
+    const skillSkill = skillDetails?.skill;
+    const ultSkill = skillDetails?.ultimate;
+    const finalAtk = activeUnit.atk ? activeUnit.atk * (1 + atkBuff / 100) : 100;
     switch (type) {
-      case 'attack': dmg = 80; cpGain = 50; epGain = 25; break;
-      case 'skill': dmg = 150; cpGain = 80; epGain = 40; break;
-      case 'ult':
-        if (activeUnit.ep < 100) { addLog('EP 부족!'); return; }
-        dmg = 400; cpGain = 100; epGain = -100;
+      case 'attack': {
+        // 일반 공격: 데이터 damageFactor 적용
+        const damageFactor = normalSkill?.damageFactor ?? 1.0;
+        dmg = Math.round(finalAtk * damageFactor);
+        cpGain = 50;
+        epGain = 25;
         break;
+      }
+      case 'skill': {
+        // 스킬 공격: 기존대로(추후 확장)
+        dmg = Math.round(finalAtk * 1.5);
+        cpGain = 80;
+        epGain = 40;
+        break;
+      }
+      case 'ult': {
+        if (activeUnit.ep < 100) { addLog('EP 부족!'); return; }
+        dmg = Math.round(finalAtk * 4.0);
+        cpGain = 100;
+        epGain = -100;
+        break;
+      }
       default: break;
     }
     setUnits(prev => prev.map(u => {
+      // 피격 대상 처리
       if (u.id === targetId) {
         const newHp = u.hp - dmg;
         addLog(`[공격] ${u.name}에게 ${dmg} 데미지!`);
@@ -122,14 +159,20 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
         }
         return { ...u, hp: Math.max(0, newHp) };
       }
+      // 공격자(턴 소유자) 처리: EP, distance, 버프 지속시간 감소 (자신 턴에만 감소)
       if (u.id === activeUnitId) {
         let newEp = u.ep + epGain;
+        // 자신의 턴에만 버프 지속시간 감소 및 만료 제거
+        let newBuffs = u.buffs ? u.buffs.map(buff => ({ ...buff, duration: buff.duration !== undefined ? buff.duration - 1 : undefined })) : [];
+        newBuffs = newBuffs.filter(buff => buff.duration === undefined || buff.duration > 0);
         return {
           ...u,
           distance: BATTLE_CONSTANTS.MAX_DISTANCE,
-          ep: Math.min(Math.max(0, newEp), u.maxEp)
+          ep: Math.min(Math.max(0, newEp), u.maxEp),
+          buffs: newBuffs
         };
       }
+      // 기타 유닛: 버프 지속시간은 감소시키지 않음 (상태만 유지)
       return u;
     }));
     setCp(prev => Math.min(prev + cpGain, BATTLE_CONSTANTS.MAX_CP));

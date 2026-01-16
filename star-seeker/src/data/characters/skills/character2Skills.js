@@ -1,6 +1,6 @@
 /**
- * 루나 (ID: 2) 스킬 데이터
- * 역할: 힐러, 원소: 빛
+ * 아다드 (ID: 2) 스킬 데이터
+ * 역할: 힐러, 원소: 중력
  */
 export const character2Skills = {
   skills: { 

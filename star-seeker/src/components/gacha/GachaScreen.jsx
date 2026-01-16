@@ -16,17 +16,17 @@ const GachaScreen = ({ handleGacha, setScreen }) => {
       {/* 뒤로가기 버튼 */}
       <BackButton onClick={() => setScreen('HOME')} disabled={false} />
 
-      <div className="flex flex-col w-full min-h-full relative">
-         <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
-            <div className="w-[35vh] h-[35vh] md:w-[60vh] md:h-[60vh] rounded-full border border-indigo-500/30 flex items-center justify-center animate-[spin_60s_linear_infinite]">
-              <div className="w-[24vh] h-[24vh] md:w-[45vh] md:h-[45vh] rounded-full border border-purple-500/30 flex items-center justify-center animate-[spin_40s_linear_infinite_reverse]">
-                 <div className="w-[13vh] h-[13vh] md:w-[30vh] md:h-[30vh] rounded-full border border-yellow-500/20 shadow-[0_0_50px_rgba(253,224,71,0.1)]"></div>
-              </div>
+      <div className="flex flex-col w-full min-h-screen relative">
+        <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+          <div className="w-[35vh] h-[35vh] md:w-[60vh] md:h-[60vh] rounded-full border border-indigo-500/30 flex items-center justify-center animate-[spin_60s_linear_infinite]">
+            <div className="w-[24vh] h-[24vh] md:w-[45vh] md:h-[45vh] rounded-full border border-purple-500/30 flex items-center justify-center animate-[spin_40s_linear_infinite_reverse]">
+              <div className="w-[13vh] h-[13vh] md:w-[30vh] md:h-[30vh] rounded-full border border-yellow-500/20 shadow-[0_0_50px_rgba(253,224,71,0.1)]"></div>
             </div>
-         </div>
+          </div>
+        </div>
 
-         <div className="flex flex-1 w-full items-center justify-center relative p-4 md:p-6">
-         <div className="z-10 flex flex-col items-center justify-center gap-4 md:gap-6 max-w-md w-full glass-panel p-5 md:p-8 rounded-3xl shadow-2xl relative">
+        <div className="flex-1 flex flex-col justify-end items-center relative p-4 md:p-6 z-10">
+          <div className="flex flex-col items-center justify-center gap-4 md:gap-6 max-w-md w-full glass-panel p-5 md:p-8 rounded-3xl shadow-2xl mb-24">
                <div className="text-center shrink-0">
                   <h2 className="text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-100 to-yellow-300 font-serif mb-1 relative z-10 flex items-center justify-center gap-2">
                       <Telescope size={24} className="text-yellow-400"/> 성운 관측

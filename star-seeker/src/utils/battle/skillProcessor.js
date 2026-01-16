@@ -40,15 +40,15 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
           break;
 
         case 'GAUGE_UP':
-          // 타임라인 구조에서 행동 게이지 = position 값
+          // 타임라인 구조에서 행동 게이지 = distance 값
           if (battleContext && typeof value === 'number') {
             // 전체 아군 대상으로 적용
             effectTargets.forEach(target => {
-              // position을 %만큼 앞으로 당김
+              // distance를 %만큼 앞으로 당김
               const timeline = battleContext.timeline;
               if (timeline && typeof timeline.startDistance === 'number') {
                 const moveAmount = timeline.startDistance * (value / 100);
-                target.position = Math.max(timeline.goalDistance, target.position - moveAmount);
+                target.distance = Math.max(timeline.goalDistance, target.distance - moveAmount);
                 battleContext.addLog(`${target.name}의 행동 게이지가 ${value}%만큼 증가하여 순서가 앞당겨짐`);
               }
             });

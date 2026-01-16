@@ -1,6 +1,6 @@
 /**
  * 서주목 (ID: 1) 스킬 데이터
- * 역할: 지휘관, 원소: 천체
+ * 역할: 지휘관, 원소: 공명
  */
 export const character1Skills = {
   skills: { 

@@ -1,6 +1,6 @@
 /**
- * 이그니스 (ID: 3) 스킬 데이터
- * 역할: 딜러, 원소: 불
+ * 시에 (ID: 3) 스킬 데이터
+ * 역할: 딜러, 원소: 엔트로피
  */
 export const character3Skills = {
   skills: { 

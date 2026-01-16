@@ -54,9 +54,9 @@ const PartyScreen = (props) => {
       </div>
 
       {/* 메인 3단 레이아웃 */}
-      <div className="flex-1 grid grid-cols-12 gap-4 p-4 overflow-hidden">
+      <div className="flex-1 grid grid-cols-12 gap-2 md:gap-4 p-2 md:p-4 md:overflow-y-auto min-h-0">
         {/* [좌측] 대기 명단 (Roster) */}
-        <div className="col-span-3 flex flex-col bg-slate-900/40 backdrop-blur-md rounded-xl border border-cyan-500/20 overflow-hidden">
+        <div className="col-span-3 flex flex-col bg-slate-900/40 backdrop-blur-md rounded-xl border border-cyan-500/20 overflow-hidden min-h-0 h-full">
           <div className="px-4 py-3 bg-cyan-950/30 border-b border-cyan-500/30 flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-cyan-300 uppercase tracking-wider">대기 명단</h2>
@@ -93,14 +93,16 @@ const PartyScreen = (props) => {
         </div>
 
         {/* [중앙] 출격 슬롯 (Formation) */}
-        <div className="col-span-6 flex flex-col items-center justify-center gap-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-cyan-100 uppercase tracking-widest mb-2">작전 배치</h2>
-            <p className="text-sm text-slate-400">4명의 대원을 선택하여 배치하세요</p>
+        <div className="col-span-6 flex flex-col items-center items-start gap-4 md:gap-8">
+          <div className="text-center w-full">
+            <h2 className="text-2xl md:text-3xl font-bold text-cyan-100 uppercase tracking-widest mb-1 md:mb-2">작전 배치</h2>
+            <p className="text-xs md:text-sm text-slate-400">4명의 대원을 선택하여 배치하세요</p>
           </div>
 
           {/* 4개 슬롯 + 연결선 */}
-          <PartySlotGrid members={displayParty} onSlotClick={handleSlotClick} />
+          <div className="w-full flex flex-col items-center mb-4 md:mb-8">
+            <PartySlotGrid members={displayParty} onSlotClick={handleSlotClick} />
+          </div>
 
           {/* 미션 타입 선택 영역 삭제됨 */}
         </div>
@@ -110,7 +112,7 @@ const PartyScreen = (props) => {
       </div>
 
       {/* [하단] 액션 바 */}
-      <div className="p-4 bg-slate-950/80 backdrop-blur-sm border-t border-cyan-500/30">
+      <div className="fixed left-0 right-0 bottom-0 p-4 bg-slate-950/90 backdrop-blur-sm border-t border-cyan-500/30 z-50">
         <button
           onClick={() => {
             // 관측/전투 진입 시 party 유효성 체크
