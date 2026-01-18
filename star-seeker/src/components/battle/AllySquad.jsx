@@ -1,89 +1,45 @@
-import React from 'react';
-import { GlassEffectStyle, NeonBorder, ColorPalette, FontStyles } from '../../constants/style';
 
 const AllySquad = ({ units, activeUnitId, onUnitClick, interventionMode }) => {
     return (
-        <div
-            style={{
-                ...GlassEffectStyle,
-                ...NeonBorder,
-                padding: '18px',
-                minWidth: 0,
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-                position: 'relative',
-            }}
-        >
-            <div style={{
-                ...FontStyles.heading,
-                fontSize: '0.85rem',
-                marginBottom: 6,
-                letterSpacing: '0.18em',
-                textAlign: 'left',
-                opacity: 0.85,
-            }}>ALLY SQUAD</div>
+        <div className="absolute top-4 left-4 w-72 flex flex-col gap-3 z-40 select-none">
             {units.filter(u => u.type === 'ally').map(u => {
                 const isActive = activeUnitId === u.id;
                 return (
                     <div
                         key={u.id}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 10,
-                            padding: '10px',
-                            borderRadius: '12px',
-                            background: isActive ? 'rgba(20,40,60,0.7)' : 'rgba(10,16,38,0.7)',
-                            border: isActive ? `2px solid ${ColorPalette.starYellow}` : `1.5px solid ${ColorPalette.glassWhite}`,
-                            boxShadow: isActive ? `0 0 12px 2px ${ColorPalette.starYellow}` : 'none',
-                            cursor: interventionMode ? 'pointer' : 'default',
-                            opacity: u.hp <= 0 ? 0.5 : 1,
-                            transition: 'box-shadow 0.2s, border-color 0.2s, background 0.2s',
-                        }}
+                        className={[
+                            'group relative w-full overflow-hidden rounded-r-lg border-l-8',
+                            isActive ? 'border-yellow-400 bg-slate-800/80 shadow-[0_0_16px_2px_rgba(255,230,102,0.25)]' : 'border-cyan-400 bg-slate-900/60',
+                            'backdrop-blur-md p-3 flex items-center gap-3 transition-all hover:translate-x-2',
+                            u.hp <= 0 ? 'opacity-50 grayscale' : '',
+                            interventionMode ? 'cursor-pointer' : 'cursor-default',
+                        ].join(' ')}
                         onClick={() => onUnitClick(u)}
+                        style={{ minHeight: 54 }}
                     >
-                        <div style={{ fontSize: 28, filter: u.hp <= 0 ? 'grayscale(0.7)' : 'none' }}>{u.icon}</div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: ColorPalette.white, opacity: 0.92 }}>
-                                <span style={{ fontWeight: 600, textShadow: `0 0 4px ${ColorPalette.neonCyan}33` }}>{u.name}</span>
-                                <span style={{ fontWeight: 400, color: ColorPalette.neonCyan }}>{u.hp}/{u.maxHp}</span>
+                        {/* Icon */}
+                        <div className="text-2xl mr-1 flex-shrink-0">
+                            {u.icon}
+                        </div>
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                            <div className="flex justify-between text-xs text-cyan-100">
+                                <span className="font-bold font-sans tracking-wide drop-shadow">{u.name}</span>
+                                <span className="font-mono opacity-80">{u.hp}/{u.maxHp}</span>
                             </div>
                             {/* HP Bar */}
-                            <div style={{
-                                width: '100%',
-                                height: 8,
-                                background: 'rgba(20,30,50,0.7)',
-                                marginTop: 6,
-                                borderRadius: 8,
-                                overflow: 'hidden',
-                                boxShadow: `0 0 6px 0 ${ColorPalette.neonCyan}22`,
-                            }}>
-                                <div style={{
-                                    height: '100%',
-                                    width: `${(u.hp/u.maxHp)*100}%`,
-                                    background: `linear-gradient(90deg, #00fff7 0%, #00bfff 60%, #ffe066 100%)`,
-                                    boxShadow: `0 0 8px 2px ${ColorPalette.neonCyan}99`,
-                                    transition: 'width 0.3s cubic-bezier(.4,2,.6,1)',
-                                }} />
+                            <div className="w-full h-2 bg-slate-800/60 rounded mt-2 overflow-hidden shadow-inner">
+                                <div
+                                    className="h-full rounded bg-gradient-to-r from-cyan-300 via-cyan-400 to-yellow-200 shadow-[0_0_8px_2px_rgba(34,211,238,0.35)] transition-all"
+                                    style={{ width: `${(u.hp / u.maxHp) * 100}%` }}
+                                />
                             </div>
                             {/* EP Bar */}
-                            <div style={{
-                                width: '100%',
-                                height: 5,
-                                background: 'rgba(40,40,60,0.6)',
-                                marginTop: 3,
-                                borderRadius: 6,
-                                overflow: 'hidden',
-                            }}>
-                                <div style={{
-                                    height: '100%',
-                                    width: `${(u.ep/u.maxEp)*100}%`,
-                                    background: `linear-gradient(90deg, #e040fb 0%, #00fff7 100%)`,
-                                    boxShadow: `0 0 6px 1px ${ColorPalette.magenta}66`,
-                                    transition: 'width 0.3s cubic-bezier(.4,2,.6,1)',
-                                }} />
+                            <div className="w-full h-1 bg-fuchsia-900/40 rounded mt-1 overflow-hidden">
+                                <div
+                                    className="h-full rounded bg-gradient-to-r from-fuchsia-400 via-cyan-300 to-cyan-100 shadow-[0_0_6px_1px_rgba(232,40,251,0.25)] transition-all"
+                                    style={{ width: `${(u.ep / u.maxEp) * 100}%` }}
+                                />
                             </div>
                         </div>
                     </div>
