@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import ActiveUnitBackView from './components/battle/ActiveUnitBackView.jsx';
 import { BOSS_ENEMIES } from './data/enemy/bossEnemyData';
 import useBattleEngine from './hooks/useBattleEngine';
 import { BATTLE_CONSTANTS } from './constants/battleConfig';
@@ -105,6 +106,8 @@ const StarSeekerBattle = ({ party }) => {
                         interventionMode={interventionMode} 
                     />
                 </div>
+                {/* ActiveUnitBackView: AllyZone 중앙 하단에 배치 */}
+                <ActiveUnitBackView activeUnitId={activeUnitId} />
                 {/* CommandPanel: 중앙 (모바일/데스크탑 모두 두 번째) */}
                 {/* CommandPanel: AllyZone 우측 하단에 고정 */}
                 <div className="absolute z-50 right-8 bottom-6">
