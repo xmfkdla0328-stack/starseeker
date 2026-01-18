@@ -6,8 +6,8 @@ import { BATTLE_CONSTANTS } from './constants/battleConfig';
 import Timeline from './components/battle/Timeline';
 import EnemyZone from './components/battle/EnemyZone';
 import BattleLog from './components/battle/BattleLog';
-import AllyStatusPanel from './components/battle/AllyStatusPanel';
-import ControlPanel from './components/battle/ControlPanel';
+import AllySquad from './components/battle/AllySquad';
+import CommandPanel from './components/battle/CommandPanel';
 import InterventionPanel from './components/battle/InterventionPanel';
 import { withFinalStats } from './utils/withFinalStats';
 
@@ -90,21 +90,27 @@ const StarSeekerBattle = ({ party }) => {
                 onUnitClick={onUnitClick} 
                 interventionMode={interventionMode} 
             />
-            <div className="flex-1 bg-slate-900 p-4 flex gap-4">
-                <div style={{flex: 1, minWidth: 0, maxWidth: '50%'}}>
-                    <AllyStatusPanel 
+            {/* AllyZone: 타임라인 하단 전체를 차지하는 아군 영역 */}
+            <div className="flex-1 bg-slate-900 p-4 flex flex-col md:flex-row gap-4 relative w-full min-w-0">
+                {/* AllySquad: 좌측 (모바일/데스크탑 모두 첫 번째) */}
+                <div className="flex-1 min-w-0 flex items-stretch">
+                    <AllySquad 
                         units={units} 
                         activeUnitId={activeUnitId} 
                         onUnitClick={onUnitClick} 
                         interventionMode={interventionMode} 
                     />
                 </div>
-                <ControlPanel 
-                    activeUnit={units.find(u => u.id === activeUnitId)} 
-                    gameStatus={gameStatus} 
-                    onCommand={handleCommandClick} 
-                />
-                <div style={{flex: 1, minWidth: 0, maxWidth: '50%'}}>
+                {/* CommandPanel: 중앙 (모바일/데스크탑 모두 두 번째) */}
+                <div className="flex-1 min-w-0 flex items-center justify-center">
+                    <CommandPanel 
+                        activeUnit={units.find(u => u.id === activeUnitId)} 
+                        gameStatus={gameStatus} 
+                        onCommand={handleCommandClick} 
+                    />
+                </div>
+                {/* InterventionPanel: 우측 (모바일/데스크탑 모두 세 번째) */}
+                <div className="flex-1 min-w-0 flex items-start justify-end">
                     <InterventionPanel 
                         cp={cp} 
                         maxCp={BATTLE_CONSTANTS.MAX_CP} 
