@@ -1,5 +1,6 @@
 import React from 'react';
-const ControlPanel = ({ activeUnit, gameStatus, battleLog, onCommand }) => {
+
+const CommandPanel = ({ activeUnit, gameStatus, onCommand }) => {
     return (
         <div className="flex flex-col gap-2 min-h-[140px] max-h-[220px] flex-shrink-0" style={{flexBasis: 220}}>
             <div className="flex-1">
@@ -40,4 +41,4 @@ const ControlPanel = ({ activeUnit, gameStatus, battleLog, onCommand }) => {
         </div>
     );
 };
-export default ControlPanel;
+export default CommandPanel;
