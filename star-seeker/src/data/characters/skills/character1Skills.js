@@ -57,7 +57,7 @@ export const character1Skills = {
       cooldown: 0 
     },
     passive2: { 
-      desc: '전투 시작 시 아군 전체에게 자신의 공격력 150%의 보호막 부여', 
+      desc: '전체 아군의 EP 충전 효율 + 5%', 
       cooldown: 0 
     }
   }

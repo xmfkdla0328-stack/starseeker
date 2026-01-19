@@ -29,6 +29,15 @@ export function calculateFinalCritStats(character, equipment = [], passives = []
 
   return { critRate, critDamage };
 }
+
+export function calculateFinalEpRecharge(character, equipment = [], passives = [], buffs = []) {
+  let epRecharge = character.epRecharge || 0;
+  equipment.forEach(eq => { epRecharge += eq.epRecharge || 0; });
+  passives.forEach(p => { epRecharge += p.epRecharge || 0; });
+  buffs.forEach(b => { if (b.type === 'EP_RECHARGE_UP') epRecharge += b.value; });
+  return epRecharge;
+}
+
 // StatCalculator.js
 // 레벨, 돌파 등 영구적 요소를 반영한 최종 스탯 계산기
 import { BREAKTHROUGH_STAGES } from '../data/breakthrough/breakthroughStages';

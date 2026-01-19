@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { BATTLE_CONSTANTS } from '../constants/battleConfig';
 import { CHARACTER_SKILLS } from '../data/characters/skills';
 import { applySkillEffect } from '../utils/battle/skillProcessor';
-import { calculateFinalCritStats } from '../utils/StatCalculator';
+import { calculateFinalCritStats, calculateFinalEpRecharge } from '../utils/StatCalculator';
 
 const useBattleEngine = (initialAllies, initialEnemies) => {
   // 서주목(1)만 쿨다운 필드 추가 (최초 0)
@@ -16,7 +16,11 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
   const alliesWithPassive = hasSeoJuMok
     ? initialAllies.map(u => ({
         ...u,
-        passives: [...(u.passives || []), { critRate: 5 }],
+        passives: [
+          ...(u.passives || []),
+          { critRate: 5 },      // 첫 번째 패시브: 치명타 확률 +5%
+          { epRecharge: 5 },    // 두 번째 패시브: EP 충전 효율 +5%
+        ],
       }))
     : initialAllies;
   const [units, setUnits] = useState([
@@ -172,6 +176,13 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
       activeUnit.passives || [],
       activeUnit.buffs || []
     );
+    // EP 충전 효율 계산
+    const epRecharge = calculateFinalEpRecharge(
+      activeUnit,
+      activeUnit.equipment || [],
+      activeUnit.passives || [],
+      activeUnit.buffs || []
+    );
     // 스킬 데이터 참조
     const skillDetails = CHARACTER_SKILLS[activeUnit.id]?.skillDetails;
     const normalSkill = skillDetails?.normal;
@@ -189,7 +200,7 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
           addLog(`[치명타!] ${activeUnit.name}의 치명타 발동!`);
         }
         cpGain = 50;
-        epGain = 25;
+        epGain = Math.floor(10 * (1 + epRecharge / 100));
         break;
       }
       case 'skill': {
@@ -201,7 +212,7 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
           addLog(`[치명타!] ${activeUnit.name}의 치명타 발동!`);
         }
         cpGain = 80;
-        epGain = 40;
+        epGain = Math.floor(20 * (1 + epRecharge / 100));
         break;
       }
       case 'ult': {
