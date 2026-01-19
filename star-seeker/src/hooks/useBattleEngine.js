@@ -91,13 +91,16 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
         skillDetail,
         battleContext,
       });
-      // buffs가 반영된 allies를 units에 반영
+      // buffs가 반영된 allies를 units에 반영 + EP 충전
       setUnits(prev => prev.map(u => {
         if (u.type === 'ally' && u.hp > 0) {
           const updated = battleContext.allies.find(a => a.id === u.id);
           let next = updated ? { ...u, ...updated } : u;
           if (u.id === activeUnitId) {
             next.distance = BATTLE_CONSTANTS.MAX_DISTANCE;
+            // 기본 EP 충전 20 (장비/버프 미적용)
+            let newEp = (next.ep ?? 0) + 20;
+            next.ep = Math.min(Math.max(0, newEp), next.maxEp ?? 100);
           }
           return next;
         }
