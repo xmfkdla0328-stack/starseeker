@@ -4,11 +4,11 @@
  */
 export const character2Skills = {
   skills: { 
-    normal: '달빛 화살', 
-    skill: '치유의 노래', 
-    ultimate: '월광 소나타',
-    passive1: '재생의 기원',
-    passive2: '달의 축복'
+    normal: '공황 매도 Panic Sell', 
+    skill: '분할 매수 Dollar Cost Averaging', 
+    ultimate: '리버스 1920 Reverse 1920',
+    passive1: '존재의 증명',
+    passive2: '풍요는 사랑의 약속'
   },
   skillLevels: {
     normal: 1, 
@@ -26,7 +26,7 @@ export const character2Skills = {
       isBuff: false 
     },
     skill: { 
-      desc: '체력이 가장 낮은 아군 회복 (공격력 120%), 2턴 동안 재생 8%', 
+      desc: '체력이 가장 낮은 아군을 공격력의 200% 위력으로 회복, 모든 아군에게 공격력의 8% 위력으로 지속회복 부여 (지속 2턴)', 
       cooldown: 3, 
       elementalPotency: 1, 
       isAttributeAttack: true, 
@@ -35,7 +35,7 @@ export const character2Skills = {
       isBuff: true 
     },
     ultimate: { 
-      desc: '아군 전체 회복 (공격력 200%), 2턴 동안 받는 피해 -15%', 
+      desc: '전체 아군을 공격력의 160% 위력으로 회복, 모든 아군의 2턴 동안 받는 피해 -15%', 
       cooldown: 5, 
       elementalPotency: 2, 
       isAttributeAttack: true, 
@@ -44,11 +44,11 @@ export const character2Skills = {
       isBuff: true 
     },
     passive1: { 
-      desc: '전투 시작 시 아군 전체 HP +10%', 
+      desc: '전투 시작 시 전체 아군의 최대 HP +10%', 
       cooldown: 0 
     },
     passive2: { 
-      desc: '치유량 +15%', 
+      desc: '치유 스킬 사용시, 자신의 치유량 +15%', 
       cooldown: 0 
     }
   }

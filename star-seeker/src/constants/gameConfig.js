@@ -29,9 +29,9 @@ export const GAME_CONST = {
 
 // 도리천 직군(Role) 상수
 export const ROLES = {
-  INTERCEPTOR: 'INTERCEPTOR',   // 전방 방어
+  INTERCEPTOR: 'INTERCEPTOR',   // 디버프 전문
   EXECUTOR: 'EXECUTOR',         // 화력 투사
-  STABILIZER: 'STABILIZER',     // 상태 안정화
+  STABILIZER: 'STABILIZER',     // 버프 전문
   PATHFINDER: 'PATHFINDER',     // 변수 창출
   KEEPER: 'KEEPER',             // 방어/보급
   SUSTAINER: 'SUSTAINER',       // 회복/지속

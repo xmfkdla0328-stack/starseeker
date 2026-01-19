@@ -25,8 +25,6 @@ const Timeline = ({ units, activeUnitId, onUnitClick, interventionMode }) => {
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2/3 h-2/3 rounded-full bg-cyan-400/10 blur-2xl" />
             </div>
 
-            {/* 상단 라벨 */}
-            <div className="absolute top-2 left-6 text-xs text-cyan-300 font-mono tracking-widest z-10 drop-shadow">TIMELINE: CELESTIAL TRAJECTORY</div>
 
             {/* 트랙 라인 + 눈금 */}
             <div className="absolute left-20 right-20 top-1/2 -translate-y-1/2 h-0.5">

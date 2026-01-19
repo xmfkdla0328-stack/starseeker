@@ -39,7 +39,7 @@ export const character1Skills = {
       duration: [2, 0], // 각 효과의 지속 턴 (게이지는 즉시 적용)
     },
     ultimate: {
-      desc: '모든 적에게 공격력의 220% 피해, 적 방어력 -15% (2턴)',
+      desc: '모든 적에게 공격력의 220% 피해, 적 방어력 -15% (지속 2턴)',
       cooldown: 4,
       elementalPotency: 2,
       isAttributeAttack: true,
@@ -53,7 +53,7 @@ export const character1Skills = {
       duration: [0, 2], // 데미지는 즉시, 방깎은 2턴
     },
     passive1: { 
-      desc: '아군 치명타 확률 +10%', 
+      desc: '전체 아군의 치명타 확률 +10%', 
       cooldown: 0 
     },
     passive2: { 

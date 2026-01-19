@@ -57,8 +57,13 @@ const CommandPanel = ({ activeUnit, gameStatus, onCommand }) => {
       </div>
     );
 
+
+  // 쿨타임 정보 추출 (기본: 0)
+  const skillCooldown = activeUnit.cooldowns?.skill ?? 0;
+  const ultCooldown = activeUnit.cooldowns?.ultimate ?? 0;
   const isLocked = activeUnit.type !== 'ally';
-  const ultLocked = isLocked || activeUnit.ep < 100;
+  const skillLocked = isLocked || skillCooldown > 0;
+  const ultLocked = isLocked || activeUnit.ep < 100 || ultCooldown > 0;
 
   return (
     <div className="flex flex-row items-end justify-center gap-4 w-full">
@@ -87,18 +92,23 @@ const CommandPanel = ({ activeUnit, gameStatus, onCommand }) => {
       <button
         type="button"
         onClick={() => onCommand('skill')}
-        disabled={isLocked}
+        disabled={skillLocked}
         className={`
           group relative h-20 w-32 -skew-x-12 overflow-hidden rounded-lg border border-cyan-300/40
           bg-cyan-200/10 backdrop-blur-xl shadow-[0_4px_32px_0_rgba(34,211,238,0.10),0_1.5px_8px_0_rgba(0,0,0,0.18)]
           ring-1 ring-cyan-200/20
           transition-all duration-200 hover:border-cyan-200/80 hover:bg-cyan-200/20 hover:ring-cyan-100/40 active:scale-95
-          ${isLocked ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-125'}
+          ${skillLocked ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:brightness-125'}
         `}
       >
         {/* 흐릿한 아이콘 배경 */}
         <span className="absolute inset-0 flex items-center justify-center text-4xl opacity-20 blur-sm select-none pointer-events-none">💠</span>
-        <div className="skew-x-12 flex flex-col items-center justify-center gap-1 relative z-10">
+        {skillCooldown > 0 && (
+          <div className="absolute inset-0 z-30 flex bg-black/70 bg-opacity-80" style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <span className="text-base text-cyan-100 font-bold tracking-widest animate-pulse drop-shadow-md" style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)'}}>{skillCooldown}</span>
+          </div>
+        )}
+        <div className="skew-x-12 flex flex-col items-center justify-center gap-1 relative z-20">
           <span className="font-bold text-cyan-100 text-lg">스킬</span>
           <span className="text-xs text-cyan-300/70">+CP 80</span>
         </div>
@@ -119,9 +129,12 @@ const CommandPanel = ({ activeUnit, gameStatus, onCommand }) => {
       >
         {/* 흐릿한 아이콘 배경 */}
         <span className="absolute inset-0 flex items-center justify-center text-5xl opacity-20 blur-sm select-none pointer-events-none">🌟</span>
-        {activeUnit.ep < 100 && (
-          <div className="absolute inset-0 bg-black/70 z-10 flex items-center justify-center text-xs text-yellow-100 font-bold tracking-widest">
-            LOCKED
+        {(activeUnit.ep < 100 || ultCooldown > 0) && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/70 bg-opacity-80">
+            <span className="text-2xl text-yellow-100 font-bold tracking-widest animate-pulse drop-shadow-md">{ultCooldown > 0 ? ultCooldown : ''}</span>
+            {ultCooldown === 0 && activeUnit.ep < 100 && (
+              <span className="text-xs text-yellow-100/80 font-bold">EP 부족</span>
+            )}
           </div>
         )}
         <div className="skew-x-12 flex flex-col items-center justify-center gap-1 relative z-20">

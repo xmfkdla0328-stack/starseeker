@@ -72,8 +72,8 @@ const BattleScreen = ({
           onCommand={handleCommandClick} 
         />
       </div>
-      {/* InterventionPanel: AllyZone 내 우측 상단에 절대 위치 */}
-      <div className="absolute right-0 z-50 p-2" style={{top: '9.1rem'}}>
+      {/* InterventionPanel: AllyZone 내 우측 상단에 절대 위치 (더 위로 이동) */}
+      <div className="absolute right-0 z-50 p-2" style={{top: '7.2rem'}}>
         <InterventionPanel 
           cp={cp} 
           maxCp={BATTLE_CONSTANTS.MAX_CP} 
