@@ -7,8 +7,8 @@ const CritBuffIcon = ({ className }) => (
     viewBox="0 0 16 16"
     fill="none"
     className={className}
-    width={12}
-    height={12}
+    width={16}
+    height={16}
     style={{ display: "block" }}
   >
     {/* 노란 네모 배경 */}
