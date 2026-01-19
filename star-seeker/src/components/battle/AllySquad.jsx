@@ -1,3 +1,4 @@
+import BuffIcon from './BuffIcon';
 
 const AllySquad = ({ units, activeUnitId, onUnitClick, interventionMode }) => {
     return (
@@ -15,31 +16,37 @@ const AllySquad = ({ units, activeUnitId, onUnitClick, interventionMode }) => {
                             interventionMode ? 'cursor-pointer' : 'cursor-default',
                         ].join(' ')}
                         onClick={() => onUnitClick(u)}
-                        style={{ minHeight: 54 }}
+                        style={{ minHeight: 44, paddingTop: 6, paddingBottom: 6 }}
                     >
                         {/* Icon */}
                         <div className="text-2xl mr-1 flex-shrink-0">
                             {u.icon}
                         </div>
                         {/* Info */}
-                        <div className="flex-1 min-w-0">
-                            <div className="flex justify-between text-xs text-cyan-100">
+                        <div className="flex-1 min-w-0 flex flex-col justify-start">
+                            <div className="flex justify-between text-xs text-cyan-100 leading-tight" style={{marginBottom: 2}}>
                                 <span className="font-bold font-sans tracking-wide drop-shadow">{u.name}</span>
                                 <span className="font-mono opacity-80">{u.hp}/{u.maxHp}</span>
                             </div>
-                            {/* HP Bar */}
-                            <div className="w-full h-2 bg-slate-800/60 rounded mt-2 overflow-hidden shadow-inner">
+                            {/* HP Bar (빨간색) */}
+                            <div className="w-full h-1.5 bg-slate-800/60 rounded mt-0.5 overflow-hidden shadow-inner">
                                 <div
-                                    className="h-full rounded bg-gradient-to-r from-cyan-300 via-cyan-400 to-yellow-200 shadow-[0_0_8px_2px_rgba(34,211,238,0.35)] transition-all"
+                                    className="h-full rounded bg-gradient-to-r from-red-500 via-red-400 to-yellow-200 shadow-[0_0_8px_2px_rgba(239,68,68,0.25)] transition-all"
                                     style={{ width: `${(u.hp / u.maxHp) * 100}%` }}
                                 />
                             </div>
-                            {/* EP Bar */}
-                            <div className="w-full h-1 bg-fuchsia-900/40 rounded mt-1 overflow-hidden">
+                            {/* EP Bar (파란색) */}
+                            <div className="w-full h-1 bg-blue-900/40 rounded mt-0.5 overflow-hidden">
                                 <div
-                                    className="h-full rounded bg-gradient-to-r from-fuchsia-400 via-cyan-300 to-cyan-100 shadow-[0_0_6px_1px_rgba(232,40,251,0.25)] transition-all"
+                                    className="h-full rounded bg-gradient-to-r from-blue-400 via-blue-300 to-cyan-100 shadow-[0_0_6px_1px_rgba(59,130,246,0.25)] transition-all"
                                     style={{ width: `${(u.ep / u.maxEp) * 100}%` }}
                                 />
+                            </div>
+                            {/* 버프 아이콘 영역 (공격력 증가 버프만) */}
+                            <div className="flex gap-0.5 mt-0.5 items-center min-h-4">
+                                {u.buffs?.filter(buff => buff.type === 'ATK_UP').map((buff, idx) => (
+                                    <BuffIcon key={idx} />
+                                ))}
                             </div>
                         </div>
                     </div>
