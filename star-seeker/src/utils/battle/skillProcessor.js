@@ -29,12 +29,25 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
         case 'ATK_UP':
           effectTargets.forEach(target => {
             if (!target.buffs) target.buffs = [];
-            target.buffs.push({
-              type: 'ATK_UP',
-              value,
-              duration,
-              source: caster.id,
-            });
+            // 같은 type, 같은 source의 버프가 이미 있으면 갱신, 없으면 추가
+            const existingIdx = target.buffs.findIndex(
+              b => b.type === 'ATK_UP' && b.source === caster.id
+            );
+            if (existingIdx !== -1) {
+              // 기존 버프 갱신 (duration, value)
+              target.buffs[existingIdx] = {
+                ...target.buffs[existingIdx],
+                value,
+                duration,
+              };
+            } else {
+              target.buffs.push({
+                type: 'ATK_UP',
+                value,
+                duration,
+                source: caster.id,
+              });
+            }
             battleContext.addLog(`${target.name}의 공격력이 ${value}% 증가 (지속 ${duration}턴)`);
           });
           break;
