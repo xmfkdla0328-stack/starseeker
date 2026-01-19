@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { BATTLE_CONSTANTS } from '../constants/battleConfig';
 import { CHARACTER_SKILLS } from '../data/characters/skills';
 import { applySkillEffect } from '../utils/battle/skillProcessor';
+import { calculateFinalCritStats } from '../utils/StatCalculator';
 
 const useBattleEngine = (initialAllies, initialEnemies) => {
   // 서주목(1)만 쿨다운 필드 추가 (최초 0)
@@ -10,8 +11,16 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
     unit.id === 1
       ? { ...unit, cooldowns: { skill: 0, ultimate: 0, ...(unit.cooldowns || {}) } }
       : unit;
+  // 서주목 패시브: 아군 전체 치명타 확률 +5% 적용
+  const hasSeoJuMok = initialAllies.some(u => u.id === 1);
+  const alliesWithPassive = hasSeoJuMok
+    ? initialAllies.map(u => ({
+        ...u,
+        passives: [...(u.passives || []), { critRate: 5 }],
+      }))
+    : initialAllies;
   const [units, setUnits] = useState([
-    ...initialAllies.map(withCooldowns),
+    ...alliesWithPassive.map(withCooldowns),
     ...initialEnemies.map(withCooldowns),
   ]);
   const [cp, setCp] = useState(500);
@@ -156,6 +165,13 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
         if (buff.type === 'ATK_UP') atkBuff += buff.value;
       });
     }
+    // 치명타 스탯 계산 (장비/패시브/버프는 추후 확장)
+    const critStats = calculateFinalCritStats(
+      activeUnit,
+      activeUnit.equipment || [],
+      activeUnit.passives || [],
+      activeUnit.buffs || []
+    );
     // 스킬 데이터 참조
     const skillDetails = CHARACTER_SKILLS[activeUnit.id]?.skillDetails;
     const normalSkill = skillDetails?.normal;
@@ -167,6 +183,11 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
         // 일반 공격: 데이터 damageFactor 적용
         const damageFactor = normalSkill?.damageFactor ?? 1.0;
         dmg = Math.round(finalAtk * damageFactor);
+        // 치명타 판정
+        if (Math.random() * 100 < critStats.critRate) {
+          dmg = Math.round(dmg * (1 + critStats.critDamage / 100));
+          addLog(`[치명타!] ${activeUnit.name}의 치명타 발동!`);
+        }
         cpGain = 50;
         epGain = 25;
         break;
@@ -174,6 +195,11 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
       case 'skill': {
         // 스킬 공격: 기존대로(추후 확장)
         dmg = Math.round(finalAtk * 1.5);
+        // 치명타 판정
+        if (Math.random() * 100 < critStats.critRate) {
+          dmg = Math.round(dmg * (1 + critStats.critDamage / 100));
+          addLog(`[치명타!] ${activeUnit.name}의 치명타 발동!`);
+        }
         cpGain = 80;
         epGain = 40;
         break;
@@ -181,6 +207,11 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
       case 'ult': {
         if (activeUnit.ep < 100) { addLog('EP 부족!'); return; }
         dmg = Math.round(finalAtk * 4.0);
+        // 치명타 판정
+        if (Math.random() * 100 < critStats.critRate) {
+          dmg = Math.round(dmg * (1 + critStats.critDamage / 100));
+          addLog(`[치명타!] ${activeUnit.name}의 치명타 발동!`);
+        }
         cpGain = 100;
         epGain = -100;
         break;

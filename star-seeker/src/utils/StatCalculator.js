@@ -1,3 +1,34 @@
+/**
+ * @param {object} character - 캐릭터 객체 (critRate, critDamage 등)
+ * @param {Array} equipment - 장비 배열 (각 장비에 critRate, critDamage 옵션 가능)
+ * @param {Array} passives - 패시브 효과 배열 ({ critRate, critDamage })
+ * @param {Array} buffs - 전투 중 버프/디버프 배열 ({ type, value })
+ * @returns {object} { critRate, critDamage }
+ */
+export function calculateFinalCritStats(character, equipment = [], passives = [], buffs = []) {
+  let critRate = character.critRate || 0;
+  let critDamage = character.critDamage || 0;
+
+  // 장비 옵션 합산
+  equipment.forEach(eq => {
+    critRate += eq.critRate || 0;
+    critDamage += eq.critDamage || 0;
+  });
+
+  // 패시브 효과 합산
+  passives.forEach(passive => {
+    critRate += passive.critRate || 0;
+    critDamage += passive.critDamage || 0;
+  });
+
+  // 전투 중 버프/디버프 합산
+  buffs.forEach(buff => {
+    if (buff.type === 'CRIT_RATE_UP') critRate += buff.value;
+    if (buff.type === 'CRIT_DMG_UP') critDamage += buff.value;
+  });
+
+  return { critRate, critDamage };
+}
 // StatCalculator.js
 // 레벨, 돌파 등 영구적 요소를 반영한 최종 스탯 계산기
 import { BREAKTHROUGH_STAGES } from '../data/breakthrough/breakthroughStages';

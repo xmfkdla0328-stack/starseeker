@@ -53,7 +53,7 @@ export const character1Skills = {
       duration: [0, 2], // 데미지는 즉시, 방깎은 2턴
     },
     passive1: { 
-      desc: '전체 아군의 치명타 확률 +10%', 
+      desc: '전체 아군의 치명타 확률 +5%', 
       cooldown: 0 
     },
     passive2: { 

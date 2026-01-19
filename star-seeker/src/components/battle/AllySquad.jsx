@@ -1,4 +1,5 @@
 import BuffIcon from './BuffIcon';
+import CritBuffIcon from './CritBuffIcon';
 
 const AllySquad = ({ units, activeUnitId, onUnitClick, interventionMode }) => {
     return (
@@ -42,11 +43,16 @@ const AllySquad = ({ units, activeUnitId, onUnitClick, interventionMode }) => {
                                     style={{ width: `${(u.ep / u.maxEp) * 100}%` }}
                                 />
                             </div>
-                            {/* 버프 아이콘 영역 (공격력 증가 버프만) */}
+                            {/* 버프 아이콘 영역 (공격력 증가 + 치명타 확률 패시브) */}
                             <div className="flex gap-0.5 mt-0.5 items-center min-h-4">
+                                {/* 공격력 증가 버프 */}
                                 {u.buffs?.filter(buff => buff.type === 'ATK_UP').map((buff, idx) => (
                                     <BuffIcon key={idx} />
                                 ))}
+                                {/* 치명타 확률 패시브(서주목 효과) */}
+                                {u.passives?.some(p => p.critRate) && (
+                                    <CritBuffIcon />
+                                )}
                             </div>
                         </div>
                     </div>
