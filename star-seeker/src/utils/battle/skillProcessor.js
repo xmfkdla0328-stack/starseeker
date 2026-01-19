@@ -12,6 +12,45 @@
  */
 
 export function applySkillEffect({ caster, targets, skillDetail, battleContext }) {
+  // 아다드(2) 스킬: 체력이 가장 낮은 아군을 공격력의 200%로 회복
+  if (caster.id === 2 && skillDetail && skillDetail.targetType === 'ALLY_ONE') {
+    // 회복량 계산: atk * 2.0
+    const healAmount = Math.round((caster.atk || 100) * 2.0);
+    const target = targets[0];
+    if (target && target.hp < target.maxHp) {
+      const before = target.hp;
+      target.hp = Math.min(target.hp + healAmount, target.maxHp);
+      battleContext.addLog(`${target.name}이(가) ${healAmount}만큼 회복! (${before} → ${target.hp})`);
+    }
+    // 모든 아군에게 HOT(지속 회복) 버프 부여 (2턴, 아다드의 최종 atk의 8%)
+    // 실제 units 배열에 직접 반영
+    if (battleContext && battleContext.allies) {
+      // 아다드의 최종 공격력 계산 (버프 포함)
+      let finalAtk = caster.atk || 100;
+      if (caster.buffs) {
+        let atkBuff = 0;
+        caster.buffs.forEach(buff => {
+          if (buff.type === 'ATK_UP') atkBuff += buff.value;
+        });
+        finalAtk = Math.floor(finalAtk * (1 + atkBuff / 100));
+      }
+      battleContext.allies.forEach(target => {
+        const hotValue = Math.round(finalAtk * 0.08);
+        // 실제 units 배열의 해당 유닛 찾아서 버프 추가
+        const realUnit = battleContext.units?.find(u => u.id === target.id) || target;
+        if (!realUnit.buffs) realUnit.buffs = [];
+        realUnit.buffs.push({
+          type: 'HOT',
+          value: hotValue,
+          duration: 2,
+          source: caster.id,
+        });
+        battleContext.addLog(`${realUnit.name}이(가) 2턴간 매 턴 ${hotValue} 회복 (지속 회복)`);
+      });
+    }
+    return;
+  }
+
   // 데이터 기반 효과 처리
   if (Array.isArray(skillDetail.effectType)) {
     skillDetail.effectType.forEach((type, idx) => {
