@@ -5,7 +5,15 @@ import { CHARACTER_SKILLS } from '../data/characters/skills';
 import { applySkillEffect } from '../utils/battle/skillProcessor';
 
 const useBattleEngine = (initialAllies, initialEnemies) => {
-  const [units, setUnits] = useState([...initialAllies, ...initialEnemies]);
+  // 서주목(1)만 쿨다운 필드 추가 (최초 0)
+  const withCooldowns = (unit) =>
+    unit.id === 1
+      ? { ...unit, cooldowns: { skill: 0, ultimate: 0, ...(unit.cooldowns || {}) } }
+      : unit;
+  const [units, setUnits] = useState([
+    ...initialAllies.map(withCooldowns),
+    ...initialEnemies.map(withCooldowns),
+  ]);
   const [cp, setCp] = useState(500);
   const [activeUnitId, setActiveUnitId] = useState(null);
   const [gameStatus, setGameStatus] = useState('running');
@@ -70,13 +78,23 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
   const handlePlayerAction = (type, targetId) => {
     const activeUnit = units.find(u => u.id === activeUnitId);
     if (!activeUnit) return;
-    // 서주목(캐릭터 id 1)이 skill 커맨드를 사용할 때 실제 스킬 효과 적용
-    if (type === 'skill' && activeUnit.id === 1) {
-      // 아군 전체
+    // 서주목(캐릭터 id 1) 스킬/필살기 쿨다운 적용
+    if (activeUnit.id === 1 && (type === 'skill' || type === 'ult')) {
+      // 쿨다운 체크
+      if (activeUnit.cooldowns && activeUnit.cooldowns[type] > 0) {
+        addLog(`스킬 쿨다운 중! (${activeUnit.cooldowns[type]}턴 남음)`);
+        return;
+      }
+    }
+    // 서주목(캐릭터 id 1)이 skill 또는 ult 커맨드를 사용할 때 실제 스킬 효과 적용 (데이터 기반)
+    if ((type === 'skill' || type === 'ult') && activeUnit.id === 1) {
+      // 아군/적 전체
       const allies = units.filter(u => u.type === 'ally' && u.hp > 0);
+      const enemies = units.filter(u => u.type === 'enemy' && u.hp > 0);
       // battleContext 임시 생성 (실제 battleLog 연동)
       const battleContext = {
         allies: allies.map(a => ({ ...a })), // 깊은 복사로 전달
+        enemies: enemies.map(e => ({ ...e })),
         timeline: {
           startDistance: BATTLE_CONSTANTS.MAX_DISTANCE,
           goalDistance: 0,
@@ -84,27 +102,45 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
         addLog: addLog,
       };
       // 서주목 스킬 데이터
-      const skillDetail = CHARACTER_SKILLS[1].skillDetails.skill;
+      const skillDetail = type === 'skill'
+        ? CHARACTER_SKILLS[1].skillDetails.skill
+        : CHARACTER_SKILLS[1].skillDetails.ultimate;
+      // 대상 결정
+      let targets = [];
+      if (type === 'skill') {
+        targets = battleContext.allies;
+      } else if (type === 'ult') {
+        targets = battleContext.enemies;
+      }
+      // EP 체크 (필살기)
+      if (type === 'ult' && activeUnit.ep < 100) { addLog('EP 부족!'); return; }
+      // 효과 적용
       applySkillEffect({
         caster: activeUnit,
-        targets: battleContext.allies,
+        targets,
         skillDetail,
         battleContext,
       });
-      // buffs가 반영된 allies를 units에 반영 + EP 충전
+      // buffs/디버프/HP가 반영된 allies/enemies를 units에 반영 + EP/쿨다운 적용
       setUnits(prev => prev.map(u => {
-        if (u.type === 'ally' && u.hp > 0) {
-          const updated = battleContext.allies.find(a => a.id === u.id);
-          let next = updated ? { ...u, ...updated } : u;
-          if (u.id === activeUnitId) {
-            next.distance = BATTLE_CONSTANTS.MAX_DISTANCE;
-            // 기본 EP 충전 20 (장비/버프 미적용)
-            let newEp = (next.ep ?? 0) + 20;
-            next.ep = Math.min(Math.max(0, newEp), next.maxEp ?? 100);
-          }
-          return next;
+        let updated;
+        if (type === 'skill' && u.type === 'ally' && u.hp > 0) {
+          updated = battleContext.allies.find(a => a.id === u.id);
+        } else if (type === 'ult' && u.type === 'enemy' && u.hp > 0) {
+          updated = battleContext.enemies.find(e => e.id === u.id);
         }
-        return u;
+        let next = updated ? { ...u, ...updated } : u;
+        if (u.id === activeUnitId) {
+          next.distance = BATTLE_CONSTANTS.MAX_DISTANCE;
+          // skill: 기본 EP 충전 20, ult: EP -100
+          let newEp = type === 'skill'
+            ? (next.ep ?? 0) + 20
+            : (next.ep ?? 0) - 100;
+          next.ep = Math.min(Math.max(0, newEp), next.maxEp ?? 100);
+          // 쿨다운 적용
+          next.cooldowns = { ...next.cooldowns, [type]: skillDetail.cooldown };
+        }
+        return next;
       }));
       setActiveUnitId(null);
       return;
@@ -168,11 +204,20 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
         // 자신의 턴에만 버프 지속시간 감소 및 만료 제거
         let newBuffs = u.buffs ? u.buffs.map(buff => ({ ...buff, duration: buff.duration !== undefined ? buff.duration - 1 : undefined })) : [];
         newBuffs = newBuffs.filter(buff => buff.duration === undefined || buff.duration > 0);
+        // 쿨다운 감소(서주목만)
+        let newCooldowns = u.cooldowns;
+        if (u.id === 1 && newCooldowns) {
+          newCooldowns = { ...newCooldowns };
+          Object.keys(newCooldowns).forEach(key => {
+            newCooldowns[key] = Math.max(0, newCooldowns[key] - 1);
+          });
+        }
         return {
           ...u,
           distance: BATTLE_CONSTANTS.MAX_DISTANCE,
           ep: Math.min(Math.max(0, newEp), u.maxEp),
-          buffs: newBuffs
+          buffs: newBuffs,
+          ...(u.id === 1 && newCooldowns ? { cooldowns: newCooldowns } : {}),
         };
       }
       // 기타 유닛: 버프 지속시간은 감소시키지 않음 (상태만 유지)

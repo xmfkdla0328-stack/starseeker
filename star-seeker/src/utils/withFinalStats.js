@@ -8,7 +8,8 @@ import { calculateFinalStats } from './StatCalculator';
  */
 export function withFinalStats(party) {
   return (party || []).filter(Boolean).map((char, idx) => {
-    const stats = calculateFinalStats(char);
+    // buffs 정보도 전달
+    const stats = calculateFinalStats({ ...char, buffs: char.buffs });
     return {
       ...char,
       ...stats,

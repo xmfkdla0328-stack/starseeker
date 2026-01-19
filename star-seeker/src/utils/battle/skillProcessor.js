@@ -52,6 +52,31 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
           });
           break;
 
+        case 'DEF_DOWN':
+          effectTargets.forEach(target => {
+            if (!target.buffs) target.buffs = [];
+            // 같은 type, 같은 source의 디버프가 이미 있으면 갱신, 없으면 추가
+            const existingIdx = target.buffs.findIndex(
+              b => b.type === 'DEF_DOWN' && b.source === caster.id
+            );
+            if (existingIdx !== -1) {
+              target.buffs[existingIdx] = {
+                ...target.buffs[existingIdx],
+                value,
+                duration,
+              };
+            } else {
+              target.buffs.push({
+                type: 'DEF_DOWN',
+                value,
+                duration,
+                source: caster.id,
+              });
+            }
+            battleContext.addLog(`${target.name}의 방어력이 ${value}% 감소 (지속 ${duration}턴)`);
+          });
+          break;
+
         case 'GAUGE_UP':
           // 타임라인 구조에서 행동 게이지 = distance 값
           if (battleContext && typeof value === 'number') {

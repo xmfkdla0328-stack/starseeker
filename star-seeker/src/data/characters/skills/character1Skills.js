@@ -27,7 +27,7 @@ export const character1Skills = {
     },
     skill: {
       desc: '아군 전체 공격력 +20% (지속 2턴) & 전체 아군 행동 게이지 +10%',
-      cooldown: 3,
+      cooldown: 2,
       elementalPotency: 1,
       isAttributeAttack: true,
       damageFactor: 0,
@@ -38,14 +38,19 @@ export const character1Skills = {
       effectTarget: ['ALLY_ALL', 'ALLY_ALL'], // 효과 대상
       duration: [2, 0], // 각 효과의 지속 턴 (게이지는 즉시 적용)
     },
-    ultimate: { 
-      desc: '모든 적에게 공격력의 220% 피해, 적 방어력 -15% (지속 2턴)', 
-      cooldown: 4, 
-      elementalPotency: 2, 
-      isAttributeAttack: true, 
-      damageFactor: 2.2, 
-      targetType: 'ENEMY_ALL', 
-      isBuff: false 
+    ultimate: {
+      desc: '모든 적에게 공격력의 220% 피해, 적 방어력 -15% (2턴)',
+      cooldown: 4,
+      elementalPotency: 2,
+      isAttributeAttack: true,
+      damageFactor: 2.2,
+      targetType: 'ENEMY_ALL',
+      isBuff: false,
+      // 데이터 기반 효과 구조 추가
+      effectType: ['DAMAGE', 'DEF_DOWN'], // 1: 데미지, 2: 방깎
+      effectValue: [2.2, 15], // 1: 데미지 배수, 2: 방어력 감소 %
+      effectTarget: ['ENEMY_ALL', 'ENEMY_ALL'],
+      duration: [0, 2], // 데미지는 즉시, 방깎은 2턴
     },
     passive1: { 
       desc: '아군 치명타 확률 +10%', 

@@ -12,6 +12,7 @@ export function calculateFinalStats(character) {
   const baseDef = character.baseDef || 30;
   const level = character.level || 1;
   const breakthrough = character.breakthrough || 0;
+  const buffs = character.buffs || [];
 
   // 레벨 보정
   const levelMultiplier = 1 + (level - 1) * 0.02;
@@ -26,9 +27,21 @@ export function calculateFinalStats(character) {
     }
   }
 
+  // 버프/디버프 적용
+  let atkUp = 0;
+  let defDown = 0;
+  buffs.forEach(buff => {
+    if (buff.type === 'ATK_UP') atkUp += buff.value;
+    if (buff.type === 'DEF_DOWN') defDown += buff.value;
+  });
+
+  // 방어력 감소는 최대 90%까지만(최소 10%만 남음)
+  let defMultiplier = 1 - defDown / 100;
+  if (defMultiplier < 0.1) defMultiplier = 0.1;
+
   return {
-    atk: Math.floor(baseAtk * levelMultiplier) + breakthroughBonus.atk,
+    atk: Math.floor((baseAtk * levelMultiplier + breakthroughBonus.atk) * (1 + atkUp / 100)),
     hp: Math.floor(baseHp * levelMultiplier) + breakthroughBonus.hp,
-    def: Math.floor(baseDef * levelMultiplier) + breakthroughBonus.def,
+    def: Math.floor((baseDef * levelMultiplier + breakthroughBonus.def) * defMultiplier),
   };
 }
