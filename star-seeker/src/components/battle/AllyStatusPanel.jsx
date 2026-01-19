@@ -4,6 +4,7 @@ import { calculateFinalStats, calculateFinalCritStats, calculateFinalEpRecharge 
 import BuffIcon from './BuffIcon';
 import CritBuffIcon from './CritBuffIcon';
 import EpRechargeBuffIcon from './EpRechargeBuffIcon';
+import HotBuffIcon from './HotBuffIcon';
 
 const BUFF_DESCRIPTIONS = {
   ATK_UP: {
@@ -20,6 +21,19 @@ const BUFF_DESCRIPTIONS = {
     icon: <EpRechargeBuffIcon />,
     label: 'EP 충전 효율 증가',
     getDesc: (buff) => `EP 충전 효율 +${buff.value}%`,
+  },
+  HOT: {
+    icon: <HotBuffIcon />,
+    label: '지속 회복',
+    getDesc: (buff) => {
+      // duration이 1 이하면 지속 표시 생략
+      let valueDesc = `매 턴 HP +${buff.value}`;
+      // source가 2(아다드)면 '아다드의 공격력 8%'로 안내
+      if (buff.source === 2) {
+        valueDesc = `매 턴 HP +아다드의 공격력 8% (${buff.value})`;
+      }
+      return valueDesc;
+    },
   },
 };
 

@@ -6,9 +6,9 @@ import { applySkillEffect } from '../utils/battle/skillProcessor';
 import { calculateFinalCritStats, calculateFinalEpRecharge } from '../utils/StatCalculator';
 
 const useBattleEngine = (initialAllies, initialEnemies) => {
-  // 서주목(1)만 쿨다운 필드 추가 (최초 0)
+  // 서주목(1) 또는 아다드(2)만 쿨다운 필드 추가 (최초 0)
   const withCooldowns = (unit) =>
-    unit.id === 1
+    (unit.id === 1 || unit.id === 2)
       ? { ...unit, cooldowns: { skill: 0, ultimate: 0, ...(unit.cooldowns || {}) } }
       : unit;
   // 서주목 패시브: 아군 전체 치명타 확률 +5% 적용
@@ -91,16 +91,21 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
   const handlePlayerAction = (type, targetId) => {
     const activeUnit = units.find(u => u.id === activeUnitId);
     if (!activeUnit) return;
-    // 서주목(캐릭터 id 1) 스킬/필살기 쿨다운 적용
-    if (activeUnit.id === 1 && (type === 'skill' || type === 'ult')) {
+    // 서주목(1) 또는 아다드(2)만 쿨다운 필드 추가 (최초 0)
+    const withCooldowns = (unit) =>
+      (unit.id === 1 || unit.id === 2)
+        ? { ...unit, cooldowns: { skill: 0, ultimate: 0, ...(unit.cooldowns || {}) } }
+        : unit;
+    // 서주목(1) 또는 아다드(2) 스킬/필살기 쿨다운 적용
+    if ((activeUnit.id === 1 || activeUnit.id === 2) && (type === 'skill' || type === 'ult')) {
       // 쿨다운 체크
       if (activeUnit.cooldowns && activeUnit.cooldowns[type] > 0) {
         addLog(`스킬 쿨다운 중! (${activeUnit.cooldowns[type]}턴 남음)`);
         return;
       }
     }
-    // 서주목(캐릭터 id 1)이 skill 또는 ult 커맨드를 사용할 때 실제 스킬 효과 적용 (데이터 기반)
-    if ((type === 'skill' || type === 'ult') && activeUnit.id === 1) {
+    // 서주목(1) 또는 아다드(2) 스킬/필살기 처리
+    if ((type === 'skill' || type === 'ult') && (activeUnit.id === 1 || activeUnit.id === 2)) {
       // 아군/적 전체
       const allies = units.filter(u => u.type === 'ally' && u.hp > 0);
       const enemies = units.filter(u => u.type === 'enemy' && u.hp > 0);
@@ -114,16 +119,16 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
         },
         addLog: addLog,
       };
-      // 서주목 스킬 데이터
+      // 스킬 데이터
       const skillDetail = type === 'skill'
-        ? CHARACTER_SKILLS[1].skillDetails.skill
-        : CHARACTER_SKILLS[1].skillDetails.ultimate;
+        ? CHARACTER_SKILLS[activeUnit.id].skillDetails.skill
+        : CHARACTER_SKILLS[activeUnit.id].skillDetails.ultimate;
       // 대상 결정
       let targets = [];
       if (type === 'skill') {
-        targets = battleContext.allies;
+        targets = skillDetail.targetType === 'ALLY_ONE' ? [battleContext.allies.reduce((min, a) => (a.hp/a.maxHp < min.hp/min.maxHp ? a : min), battleContext.allies[0])] : battleContext.allies;
       } else if (type === 'ult') {
-        targets = battleContext.enemies;
+        targets = skillDetail.targetType === 'ALLY_ALL' ? battleContext.allies : battleContext.enemies;
       }
       // EP 체크 (필살기)
       if (type === 'ult' && activeUnit.ep < 100) { addLog('EP 부족!'); return; }
@@ -138,6 +143,8 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
       setUnits(prev => prev.map(u => {
         let updated;
         if (type === 'skill' && u.type === 'ally' && u.hp > 0) {
+          updated = battleContext.allies.find(a => a.id === u.id);
+        } else if (type === 'ult' && u.type === 'ally' && u.hp > 0) {
           updated = battleContext.allies.find(a => a.id === u.id);
         } else if (type === 'ult' && u.type === 'enemy' && u.hp > 0) {
           updated = battleContext.enemies.find(e => e.id === u.id);
@@ -246,6 +253,21 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
         // 자신의 턴에만 버프 지속시간 감소 및 만료 제거
         let newBuffs = u.buffs ? u.buffs.map(buff => ({ ...buff, duration: buff.duration !== undefined ? buff.duration - 1 : undefined })) : [];
         newBuffs = newBuffs.filter(buff => buff.duration === undefined || buff.duration > 0);
+          // HOT 버프 효과 적용 (턴 시작 시)
+          let hotHeal = 0;
+          if (u.buffs) {
+            u.buffs.forEach(buff => {
+              if (buff.type === 'HOT') {
+                hotHeal += buff.value;
+              }
+            });
+          }
+          let newHp = u.hp;
+          if (hotHeal > 0 && u.hp > 0) {
+            const beforeHp = newHp;
+            newHp = Math.min(u.maxHp, newHp + hotHeal);
+            addLog(`[HOT] ${u.name}이(가) HOT 효과로 ${hotHeal} 회복! (${beforeHp} → ${newHp})`);
+          }
         // 쿨다운 감소(서주목만)
         let newCooldowns = u.cooldowns;
         if (u.id === 1 && newCooldowns) {
@@ -259,6 +281,7 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
           distance: BATTLE_CONSTANTS.MAX_DISTANCE,
           ep: Math.min(Math.max(0, newEp), u.maxEp),
           buffs: newBuffs,
+            hp: newHp,
           ...(u.id === 1 && newCooldowns ? { cooldowns: newCooldowns } : {}),
         };
       }

@@ -27,7 +27,7 @@ export const character2Skills = {
     },
     skill: { 
       desc: '체력이 가장 낮은 아군을 공격력의 200% 위력으로 회복, 모든 아군에게 공격력의 8% 위력으로 지속회복 부여 (지속 2턴)', 
-      cooldown: 3, 
+      cooldown: 2, 
       elementalPotency: 1, 
       isAttributeAttack: true, 
       damageFactor: 0, 

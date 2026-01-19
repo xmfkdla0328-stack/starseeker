@@ -1,6 +1,7 @@
 import BuffIcon from './BuffIcon';
 import CritBuffIcon from './CritBuffIcon';
 import EpRechargeBuffIcon from './EpRechargeBuffIcon';
+import HotBuffIcon from './HotBuffIcon';
 import AllyStatusPanel from './AllyStatusPanel';
 import { useState } from 'react';
 
@@ -56,7 +57,11 @@ const AllySquad = ({ units, activeUnitId, onUnitClick, interventionMode }) => {
                                 <div className="flex gap-0.5 mt-0.5 items-center min-h-4">
                                     {/* 공격력 증가 버프 */}
                                     {u.buffs?.filter(buff => buff.type === 'ATK_UP').map((buff, idx) => (
-                                        <BuffIcon key={idx} />
+                                        <BuffIcon key={"atk"+idx} />
+                                    ))}
+                                    {/* HOT(지속 회복) 버프 */}
+                                    {u.buffs?.filter(buff => buff.type === 'HOT').map((buff, idx) => (
+                                        <HotBuffIcon key={"hot"+idx} />
                                     ))}
                                     {/* 치명타 확률 패시브(서주목 효과) */}
                                     {u.passives?.some(p => p.critRate) && (
