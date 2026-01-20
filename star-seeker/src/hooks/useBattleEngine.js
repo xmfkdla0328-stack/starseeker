@@ -32,6 +32,11 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
       ? { ...u, passives: [ ...(u.passives || []), { atkUp: 10 } ] }
       : u
   );
+  // passive1, passive2, 버프, 레벨, 돌파 등 모든 요소가 atk에 반영되도록 최종 스탯 계산
+  alliesWithPassive = alliesWithPassive.map(u => {
+    const finalStats = require('../utils/StatCalculator').calculateFinalStats(u);
+    return { ...u, ...finalStats };
+  });
   const [units, setUnits] = useState([
     ...alliesWithPassive.map(withCooldowns),
     ...initialEnemies.map(withCooldowns),
