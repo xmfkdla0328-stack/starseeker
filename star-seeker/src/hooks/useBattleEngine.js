@@ -4,6 +4,7 @@ import { BATTLE_CONSTANTS } from '../constants/battleConfig';
 import { CHARACTER_SKILLS } from '../data/characters/skills';
 import { applySkillEffect } from '../utils/battle/skillProcessor';
 import { calculateFinalCritStats, calculateFinalEpRecharge } from '../utils/StatCalculator';
+import { playerPassiveUnlocks } from '../data/playerPassiveUnlocks';
 
 const useBattleEngine = (initialAllies, initialEnemies) => {
   // 서주목(1) 또는 아다드(2)만 쿨다운 필드 추가 (최초 0)
@@ -13,16 +14,24 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
       : unit;
   // 서주목 패시브: 아군 전체 치명타 확률 +5% 적용
   const hasSeoJuMok = initialAllies.some(u => u.id === 1);
-  const alliesWithPassive = hasSeoJuMok
-    ? initialAllies.map(u => ({
-        ...u,
-        passives: [
-          ...(u.passives || []),
-          { critRate: 5 },      // 첫 번째 패시브: 치명타 확률 +5%
-          { epRecharge: 5 },    // 두 번째 패시브: EP 충전 효율 +5%
-        ],
-      }))
-    : initialAllies;
+  let alliesWithPassive = initialAllies;
+  // 서주목 패시브 적용 (해제된 경우만)
+  if (hasSeoJuMok && playerPassiveUnlocks[1]?.passive1) {
+    alliesWithPassive = alliesWithPassive.map(u => ({
+      ...u,
+      passives: [
+        ...(u.passives || []),
+        { critRate: 5 },
+        { epRecharge: 5 },
+      ],
+    }));
+  }
+  // 아다드 패시브(자신만 공격력 +10%) 적용 (해제된 경우만)
+  alliesWithPassive = alliesWithPassive.map(u =>
+    u.id === 2 && playerPassiveUnlocks[2]?.passive1
+      ? { ...u, passives: [ ...(u.passives || []), { atkUp: 10 } ] }
+      : u
+  );
   const [units, setUnits] = useState([
     ...alliesWithPassive.map(withCooldowns),
     ...initialEnemies.map(withCooldowns),
@@ -237,10 +246,19 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
       default: break;
     }
     setUnits(prev => prev.map(u => {
-      // 피격 대상 처리
+      // 피격 대상 처리 (피해 감소 버프 적용)
       if (u.id === targetId) {
-        const newHp = u.hp - dmg;
-        addLog(`[공격] ${u.name}에게 ${dmg} 데미지!`);
+        let finalDmg = dmg;
+        // DMG_REDUCTION 버프가 있으면 value만큼 피해 감소
+        if (u.buffs) {
+          const dmgRed = u.buffs.filter(buff => buff.type === 'DMG_REDUCTION').reduce((acc, buff) => acc + (buff.value || 0), 0);
+          if (dmgRed > 0) {
+            finalDmg = Math.round(dmg * (1 - dmgRed / 100));
+            addLog(`[피해 감소] ${u.name}이(가) 피해 감소 효과로 ${dmg} → ${finalDmg} 데미지!`);
+          }
+        }
+        const newHp = u.hp - finalDmg;
+        addLog(`[공격] ${u.name}에게 ${finalDmg} 데미지!`);
         if (newHp <= 0) {
           addLog(`!! ${u.name} 처치됨! (CP +100)`);
           cpGain += 100;
@@ -270,7 +288,7 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
           }
         // 쿨다운 감소(서주목만)
         let newCooldowns = u.cooldowns;
-        if (u.id === 1 && newCooldowns) {
+        if ((u.id === 1 || u.id === 2) && newCooldowns) {
           newCooldowns = { ...newCooldowns };
           Object.keys(newCooldowns).forEach(key => {
             newCooldowns[key] = Math.max(0, newCooldowns[key] - 1);
@@ -281,8 +299,8 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
           distance: BATTLE_CONSTANTS.MAX_DISTANCE,
           ep: Math.min(Math.max(0, newEp), u.maxEp),
           buffs: newBuffs,
-            hp: newHp,
-          ...(u.id === 1 && newCooldowns ? { cooldowns: newCooldowns } : {}),
+          hp: newHp,
+          ...((u.id === 1 || u.id === 2) && newCooldowns ? { cooldowns: newCooldowns } : {}),
         };
       }
       // 기타 유닛: 버프 지속시간은 감소시키지 않음 (상태만 유지)

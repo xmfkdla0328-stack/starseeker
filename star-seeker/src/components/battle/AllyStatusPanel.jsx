@@ -1,12 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { calculateFinalStats, calculateFinalCritStats, calculateFinalEpRecharge } from '../../utils/StatCalculator';
-import BuffIcon from './BuffIcon';
-import CritBuffIcon from './CritBuffIcon';
-import EpRechargeBuffIcon from './EpRechargeBuffIcon';
-import HotBuffIcon from './HotBuffIcon';
+import BuffIcon from './buffIcons/BuffIcon';
+import CritBuffIcon from './buffIcons/CritBuffIcon';
+import EpRechargeBuffIcon from './buffIcons/EpRechargeBuffIcon';
+import HotBuffIcon from './buffIcons/HotBuffIcon';
+import DmgReductionBuffIcon from './buffIcons/DmgReductionBuffIcon';
 
 const BUFF_DESCRIPTIONS = {
+    DMG_REDUCTION: {
+      icon: <DmgReductionBuffIcon />,
+      label: '받는 피해 감소',
+      getDesc: (buff) => `받는 피해 -${buff.value}%`,
+    },
   ATK_UP: {
     icon: <BuffIcon />,
     label: '공격력 증가',
@@ -55,16 +61,12 @@ const AllyStatusPanel = ({ unit, onClose }) => {
   );
   // 적용 중인 버프/패시브/스킬 효과 목록
   const activeBuffs = [
+    // 액티브 버프만 표시 (패시브 효과는 제외)
     ...(unit.buffs || []).map(buff => ({
       type: buff.type,
       value: buff.value,
-      // source: buff.source, // source 제거
+      // source: buff.source,
     })),
-    ...(unit.passives || []).map(passive => {
-      if (passive.critRate) return { type: 'CRIT_RATE_UP', value: passive.critRate };
-      if (passive.epRecharge) return { type: 'EP_RECHARGE_UP', value: passive.epRecharge };
-      return null;
-    }).filter(Boolean),
   ];
 
   return (

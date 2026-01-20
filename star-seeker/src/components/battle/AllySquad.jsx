@@ -1,9 +1,10 @@
-import BuffIcon from './BuffIcon';
-import CritBuffIcon from './CritBuffIcon';
-import EpRechargeBuffIcon from './EpRechargeBuffIcon';
-import HotBuffIcon from './HotBuffIcon';
+import BuffIcon from './buffIcons/BuffIcon';
+import CritBuffIcon from './buffIcons/CritBuffIcon';
+import EpRechargeBuffIcon from './buffIcons/EpRechargeBuffIcon';
+import HotBuffIcon from './buffIcons/HotBuffIcon';
 import AllyStatusPanel from './AllyStatusPanel';
 import { useState } from 'react';
+import DmgReductionBuffIcon from './buffIcons/DmgReductionBuffIcon';
 
 const AllySquad = ({ units, activeUnitId, onUnitClick, interventionMode }) => {
     const [selectedUnit, setSelectedUnit] = useState(null);
@@ -55,6 +56,10 @@ const AllySquad = ({ units, activeUnitId, onUnitClick, interventionMode }) => {
                                 </div>
                                 {/* 버프 아이콘 영역 (공격력 증가 + 치명타 확률 + EP 충전 효율 패시브) */}
                                 <div className="flex gap-0.5 mt-0.5 items-center min-h-4">
+                                                                        {/* 받는 피해 감소 버프 */}
+                                                                        {u.buffs?.filter(buff => buff.type === 'DMG_REDUCTION').map((buff, idx) => (
+                                                                            <DmgReductionBuffIcon key={"dmgred"+idx} />
+                                                                        ))}
                                     {/* 공격력 증가 버프 */}
                                     {u.buffs?.filter(buff => buff.type === 'ATK_UP').map((buff, idx) => (
                                         <BuffIcon key={"atk"+idx} />
@@ -63,14 +68,14 @@ const AllySquad = ({ units, activeUnitId, onUnitClick, interventionMode }) => {
                                     {u.buffs?.filter(buff => buff.type === 'HOT').map((buff, idx) => (
                                         <HotBuffIcon key={"hot"+idx} />
                                     ))}
-                                    {/* 치명타 확률 패시브(서주목 효과) */}
-                                    {u.passives?.some(p => p.critRate) && (
-                                        <CritBuffIcon />
-                                    )}
-                                    {/* EP 충전 효율 패시브(서주목 효과) */}
-                                    {u.passives?.some(p => p.epRecharge) && (
-                                        <EpRechargeBuffIcon />
-                                    )}
+                                    {/* 치명타 확률 증가 버프 (액티브 효과만) */}
+                                    {u.buffs?.filter(buff => buff.type === 'CRIT_RATE_UP').map((buff, idx) => (
+                                        <CritBuffIcon key={"crit"+idx} />
+                                    ))}
+                                    {/* EP 충전 효율 증가 버프 (액티브 효과만) */}
+                                    {u.buffs?.filter(buff => buff.type === 'EP_RECHARGE_UP').map((buff, idx) => (
+                                        <EpRechargeBuffIcon key={"ep"+idx} />
+                                    ))}
                                 </div>
                             </div>
                         </div>

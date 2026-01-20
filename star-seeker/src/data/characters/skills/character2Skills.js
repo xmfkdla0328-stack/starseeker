@@ -44,11 +44,11 @@ export const character2Skills = {
       isBuff: true 
     },
     passive1: { 
-      desc: '전투 시작 시 전체 아군의 최대 HP +10%', 
+      desc: '자신의 공격력 +10%', 
       cooldown: 0 
     },
     passive2: { 
-      desc: '치유 스킬 사용시, 자신의 치유량 +15%', 
+      desc: '치유 스킬 사용시, 치유 스킬의 치유량 +15%', 
       cooldown: 0 
     }
   }

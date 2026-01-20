@@ -53,6 +53,7 @@ export function calculateFinalStats(character) {
   const level = character.level || 1;
   const breakthrough = character.breakthrough || 0;
   const buffs = character.buffs || [];
+  const passives = character.passives || [];
 
   // 레벨 보정
   const levelMultiplier = 1 + (level - 1) * 0.02;
@@ -70,6 +71,10 @@ export function calculateFinalStats(character) {
   // 버프/디버프 적용
   let atkUp = 0;
   let defDown = 0;
+  // 패시브 atkUp 적용
+  passives.forEach(passive => {
+    if (passive.atkUp) atkUp += passive.atkUp;
+  });
   buffs.forEach(buff => {
     if (buff.type === 'ATK_UP') atkUp += buff.value;
     if (buff.type === 'DEF_DOWN') defDown += buff.value;
