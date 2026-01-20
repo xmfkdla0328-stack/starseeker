@@ -12,6 +12,38 @@
  */
 
 export function applySkillEffect({ caster, targets, skillDetail, battleContext }) {
+    // 아다드(2) 필살기: 전체 아군 회복 + 2턴간 받는 피해 15% 감소
+    if (caster.id === 2 && skillDetail && skillDetail.targetType === 'ALLY_ALL') {
+      // 아다드의 최종 공격력 계산 (버프 포함)
+      let finalAtk = caster.atk || 100;
+      if (caster.buffs) {
+        let atkBuff = 0;
+        caster.buffs.forEach(buff => {
+          if (buff.type === 'ATK_UP') atkBuff += buff.value;
+        });
+        finalAtk = Math.floor(finalAtk * (1 + atkBuff / 100));
+      }
+      // 전체 아군 회복
+      battleContext.allies.forEach(target => {
+        const healAmount = Math.round(finalAtk * 1.6);
+        const before = target.hp;
+        target.hp = Math.min(target.hp + healAmount, target.maxHp);
+        battleContext.addLog(`${target.name}이(가) ${healAmount}만큼 회복! (${before} → ${target.hp})`);
+      });
+      // 전체 아군에게 받는 피해 15% 감소 버프(2턴) 부여
+      battleContext.allies.forEach(target => {
+        const realUnit = battleContext.units?.find(u => u.id === target.id) || target;
+        if (!realUnit.buffs) realUnit.buffs = [];
+        realUnit.buffs.push({
+          type: 'DMG_REDUCTION',
+          value: 15,
+          duration: 2,
+          source: caster.id,
+        });
+        battleContext.addLog(`${realUnit.name}이(가) 2턴간 받는 피해 15% 감소 (피해 감소)`);
+      });
+      return;
+    }
   // 아다드(2) 스킬: 체력이 가장 낮은 아군을 공격력의 200%로 회복
   if (caster.id === 2 && skillDetail && skillDetail.targetType === 'ALLY_ONE') {
     // 회복량 계산: atk * 2.0
@@ -57,6 +89,33 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
       const value = skillDetail.effectValue?.[idx];
       const targetType = skillDetail.effectTarget?.[idx];
       const duration = skillDetail.duration?.[idx] ?? 0;
+
+      // DAMAGE 타입: 적 전체에게 데미지 적용
+      if (type === 'DAMAGE') {
+        // 대상 결정 (ENEMY_ALL)
+        let damageTargets = targets;
+        if (skillDetail.targetType === 'ENEMY_ALL' && battleContext?.enemies) {
+          damageTargets = battleContext.enemies.filter(u => !u.isDead);
+        }
+        // 공격력 및 버프 계산
+        let finalAtk = caster.atk || 100;
+        if (caster.buffs) {
+          let atkBuff = 0;
+          caster.buffs.forEach(buff => {
+            if (buff.type === 'ATK_UP') atkBuff += buff.value;
+          });
+          finalAtk = Math.floor(finalAtk * (1 + atkBuff / 100));
+        }
+        // damageFactor 적용
+        const damageFactor = value || skillDetail.damageFactor || 1.0;
+        damageTargets.forEach(target => {
+          const dmg = Math.round(finalAtk * damageFactor);
+          const before = target.hp;
+          target.hp = Math.max(0, target.hp - dmg);
+          battleContext.addLog(`${target.name}이(가) ${dmg} 피해! (${before} → ${target.hp})`);
+        });
+        return;
+      }
 
       // 대상 결정 (예시: ALLY_ALL)
       let effectTargets = targets;
