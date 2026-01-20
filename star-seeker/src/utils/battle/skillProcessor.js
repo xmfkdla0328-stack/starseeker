@@ -4,6 +4,8 @@
  * 예시: 공격력 증가, 게이지 증가, 방어력 감소, 보호막 부여 등
  */
 
+import { playerPassiveUnlocks } from '../../data/playerPassiveUnlocks';
+
 // 주요 효과 타입별 처리 함수
 
 /**
@@ -23,9 +25,12 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
         });
         finalAtk = Math.floor(finalAtk * (1 + atkBuff / 100));
       }
+      // passive2 치유량 +15% 적용
+      let healMultiplier = 1.0;
+      if (playerPassiveUnlocks[2]?.passive2) healMultiplier = 1.15;
       // 전체 아군 회복
       battleContext.allies.forEach(target => {
-        const healAmount = Math.round(finalAtk * 1.6);
+        const healAmount = Math.round(finalAtk * 1.6 * healMultiplier);
         const before = target.hp;
         target.hp = Math.min(target.hp + healAmount, target.maxHp);
         battleContext.addLog(`${target.name}이(가) ${healAmount}만큼 회복! (${before} → ${target.hp})`);
@@ -46,8 +51,11 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
     }
   // 아다드(2) 스킬: 체력이 가장 낮은 아군을 공격력의 200%로 회복
   if (caster.id === 2 && skillDetail && skillDetail.targetType === 'ALLY_ONE') {
+    // passive2 치유량 +15% 적용
+    let healMultiplier = 1.0;
+    if (playerPassiveUnlocks[2]?.passive2) healMultiplier = 1.15;
     // 회복량 계산: atk * 2.0
-    const healAmount = Math.round((caster.atk || 100) * 2.0);
+    const healAmount = Math.round((caster.atk || 100) * 2.0 * healMultiplier);
     const target = targets[0];
     if (target && target.hp < target.maxHp) {
       const before = target.hp;
@@ -66,8 +74,11 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
         });
         finalAtk = Math.floor(finalAtk * (1 + atkBuff / 100));
       }
+      // passive2 치유량 +15% 적용
+      let healMultiplier = 1.0;
+      if (playerPassiveUnlocks[2]?.passive2) healMultiplier = 1.15;
       battleContext.allies.forEach(target => {
-        const hotValue = Math.round(finalAtk * 0.08);
+        const hotValue = Math.round(finalAtk * 0.08 * healMultiplier);
         // 실제 units 배열의 해당 유닛 찾아서 버프 추가
         const realUnit = battleContext.units?.find(u => u.id === target.id) || target;
         if (!realUnit.buffs) realUnit.buffs = [];
