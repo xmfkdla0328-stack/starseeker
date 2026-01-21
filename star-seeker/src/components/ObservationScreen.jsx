@@ -13,6 +13,16 @@ import './ObservationConsole/ObservationConsole.css';
  * Master-Detail View: 좌측 스테이지 리스트 + 우측 뷰포트
  */
 const ObservationScreen = ({ setScreen, startBattle, party }) => {
+    // 파티 편성 진입 핸들러: 관측에서 파티 편성 진입 시, battleType(컨텐츠 타입)과 함께 전달
+    const handlePartySetup = () => {
+      setScreen({
+        name: 'PARTY_SETUP',
+        showEngageButton: true,
+        battleType: selectedStage?.type,
+        stage: selectedStage,
+        onEngage: (battleType, stage) => startBattle(battleType, stage),
+      });
+    };
   // 관측 상태 훅
   const {
     selectedStage,
@@ -64,7 +74,7 @@ const ObservationScreen = ({ setScreen, startBattle, party }) => {
       {/* 좌측: 헤더 + 사이드바 (세로 배치, 독립 스크롤) */}
       <div className="flex flex-col w-full md:w-[380px] min-w-[260px] max-w-[420px] h-[40vh] md:h-[100dvh] bg-transparent z-10 border-r border-cyan-900/30">
         <div className="relative z-20" style={{ flexShrink: 0 }}>
-          <ObservationHeader onBackClick={() => setScreen('HOME')} />
+          <ObservationHeader onBackClick={() => setScreen({ name: 'HOME' })} />
         </div>
         <div className="flex-1 overflow-y-auto overflow-x-visible">
           <ObservationSidebar
@@ -89,7 +99,7 @@ const ObservationScreen = ({ setScreen, startBattle, party }) => {
           <ObservationInfoPanel
             selectedStage={selectedStage}
             isDeploying={isDeploying}
-            onEngage={handleEngage}
+            onEngage={handlePartySetup}
           />
         </div>
       </div>

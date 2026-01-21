@@ -13,22 +13,36 @@ function StarSeekerAppContent() {
   const { screen, setScreen, toast, showToast } = useUI();
   const { inventory, setInventory, items, setItems, handleGacha, handleLevelUp, EXP_PER_CHIP } = useInventory();
 
+  // 화면 이름/파라미터 분리
+  const screenName = typeof screen === 'object' && screen !== null ? screen.name : screen;
+  const screenParams = typeof screen === 'object' && screen !== null ? screen : {};
+
   return (
     <div className="flex flex-col min-h-screen">
       <StatusBar />
       <Background />
       <main className="flex-1 flex flex-col">
         <div className="flex-1 overflow-y-auto relative no-scrollbar screen-scroll">
-          {screen === 'HOME' && (
-            <HomeScreen setScreen={setScreen} onProfileClick={() => setScreen('PROFILE')} />
+          {screenName === 'HOME' && (
+            <HomeScreen setScreen={setScreen} onProfileClick={() => setScreen({ name: 'PROFILE' })} />
           )}
-          {screen === 'PARTY' && (
-            <PartyScreen party={party} setParty={setParty} inventory={Array.isArray(inventory) ? inventory : partyData} showToast={showToast} setScreen={setScreen} />
+          {screenName === 'PARTY' && (
+            <PartyScreen party={party} setParty={setParty} inventory={Array.isArray(inventory) ? inventory : partyData} showToast={showToast} setScreen={setScreen} showEngageButton={false} />
           )}
-          {screen === 'GACHA' && (
+          {screenName === 'PARTY_SETUP' && (
+            <PartyScreen
+              party={party}
+              setParty={setParty}
+              inventory={Array.isArray(inventory) ? inventory : partyData}
+              showToast={showToast}
+              setScreen={setScreen}
+              {...screenParams}
+            />
+          )}
+          {screenName === 'GACHA' && (
             <GachaScreen handleGacha={handleGacha} setScreen={setScreen} />
           )}
-          {screen === 'CODEX' && (
+          {screenName === 'CODEX' && (
             <CodexScreen
               inventory={inventory}
               setInventory={setInventory}
@@ -40,19 +54,19 @@ function StarSeekerAppContent() {
               setScreen={setScreen}
             />
           )}
-          {screen === 'OBSERVATION' && (
-            <ObservationScreen setScreen={setScreen} party={Array.isArray(party) ? party : []} startBattle={() => setScreen('BATTLE')} />
+          {screenName === 'OBSERVATION' && (
+            <ObservationScreen setScreen={setScreen} party={Array.isArray(party) ? party : []} startBattle={(battleType, stage) => setScreen({ name: 'BATTLE', battleType, stage })} />
           )}
-          {screen === 'EXTRACTION' && (
+          {screenName === 'EXTRACTION' && (
             <ExtractionScreen setScreen={setScreen} party={Array.isArray(party) ? party : []} />
           )}
-          {screen === 'INVENTORY' && (
+          {screenName === 'INVENTORY' && (
             <InventoryScreen items={items} setItems={setItems} showToast={showToast} setScreen={setScreen} />
           )}
-          {screen === 'BATTLE' && (
+          {screenName === 'BATTLE' && (
             <BattleScreen party={party} />
           )}
-          {screen === 'PROFILE' && (
+          {screenName === 'PROFILE' && (
             <ProfileScreen />
           )}
         </div>

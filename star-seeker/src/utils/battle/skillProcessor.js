@@ -128,9 +128,11 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
         return;
       }
 
-      // 대상 결정 (예시: ALLY_ALL)
+      // 대상 결정 (SELF, ALLY_ALL 등)
       let effectTargets = targets;
-      if (targetType === 'ALLY_ALL' && battleContext?.allies) {
+      if (targetType === 'SELF') {
+        effectTargets = [caster];
+      } else if (targetType === 'ALLY_ALL' && battleContext?.allies) {
         effectTargets = battleContext.allies.filter(u => !u.isDead);
       }
       // 효과별 처리
@@ -138,12 +140,10 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
         case 'ATK_UP':
           effectTargets.forEach(target => {
             if (!target.buffs) target.buffs = [];
-            // 같은 type, 같은 source의 버프가 이미 있으면 갱신, 없으면 추가
             const existingIdx = target.buffs.findIndex(
               b => b.type === 'ATK_UP' && b.source === caster.id
             );
             if (existingIdx !== -1) {
-              // 기존 버프 갱신 (duration, value)
               target.buffs[existingIdx] = {
                 ...target.buffs[existingIdx],
                 value,
@@ -161,10 +161,57 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
           });
           break;
 
+        case 'CRIT_RATE_UP':
+          effectTargets.forEach(target => {
+            if (!target.buffs) target.buffs = [];
+            const existingIdx = target.buffs.findIndex(
+              b => b.type === 'CRIT_RATE_UP' && b.source === caster.id
+            );
+            if (existingIdx !== -1) {
+              target.buffs[existingIdx] = {
+                ...target.buffs[existingIdx],
+                value,
+                duration,
+              };
+            } else {
+              target.buffs.push({
+                type: 'CRIT_RATE_UP',
+                value,
+                duration,
+                source: caster.id,
+              });
+            }
+            battleContext.addLog(`${target.name}의 치명타 확률이 ${value}% 증가 (지속 ${duration}턴)`);
+          });
+          break;
+
+        case 'CRIT_DMG_UP':
+          effectTargets.forEach(target => {
+            if (!target.buffs) target.buffs = [];
+            const existingIdx = target.buffs.findIndex(
+              b => b.type === 'CRIT_DMG_UP' && b.source === caster.id
+            );
+            if (existingIdx !== -1) {
+              target.buffs[existingIdx] = {
+                ...target.buffs[existingIdx],
+                value,
+                duration,
+              };
+            } else {
+              target.buffs.push({
+                type: 'CRIT_DMG_UP',
+                value,
+                duration,
+                source: caster.id,
+              });
+            }
+            battleContext.addLog(`${target.name}의 치명타 피해가 ${value}% 증가 (지속 ${duration}턴)`);
+          });
+          break;
+
         case 'DEF_DOWN':
           effectTargets.forEach(target => {
             if (!target.buffs) target.buffs = [];
-            // 같은 type, 같은 source의 디버프가 이미 있으면 갱신, 없으면 추가
             const existingIdx = target.buffs.findIndex(
               b => b.type === 'DEF_DOWN' && b.source === caster.id
             );
@@ -187,11 +234,8 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
           break;
 
         case 'GAUGE_UP':
-          // 타임라인 구조에서 행동 게이지 = distance 값
           if (battleContext && typeof value === 'number') {
-            // 전체 아군 대상으로 적용
             effectTargets.forEach(target => {
-              // distance를 %만큼 앞으로 당김
               const timeline = battleContext.timeline;
               if (timeline && typeof timeline.startDistance === 'number') {
                 const moveAmount = timeline.startDistance * (value / 100);

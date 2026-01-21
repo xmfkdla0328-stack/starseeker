@@ -1,5 +1,6 @@
 import BuffIcon from './buffIcons/BuffIcon';
 import CritBuffIcon from './buffIcons/CritBuffIcon';
+import CritDmgBuffIcon from './buffIcons/CritDmgBuffIcon';
 import EpRechargeBuffIcon from './buffIcons/EpRechargeBuffIcon';
 import HotBuffIcon from './buffIcons/HotBuffIcon';
 import AllyStatusPanel from './AllyStatusPanel';
@@ -71,6 +72,10 @@ const AllySquad = ({ units, activeUnitId, onUnitClick, interventionMode }) => {
                                     {/* 치명타 확률 증가 버프 (액티브 효과만) */}
                                     {u.buffs?.filter(buff => buff.type === 'CRIT_RATE_UP').map((buff, idx) => (
                                         <CritBuffIcon key={"crit"+idx} />
+                                    ))}
+                                    {/* 치명타 피해 증가 버프 (액티브 효과만) */}
+                                    {u.buffs?.filter(buff => buff.type === 'CRIT_DMG_UP').map((buff, idx) => (
+                                        <CritDmgBuffIcon key={"critdmg"+idx} />
                                     ))}
                                     {/* EP 충전 효율 증가 버프 (액티브 효과만) */}
                                     {u.buffs?.filter(buff => buff.type === 'EP_RECHARGE_UP').map((buff, idx) => (

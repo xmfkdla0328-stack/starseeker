@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { calculateFinalStats, calculateFinalCritStats, calculateFinalEpRecharge } from '../../utils/StatCalculator';
 import BuffIcon from './buffIcons/BuffIcon';
 import CritBuffIcon from './buffIcons/CritBuffIcon';
+import CritDmgBuffIcon from './buffIcons/CritDmgBuffIcon';
 import EpRechargeBuffIcon from './buffIcons/EpRechargeBuffIcon';
 import HotBuffIcon from './buffIcons/HotBuffIcon';
 import DmgReductionBuffIcon from './buffIcons/DmgReductionBuffIcon';
@@ -24,9 +25,14 @@ const BUFF_DESCRIPTIONS = {
     getDesc: (buff) => `치명타 확률 +${buff.value}%`,
   },
   EP_RECHARGE_UP: {
-    icon: <EpRechargeBuffIcon />,
+    icon: <EpRechargeBuffIcon />, 
     label: 'EP 충전 효율 증가',
     getDesc: (buff) => `EP 충전 효율 +${buff.value}%`,
+  },
+  CRIT_DMG_UP: {
+    icon: <CritDmgBuffIcon />,
+    label: '치명타 피해 증가',
+    getDesc: (buff) => `치명타 피해 +${buff.value}%`,
   },
   HOT: {
     icon: <HotBuffIcon />,

@@ -26,14 +26,17 @@ export const character3Skills = {
       isBuff: false 
     },
     skill: { 
-      desc: '자신의 치명타 확률+20% (지속 2턴), 자신의 치명타 피해+30% (지속 2턴)', 
-      cooldown: 2, 
-      elementalPotency: 1, 
-      isAttributeAttack: true, 
-      damageFactor: 0, 
-      targetType: 'ENEMY_ALL', 
-      
-      isBuff: false 
+      desc: '자신의 치명타 확률+20% (지속 2턴), 자신의 치명타 피해+30% (지속 2턴)',
+      cooldown: 2,
+      elementalPotency: 1,
+      isAttributeAttack: true,
+      damageFactor: 0,
+      targetType: 'SELF',
+      effectType: ['CRIT_RATE_UP', 'CRIT_DMG_UP'],
+      effectValue: [20, 30],
+      effectTarget: ['SELF', 'SELF'],
+      duration: [2, 2],
+      isBuff: true
     },
     ultimate: { 
       desc: '적 1체에게 공격력의 300% 피해, 자신의 스킬 쿨다운 -1턴', 

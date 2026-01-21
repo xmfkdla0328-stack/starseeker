@@ -8,10 +8,10 @@ import { playerPassiveUnlocks } from '../data/playerPassiveUnlocks';
 
 const useBattleEngine = (initialAllies, initialEnemies) => {
   // 서주목(1) 또는 아다드(2)만 쿨다운 필드 추가 (최초 0)
-  const withCooldowns = (unit) =>
-    (unit.id === 1 || unit.id === 2)
-      ? { ...unit, cooldowns: { skill: 0, ultimate: 0, ...(unit.cooldowns || {}) } }
-      : unit;
+  // 모든 캐릭터에 쿨다운 필드 부여 (기존: 1,2번만)
+  const withCooldowns = (unit) => {
+    return { ...unit, cooldowns: { skill: 0, ultimate: 0, ...(unit.cooldowns || {}) } };
+  };
   // 서주목 패시브: 아군 전체 치명타 확률 +5% 적용
   const hasSeoJuMok = initialAllies.some(u => u.id === 1);
   let alliesWithPassive = initialAllies;
@@ -110,16 +110,15 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
       (unit.id === 1 || unit.id === 2)
         ? { ...unit, cooldowns: { skill: 0, ultimate: 0, ...(unit.cooldowns || {}) } }
         : unit;
-    // 서주목(1) 또는 아다드(2) 스킬/필살기 쿨다운 적용
-    if ((activeUnit.id === 1 || activeUnit.id === 2) && (type === 'skill' || type === 'ult')) {
-      // 쿨다운 체크
+    // 모든 캐릭터 스킬/필살기 쿨다운 적용
+    if ((type === 'skill' || type === 'ult')) {
       if (activeUnit.cooldowns && activeUnit.cooldowns[type] > 0) {
         addLog(`스킬 쿨다운 중! (${activeUnit.cooldowns[type]}턴 남음)`);
         return;
       }
     }
-    // 서주목(1) 또는 아다드(2) 스킬/필살기 처리
-    if ((type === 'skill' || type === 'ult') && (activeUnit.id === 1 || activeUnit.id === 2)) {
+    // 모든 캐릭터의 스킬/필살기 처리 (쿨다운/EP/버프 등)
+    if ((type === 'skill' || type === 'ult')) {
       // 아군/적 전체
       const allies = units.filter(u => u.type === 'ally' && u.hp > 0);
       const enemies = units.filter(u => u.type === 'enemy' && u.hp > 0);

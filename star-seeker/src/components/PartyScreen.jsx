@@ -15,8 +15,10 @@ import { usePartyHandlers } from '../hooks/usePartyHandlers';
 const PartyScreen = (props) => {
   // party: 출전 멤버 배열(최대 4명, null 허용)
   // inventory: 전체 보유 캐릭터 배열(창고)
-  // party는 반드시 props로만 받고, 변경은 setParty로만 수행
-  const { party, setParty, inventory, showToast, setScreen, missionType, setMissionType } = props;
+  // showEngageButton: 관측/전투 진입 버튼 노출 여부
+  // onEngage: 관측 개시(전투 진입) 핸들러
+  // battleType: 진입할 전투 컨텐츠 타입(예: 'calamity', 'resource')
+  const { party, setParty, inventory, showToast, setScreen, showEngageButton = false, onEngage, battleType } = props;
   const normalizedParty = Array.isArray(party) ? [...party] : [];
   while (normalizedParty.length < 4) normalizedParty.push(null);
   const displayParty = normalizedParty.slice(0, 4);
@@ -39,7 +41,7 @@ const PartyScreen = (props) => {
     removeChar,
   });
 
-  const isPartyFull = party.filter(Boolean).length === 4;
+  const hasAnyMember = party.filter(Boolean).length > 0;
 
   return (
     <div className="flex flex-col h-full relative" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
@@ -112,28 +114,29 @@ const PartyScreen = (props) => {
       </div>
 
       {/* [하단] 액션 바 */}
-      <div className="fixed left-0 right-0 bottom-0 p-4 bg-slate-950/90 backdrop-blur-sm border-t border-cyan-500/30 z-50">
-        <button
-          onClick={() => {
-            // 관측/전투 진입 시 party 유효성 체크
-            if (!isPartyFull) {
-              window.alert('파티가 4명 모두 채워져야 전투에 진입할 수 있습니다.');
-              return;
-            }
-            setScreen('OBSERVATION');
-          }}
-          disabled={!isPartyFull}
-          className={`w-full py-4 rounded-xl font-bold text-lg uppercase tracking-widest transition-all flex items-center justify-center gap-3 ${
-            isPartyFull
-              ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-2xl shadow-cyan-500/50 hover:shadow-cyan-500/70 hover:scale-[1.02] border-2 border-cyan-400 animate-pulse'
-              : 'bg-slate-800/50 text-slate-600 cursor-not-allowed border-2 border-slate-700'
-          }`}
-        >
-          <Zap size={24} className={isPartyFull ? 'text-yellow-300' : 'text-slate-600'} />
-          {isPartyFull ? '관측 개시' : `${4 - displayParty.filter(p => p).length}명 더 선택`}
-          {isPartyFull && <ChevronRight size={24} />}
-        </button>
-      </div>
+      {showEngageButton && (
+        <div className="fixed left-0 right-0 bottom-0 p-4 bg-slate-950/90 backdrop-blur-sm border-t border-cyan-500/30 z-50">
+          <button
+            onClick={() => {
+              if (!hasAnyMember) {
+                window.alert('파티에 최소 1명 이상 배치해야 전투에 진입할 수 있습니다.');
+                return;
+              }
+              if (onEngage) onEngage(battleType, props.stage);
+            }}
+            disabled={!hasAnyMember}
+            className={`w-full py-4 rounded-xl font-bold text-lg uppercase tracking-widest transition-all flex items-center justify-center gap-3 ${
+              hasAnyMember
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-2xl shadow-cyan-500/50 hover:shadow-cyan-500/70 hover:scale-[1.02] border-2 border-cyan-400 animate-pulse'
+                : 'bg-slate-800/50 text-slate-600 cursor-not-allowed border-2 border-slate-700'
+            }`}
+          >
+            <Zap size={24} className={hasAnyMember ? 'text-yellow-300' : 'text-slate-600'} />
+            {hasAnyMember ? '관측 개시' : '최소 1명 배치 필요'}
+            {hasAnyMember && <ChevronRight size={24} />}
+          </button>
+        </div>
+      )}
 
       {/* 전술 가이드 모달 */}
       <TacticalGuideModal isOpen={showGuide} onClose={() => setShowGuide(false)} />
