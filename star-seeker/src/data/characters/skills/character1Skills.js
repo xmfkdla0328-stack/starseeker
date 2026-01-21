@@ -40,7 +40,7 @@ export const character1Skills = {
     },
     ultimate: {
       desc: '모든 적에게 공격력의 220% 피해, 적 방어력 -15% (지속 2턴)',
-      cooldown: 4,
+      cooldown: 0,
       elementalPotency: 2,
       isAttributeAttack: true,
       damageFactor: 2.2,
