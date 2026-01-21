@@ -245,6 +245,17 @@ export function applySkillEffect({ caster, targets, skillDetail, battleContext }
             });
           }
           break;
+        case 'COOLDOWN_REDUCE':
+          // 쿨다운 감소: effectTarget이 SELF면 allies의 해당 객체의 쿨다운도 직접 감소
+          if (targetType === 'SELF') {
+            effectTargets.forEach(target => {
+              if (target.cooldowns && typeof target.cooldowns.skill === 'number') {
+                target.cooldowns.skill = Math.max(0, target.cooldowns.skill - value);
+                battleContext.addLog(`${target.name}의 스킬 쿨다운이 ${value}턴 감소!`);
+              }
+            });
+          }
+          break;
         default:
           break;
       }

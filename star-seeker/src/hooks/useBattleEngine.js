@@ -290,9 +290,9 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
             newHp = Math.min(u.maxHp, newHp + hotHeal);
             addLog(`[HOT] ${u.name}이(가) HOT 효과로 ${hotHeal} 회복! (${beforeHp} → ${newHp})`);
           }
-        // 쿨다운 감소(서주목만)
+        // 쿨다운 감소(모든 캐릭터)
         let newCooldowns = u.cooldowns;
-        if ((u.id === 1 || u.id === 2) && newCooldowns) {
+        if (newCooldowns) {
           newCooldowns = { ...newCooldowns };
           Object.keys(newCooldowns).forEach(key => {
             newCooldowns[key] = Math.max(0, newCooldowns[key] - 1);
@@ -304,7 +304,7 @@ const useBattleEngine = (initialAllies, initialEnemies) => {
           ep: Math.min(Math.max(0, newEp), u.maxEp),
           buffs: newBuffs,
           hp: newHp,
-          ...((u.id === 1 || u.id === 2) && newCooldowns ? { cooldowns: newCooldowns } : {}),
+          ...(newCooldowns ? { cooldowns: newCooldowns } : {}),
         };
       }
       // 기타 유닛: 버프 지속시간은 감소시키지 않음 (상태만 유지)

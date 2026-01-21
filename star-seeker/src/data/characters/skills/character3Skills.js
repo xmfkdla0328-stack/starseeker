@@ -27,7 +27,7 @@ export const character3Skills = {
     },
     skill: { 
       desc: '자신의 치명타 확률+20% (지속 2턴), 자신의 치명타 피해+30% (지속 2턴)',
-      cooldown: 2,
+      cooldown: 3,
       elementalPotency: 1,
       isAttributeAttack: true,
       damageFactor: 0,
@@ -39,13 +39,17 @@ export const character3Skills = {
       isBuff: true
     },
     ultimate: { 
-      desc: '적 1체에게 공격력의 300% 피해, 자신의 스킬 쿨다운 -1턴', 
+      desc: '선택한 적 1체에게 공격력의 300% 피해, 자신의 스킬 쿨 -1턴', 
       cooldown: 0, 
       elementalPotency: 2, 
       isAttributeAttack: true, 
       damageFactor: 3.0, 
       targetType: 'ENEMY', 
-      isBuff: false 
+      isBuff: false, 
+      effectType: ['DAMAGE', 'COOLDOWN_REDUCE'],
+      effectValue: [3.0, 1],
+      effectTarget: ['ENEMY', 'SELF'],
+      duration: [0, 0]
     },
     passive1: { 
       desc: '자신의 치명타 확률 +10%', 
