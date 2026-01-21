@@ -24,7 +24,6 @@ export const useLevelSync = (playerInfo, setPlayerInfo, inventory, setInventory,
           const breakthrough = char.breakthrough || 0;
           const maxLevel = getMaxLevelByBreakthrough(breakthrough);
           const cappedLevel = Math.min(newLevel, maxLevel);
-          
           return {
             ...char,
             level: cappedLevel,
@@ -32,23 +31,38 @@ export const useLevelSync = (playerInfo, setPlayerInfo, inventory, setInventory,
         })
       );
 
-      // 파티 캐릭터도 동기화
-      setParty(prevParty => ({
-        members: prevParty.members.map(c => {
-          if (!c) return null;
-          const breakthrough = c.breakthrough || 0;
-          const maxLevel = getMaxLevelByBreakthrough(breakthrough);
-          const cappedLevel = Math.min(newLevel, maxLevel);
-          return { ...c, level: cappedLevel };
-        }),
-      }));
+      // 파티 캐릭터도 동기화 (배열/객체 모두 지원)
+      setParty(prevParty => {
+        if (Array.isArray(prevParty)) {
+          // 배열 기반 파티
+          return prevParty.map(c => {
+            if (!c) return null;
+            const breakthrough = c.breakthrough || 0;
+            const maxLevel = getMaxLevelByBreakthrough(breakthrough);
+            const cappedLevel = Math.min(newLevel, maxLevel);
+            return { ...c, level: cappedLevel };
+          });
+        } else if (prevParty && Array.isArray(prevParty.members)) {
+          // 객체 기반 파티
+          return {
+            ...prevParty,
+            members: prevParty.members.map(c => {
+              if (!c) return null;
+              const breakthrough = c.breakthrough || 0;
+              const maxLevel = getMaxLevelByBreakthrough(breakthrough);
+              const cappedLevel = Math.min(newLevel, maxLevel);
+              return { ...c, level: cappedLevel };
+            }),
+          };
+        }
+        return prevParty;
+      });
 
       // 메인 캐릭터도 동기화
       if (mainChar) {
         const breakthrough = mainChar.breakthrough || 0;
         const maxLevel = getMaxLevelByBreakthrough(breakthrough);
         const cappedLevel = Math.min(newLevel, maxLevel);
-        
         setMainChar(prev => ({
           ...prev,
           level: cappedLevel,
